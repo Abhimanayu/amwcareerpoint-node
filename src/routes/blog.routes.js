@@ -1,0 +1,12 @@
+const router = require("express").Router();
+const ctrl = require("../controllers/blog.controller");
+const { authMiddleware } = require("../middleware/auth");
+
+// Blog posts
+router.get("/", ctrl.list);
+router.get("/:slug", ctrl.detail);
+router.post("/", authMiddleware, ctrl.create);
+router.put("/:id", authMiddleware, ctrl.update);
+router.delete("/:id", authMiddleware, ctrl.remove);
+
+module.exports = router;

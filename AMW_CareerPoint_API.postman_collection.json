@@ -1,0 +1,769 @@
+{
+  "info": {
+    "name": "AMW Career Point API",
+    "description": "Complete API collection for AMW Career Point — Frontend + Admin Panel\nBase URL: http://localhost:5000/api/v1\n\nHow to use:\n1. Import this file in Postman\n2. Run 'Admin - Login' first\n3. Copy the token from response\n4. It auto-saves to {{token}} variable\n5. All admin requests use {{token}} automatically",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "countryId", "value": "", "type": "string" },
+    { "key": "universityId", "value": "", "type": "string" },
+    { "key": "counsellorId", "value": "", "type": "string" },
+    { "key": "reviewId", "value": "", "type": "string" },
+    { "key": "blogId", "value": "", "type": "string" },
+    { "key": "enquiryId", "value": "", "type": "string" }
+  ],
+  "item": [
+
+    {
+      "name": "🔐 AUTH",
+      "item": [
+        {
+          "name": "Admin - Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) {",
+                  "  pm.collectionVariables.set('token', res.data.token);",
+                  "  console.log('✅ Token saved:', res.data.token.substring(0, 30) + '...');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@amwcareerpoint.com\",\n  \"password\": \"Admin@123456\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "description": "Login and get JWT token. Token is auto-saved to {{token}} variable."
+          }
+        },
+        {
+          "name": "Admin - Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"PASTE_REFRESH_TOKEN_HERE\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["auth", "refresh"] }
+          }
+        },
+        {
+          "name": "Admin - Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🌍 COUNTRIES",
+      "item": [
+        {
+          "name": "List Countries (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/countries?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["countries"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "featured", "value": "true", "disabled": true },
+                { "key": "search", "value": "russia", "disabled": true },
+                { "key": "sort", "value": "sortOrder", "disabled": true },
+                { "key": "status", "value": "all", "disabled": true }
+              ]
+            },
+            "description": "Public endpoint. Use ?featured=true for homepage. Use ?status=all for admin panel."
+          }
+        },
+        {
+          "name": "Get Country by Slug (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/countries/russia",
+              "host": ["{{baseUrl}}"],
+              "path": ["countries", "russia"]
+            },
+            "description": "Returns country detail + nested universities list"
+          }
+        },
+        {
+          "name": "Create Country (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) {",
+                  "  pm.collectionVariables.set('countryId', res.data.id);",
+                  "  console.log('✅ Country ID saved:', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Russia\",\n  \"countryCode\": \"ru\",\n  \"description\": \"Russia offers world-class medical education with globally recognized degrees at affordable costs. Russian medical universities are WHO and MCI approved.\",\n  \"bannerImage\": \"https://images.unsplash.com/photo-1547448415-e9f5b28e570d?w=1200\",\n  \"cardImage\": \"https://images.unsplash.com/photo-1547448415-e9f5b28e570d?w=400\",\n  \"headerColor\": \"#2563EB\",\n  \"feeRange\": \"₹2.5L – 6L\",\n  \"feeRangeUSD\": \"$4,000 - $6,000/year\",\n  \"duration\": \"6 Yrs\",\n  \"highlights\": [\"No IELTS\", \"WHO Approved\", \"Low Cost\"],\n  \"features\": [\n    \"WHO & NMC Approved Universities\",\n    \"No Entrance Exam Required\",\n    \"Affordable Tuition Fees\",\n    \"English Medium Courses\",\n    \"Global Recognition\"\n  ],\n  \"eligibility\": [\n    \"Minimum 50% in Physics, Chemistry, Biology\",\n    \"NEET Qualification Required\",\n    \"Age: 17-25 years\"\n  ],\n  \"admissionProcess\": [\n    { \"step\": 1, \"title\": \"Submit Application\", \"description\": \"Fill out the online application form with your academic details and documents.\" },\n    { \"step\": 2, \"title\": \"Document Verification\", \"description\": \"Our team verifies all submitted documents within 3-5 working days.\" },\n    { \"step\": 3, \"title\": \"Admission Letter\", \"description\": \"Receive official admission letter from the university.\" },\n    { \"step\": 4, \"title\": \"Visa Processing\", \"description\": \"Apply for student visa with our end-to-end visa assistance.\" },\n    { \"step\": 5, \"title\": \"Travel & Arrival\", \"description\": \"Travel to Russia with airport pickup and hostel arrangement.\" }\n  ],\n  \"climate\": \"Continental, -20°C to 30°C\",\n  \"language\": \"Russian (English medium available)\",\n  \"currency\": \"Russian Ruble (RUB)\",\n  \"livingCost\": \"₹15,000 – 25,000/month\",\n  \"visaInfo\": \"Student visa required, 30 days processing time\",\n  \"metaTitle\": \"MBBS in Russia 2026 – Fees, Top Universities, Admission\",\n  \"metaDescription\": \"Study MBBS in Russia from top WHO & NMC approved universities. Fees from ₹2.5L/year. No donation. Complete admission guidance by AMW Career Point.\",\n  \"isFeatured\": true,\n  \"sortOrder\": 1,\n  \"status\": \"active\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/countries", "host": ["{{baseUrl}}"], "path": ["countries"] },
+            "description": "Country ID is auto-saved to {{countryId}} for use in University creation"
+          }
+        },
+        {
+          "name": "Update Country (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isFeatured\": true,\n  \"sortOrder\": 1,\n  \"status\": \"active\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/countries/{{countryId}}", "host": ["{{baseUrl}}"], "path": ["countries", "{{countryId}}"] },
+            "description": "Send only the fields you want to update"
+          }
+        },
+        {
+          "name": "Reorder Countries (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"id\": \"COUNTRY_ID_1\", \"sortOrder\": 1 },\n    { \"id\": \"COUNTRY_ID_2\", \"sortOrder\": 2 },\n    { \"id\": \"COUNTRY_ID_3\", \"sortOrder\": 3 }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/countries/reorder", "host": ["{{baseUrl}}"], "path": ["countries", "reorder"] }
+          }
+        },
+        {
+          "name": "Delete Country (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/countries/{{countryId}}", "host": ["{{baseUrl}}"], "path": ["countries", "{{countryId}}"] },
+            "description": "Will fail if universities exist under this country"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🏫 UNIVERSITIES",
+      "item": [
+        {
+          "name": "List Universities (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/universities?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["universities"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "country", "value": "russia", "disabled": true },
+                { "key": "featured", "value": "true", "disabled": true },
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "status", "value": "all", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get University by Slug (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/universities/first-moscow-state-medical-university",
+              "host": ["{{baseUrl}}"],
+              "path": ["universities", "first-moscow-state-medical-university"]
+            }
+          }
+        },
+        {
+          "name": "Create University (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) {",
+                  "  pm.collectionVariables.set('universityId', res.data.id);",
+                  "  console.log('✅ University ID saved:', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"First Moscow State Medical University\",\n  \"countryId\": \"{{countryId}}\",\n  \"description\": \"One of the oldest and most prestigious medical universities in Russia, offering world-class medical education since 1758.\",\n  \"heroImage\": \"https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200\",\n  \"cardImage\": \"https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400\",\n  \"galleryImages\": [\n    \"https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800\",\n    \"https://images.unsplash.com/photo-1497366216548-37526070297c?w=800\"\n  ],\n  \"location\": \"Moscow, Russia\",\n  \"established\": 1758,\n  \"ranking\": \"Top 5 in Russia\",\n  \"fees\": \"₹4.5L/year\",\n  \"hostelFees\": \"₹50,000/year\",\n  \"totalCost\": \"₹5L/year (approx)\",\n  \"duration\": \"6 Years\",\n  \"medium\": \"English\",\n  \"approvals\": [\"WHO\", \"NMC\", \"FAIMER\"],\n  \"eligibility\": [\n    \"Minimum 50% in Physics, Chemistry, Biology\",\n    \"NEET Qualification Required\",\n    \"Valid Passport\"\n  ],\n  \"facilities\": [\n    \"Modern Laboratories\",\n    \"Well-equipped 1000-bed Hospital\",\n    \"Library with 1M+ books\",\n    \"Student Hostels\",\n    \"Cafeteria with Indian Food\"\n  ],\n  \"admissionProcess\": [\n    { \"step\": 1, \"title\": \"Submit Application Online\", \"description\": \"Fill out the application form with academic documents.\" },\n    { \"step\": 2, \"title\": \"Document Verification\", \"description\": \"Our team verifies all submitted documents.\" },\n    { \"step\": 3, \"title\": \"Admission Letter\", \"description\": \"Receive official admission letter within 7 days.\" },\n    { \"step\": 4, \"title\": \"Visa Processing\", \"description\": \"Apply for student visa with our assistance.\" },\n    { \"step\": 5, \"title\": \"Travel to Russia\", \"description\": \"Airport pickup and hostel check-in arranged.\" }\n  ],\n  \"intakeMonths\": [\"September\", \"February\"],\n  \"indianStudents\": 500,\n  \"hostelAvailable\": true,\n  \"indianFood\": true,\n  \"faqs\": [\n    { \"question\": \"Is NEET required for admission?\", \"answer\": \"Yes, NEET qualification is mandatory for Indian students as per NMC guidelines.\" },\n    { \"question\": \"What is the medium of instruction?\", \"answer\": \"The MBBS program is taught entirely in English for international students.\" }\n  ],\n  \"metaTitle\": \"First Moscow State Medical University – MBBS 2026\",\n  \"metaDescription\": \"Study MBBS at First Moscow State Medical University. Fees ₹4.5L/year. WHO & NMC approved.\",\n  \"isFeatured\": true,\n  \"sortOrder\": 1,\n  \"status\": \"active\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/universities", "host": ["{{baseUrl}}"], "path": ["universities"] },
+            "description": "countryId must be a valid MongoDB ID. Run 'Create Country' first to get {{countryId}}"
+          }
+        },
+        {
+          "name": "Update University (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fees\": \"₹4.8L/year\",\n  \"isFeatured\": true,\n  \"status\": \"active\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/universities/{{universityId}}", "host": ["{{baseUrl}}"], "path": ["universities", "{{universityId}}"] }
+          }
+        },
+        {
+          "name": "Delete University (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/universities/{{universityId}}", "host": ["{{baseUrl}}"], "path": ["universities", "{{universityId}}"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "👨‍💼 COUNSELLORS",
+      "item": [
+        {
+          "name": "List Counsellors (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/counsellors?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["counsellors"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "status", "value": "all", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Counsellor (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) pm.collectionVariables.set('counsellorId', res.data.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Manish Kataria\",\n  \"role\": \"Private College Expert\",\n  \"avatar\": null,\n  \"rating\": 5.0,\n  \"studentsGuided\": 780,\n  \"bio\": \"MBA in Education Management. 3 years of expertise in private medical college admissions across India.\",\n  \"specialization\": \"Management Quota\",\n  \"isVerified\": true,\n  \"sortOrder\": 1,\n  \"status\": \"active\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/counsellors", "host": ["{{baseUrl}}"], "path": ["counsellors"] }
+          }
+        },
+        {
+          "name": "Update Counsellor (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentsGuided\": 850,\n  \"rating\": 4.9\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/counsellors/{{counsellorId}}", "host": ["{{baseUrl}}"], "path": ["counsellors", "{{counsellorId}}"] }
+          }
+        },
+        {
+          "name": "Delete Counsellor (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/counsellors/{{counsellorId}}", "host": ["{{baseUrl}}"], "path": ["counsellors", "{{counsellorId}}"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "⭐ REVIEWS",
+      "item": [
+        {
+          "name": "List Reviews (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/reviews?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["reviews"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "all", "disabled": true }
+              ]
+            },
+            "description": "Returns: data[], meta.averageRating, meta.totalReviews, pagination"
+          }
+        },
+        {
+          "name": "Create Review (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) pm.collectionVariables.set('reviewId', res.data.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sunita Agarwal\",\n  \"avatar\": null,\n  \"rating\": 5,\n  \"text\": \"Excellent service! My son got admission in a top Russian university. The team was available 24/7. Highly trustworthy.\",\n  \"date\": \"2026-03-25\",\n  \"source\": \"google\",\n  \"isVerified\": true,\n  \"status\": \"approved\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/reviews", "host": ["{{baseUrl}}"], "path": ["reviews"] }
+          }
+        },
+        {
+          "name": "Update Review Meta - Rating & Count (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"averageRating\": 4.9,\n  \"totalReviews\": 3240\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/reviews/meta", "host": ["{{baseUrl}}"], "path": ["reviews", "meta"] },
+            "description": "Updates the '4.9 ★  3,240+ Reviews' shown on homepage"
+          }
+        },
+        {
+          "name": "Update Review (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\",\n  \"isVerified\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/reviews/{{reviewId}}", "host": ["{{baseUrl}}"], "path": ["reviews", "{{reviewId}}"] }
+          }
+        },
+        {
+          "name": "Delete Review (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/reviews/{{reviewId}}", "host": ["{{baseUrl}}"], "path": ["reviews", "{{reviewId}}"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📝 BLOG AUTHORS",
+      "item": [
+        {
+          "name": "List Authors",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/blog-authors", "host": ["{{baseUrl}}"], "path": ["blog-authors"] }
+          }
+        },
+        {
+          "name": "Create Author (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. Priya Sharma\",\n  \"avatar\": null,\n  \"bio\": \"International Education Expert at AMW Career Point. 8+ years experience guiding students for MBBS abroad.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/blog-authors", "host": ["{{baseUrl}}"], "path": ["blog-authors"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📂 BLOG CATEGORIES",
+      "item": [
+        {
+          "name": "List Categories (Public)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/blog-categories", "host": ["{{baseUrl}}"], "path": ["blog-categories"] }
+          }
+        },
+        {
+          "name": "Create Category (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Education\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/blog-categories", "host": ["{{baseUrl}}"], "path": ["blog-categories"] }
+          }
+        },
+        {
+          "name": "Update Category (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Education Guide\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/blog-categories/CATEGORY_ID_HERE", "host": ["{{baseUrl}}"], "path": ["blog-categories", "CATEGORY_ID_HERE"] }
+          }
+        },
+        {
+          "name": "Delete Category (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/blog-categories/CATEGORY_ID_HERE", "host": ["{{baseUrl}}"], "path": ["blog-categories", "CATEGORY_ID_HERE"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📰 BLOGS",
+      "item": [
+        {
+          "name": "List Blogs (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/blogs?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["blogs"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "featured", "value": "true", "disabled": true },
+                { "key": "category", "value": "education", "disabled": true },
+                { "key": "tag", "value": "MBBS", "disabled": true },
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "status", "value": "all", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Blog by Slug (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/blogs/complete-guide-mbbs-abroad",
+              "host": ["{{baseUrl}}"],
+              "path": ["blogs", "complete-guide-mbbs-abroad"]
+            },
+            "description": "Returns full blog with relatedPosts[] array"
+          }
+        },
+        {
+          "name": "Create Blog Post (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) pm.collectionVariables.set('blogId', res.data.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Complete Guide to MBBS Abroad 2026\",\n  \"excerpt\": \"Everything you need to know about pursuing MBBS abroad — from admission requirements to career prospects for Indian students.\",\n  \"content\": \"<h2>Why Choose MBBS Abroad?</h2><p>Pursuing MBBS abroad has become increasingly popular among Indian students due to the high cost of private medical colleges in India. Countries like Russia, Kyrgyzstan, Kazakhstan, and Uzbekistan offer quality medical education at a fraction of the cost.</p><h2>Top Countries for MBBS</h2><p>Russia tops the list with over 50 WHO approved medical universities. The fees range from ₹2.5L to 6L per year which is very affordable compared to Indian private colleges.</p><h2>Eligibility Criteria</h2><p>Students need to have minimum 50% marks in Physics, Chemistry and Biology in 12th standard. NEET qualification is mandatory as per NMC guidelines effective from 2024.</p>\",\n  \"contentFormat\": \"html\",\n  \"featuredImage\": \"https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200\",\n  \"authorId\": \"AUTHOR_ID_HERE\",\n  \"categoryId\": \"CATEGORY_ID_HERE\",\n  \"tags\": [\"MBBS\", \"Study Abroad\", \"Medical Education\", \"Career Guide\"],\n  \"metaTitle\": \"Complete Guide to MBBS Abroad 2026 | AMW Career Point\",\n  \"metaDescription\": \"Everything you need to know about MBBS abroad — fees, top countries, eligibility, and admission process for Indian students.\",\n  \"isFeatured\": true,\n  \"status\": \"published\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/blogs", "host": ["{{baseUrl}}"], "path": ["blogs"] },
+            "description": "Replace AUTHOR_ID_HERE and CATEGORY_ID_HERE with real MongoDB IDs from previous requests"
+          }
+        },
+        {
+          "name": "Update Blog Post (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isFeatured\": true,\n  \"status\": \"published\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/blogs/{{blogId}}", "host": ["{{baseUrl}}"], "path": ["blogs", "{{blogId}}"] }
+          }
+        },
+        {
+          "name": "Delete Blog Post (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/blogs/{{blogId}}", "host": ["{{baseUrl}}"], "path": ["blogs", "{{blogId}}"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📬 ENQUIRIES",
+      "item": [
+        {
+          "name": "Submit Enquiry - Contact Page (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "console.log(res.message);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Kumar\",\n  \"email\": \"rahul@gmail.com\",\n  \"phone\": \"+919876543210\",\n  \"neetScore\": \"550\",\n  \"interestedCountry\": \"Russia\",\n  \"message\": \"I want to know about MBBS in Russia. Please call me.\",\n  \"source\": \"contact_page\",\n  \"utmSource\": \"google\",\n  \"utmMedium\": \"cpc\",\n  \"utmCampaign\": \"mbbs-abroad-2026\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/enquiries", "host": ["{{baseUrl}}"], "path": ["enquiries"] }
+          }
+        },
+        {
+          "name": "Submit Enquiry - Hero Form (Public)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Priya Singh\",\n  \"email\": \"priya@gmail.com\",\n  \"phone\": \"9876543211\",\n  \"source\": \"hero_form\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/enquiries", "host": ["{{baseUrl}}"], "path": ["enquiries"] }
+          }
+        },
+        {
+          "name": "List All Enquiries (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data.length > 0) {",
+                  "  pm.collectionVariables.set('enquiryId', res.data[0]._id);",
+                  "  console.log('✅ Enquiry ID saved:', res.data[0]._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/enquiries?page=1&limit=20&status=all",
+              "host": ["{{baseUrl}}"],
+              "path": ["enquiries"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "status", "value": "all" },
+                { "key": "source", "value": "contact_page", "disabled": true },
+                { "key": "dateFrom", "value": "2026-04-01", "disabled": true },
+                { "key": "dateTo", "value": "2026-04-09", "disabled": true }
+              ]
+            },
+            "description": "First enquiry ID is auto-saved to {{enquiryId}}"
+          }
+        },
+        {
+          "name": "Update Enquiry Status (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"contacted\",\n  \"notes\": \"Called on 09 Apr. Interested in Russia MBBS. Follow up scheduled for 12 Apr.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/enquiries/{{enquiryId}}", "host": ["{{baseUrl}}"], "path": ["enquiries", "{{enquiryId}}"] },
+            "description": "Status values: new | contacted | converted | closed"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🖼️ MEDIA UPLOAD",
+      "item": [
+        {
+          "name": "Upload Image (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "Select any JPG/PNG/WebP image under 5MB"
+                },
+                {
+                  "key": "folder",
+                  "value": "countries",
+                  "type": "text",
+                  "description": "Options: countries | universities | blogs | counsellors"
+                }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/media/upload", "host": ["{{baseUrl}}"], "path": ["media", "upload"] },
+            "description": "Returns URL → copy and paste into country/university/blog form fields\nFile: JPG, PNG, WebP | Max size: 5MB"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "✅ HEALTH CHECK",
+      "item": [
+        {
+          "name": "Server Root",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "http://localhost:5000", "host": ["http://localhost:5000"] }
+          }
+        },
+        {
+          "name": "API v1 Root",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}", "host": ["{{baseUrl}}"] }
+          }
+        },
+        {
+          "name": "Test 404 Handler",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/nonexistent-route", "host": ["{{baseUrl}}"], "path": ["nonexistent-route"] }
+          }
+        },
+        {
+          "name": "Test Auth Guard (No Token)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"name\": \"Test\"}" },
+            "url": { "raw": "{{baseUrl}}/countries", "host": ["{{baseUrl}}"], "path": ["countries"] },
+            "description": "Should return 401 UNAUTHORIZED"
+          }
+        }
+      ]
+    }
+
+  ]
+}

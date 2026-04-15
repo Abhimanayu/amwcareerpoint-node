@@ -76,7 +76,7 @@ exports.update = async (req, res, next) => {
     const counsellor = await Counsellor.findByIdAndUpdate(
       req.params.id,
       { $set: updates },
-      { new: true, runValidators: false }
+      { returnDocument: "after", runValidators: false }
     );
 
     if (!counsellor) {

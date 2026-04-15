@@ -9,6 +9,100 @@ const admissionStepSchema = new mongoose.Schema(
   { _id: false }
 );
 
+// ── Support Experience sub-schemas ───────────────────────────────────────────
+const progressItemSchema = new mongoose.Schema(
+  {
+    label:  { type: String, required: true, trim: true, maxlength: 120 },
+    value:  { type: Number, required: true, min: 0, max: 100 },
+    status: { type: String, default: "Included", maxlength: 60 },
+  },
+  { _id: false }
+);
+
+const supportCardSchema = new mongoose.Schema(
+  {
+    title:    { type: String, required: true, trim: true, maxlength: 80 },
+    subtitle: { type: String, default: "", trim: true, maxlength: 120 },
+  },
+  { _id: false }
+);
+
+const supportExperienceSchema = new mongoose.Schema(
+  {
+    eyebrow:      { type: String, default: "", trim: true, maxlength: 80 },
+    title:        { type: String, default: "", trim: true, maxlength: 180 },
+    description:  { type: String, default: "", trim: true, maxlength: 800 },
+    progressItems: {
+      type:     [progressItemSchema],
+      default:  [],
+      validate: {
+        validator: (arr) => arr.length <= 6,
+        message:  "progressItems can have at most 6 items",
+      },
+    },
+    supportCards: {
+      type:     [supportCardSchema],
+      default:  [],
+      validate: {
+        validator: (arr) => arr.length <= 4,
+        message:  "supportCards can have at most 4 items",
+      },
+    },
+  },
+  { _id: false }
+);
+
+// ── Student Life sub-schemas ───────────────────────────────────────────────
+const studentLifeCardSchema = new mongoose.Schema(
+  {
+    icon:        { type: String, default: null },
+    title:       { type: String, required: true, trim: true, maxlength: 100 },
+    description: { type: String, default: "", trim: true, maxlength: 300 },
+  },
+  { _id: false }
+);
+
+const studentLifeSchema = new mongoose.Schema(
+  {
+    eyebrow:     { type: String, default: "", trim: true, maxlength: 80 },
+    title:       { type: String, default: "", trim: true, maxlength: 180 },
+    description: { type: String, default: "", trim: true, maxlength: 1000 },
+    cards: {
+      type:    [studentLifeCardSchema],
+      default: [],
+      validate: {
+        validator: (arr) => arr.length <= 6,
+        message:  "cards can have at most 6 items",
+      },
+    },
+  },
+  { _id: false }
+);
+
+// ── Documents Checklist sub-schemas ──────────────────────────────────────────
+const documentsChecklistItemSchema = new mongoose.Schema(
+  {
+    label: { type: String, required: true, trim: true, maxlength: 140 },
+  },
+  { _id: false }
+);
+
+const documentsChecklistSchema = new mongoose.Schema(
+  {
+    eyebrow: { type: String, default: "", trim: true, maxlength: 80 },
+    title:   { type: String, default: "", trim: true, maxlength: 180 },
+    items: {
+      type:    [documentsChecklistItemSchema],
+      default: [],
+      validate: {
+        validator: (arr) => arr.length <= 12,
+        message:  "items can have at most 12 elements",
+      },
+    },
+  },
+  { _id: false }
+);
+
 // features can be either strings OR objects {icon, title, description}
 const featureSchema = new mongoose.Schema(
   {
@@ -82,6 +176,15 @@ const countrySchema = new mongoose.Schema(
     // ── Legacy flat SEO fields (still supported) ─────────────────
     metaTitle: { type: String, default: null, maxlength: 60 },
     metaDescription: { type: String, default: null, maxlength: 160 },
+
+    // ── Support Experience ────────────────────────────────────────
+    supportExperience: { type: supportExperienceSchema, default: () => ({}) },
+
+    // ── Student Life ──────────────────────────────────────────────
+    studentLife: { type: studentLifeSchema, default: () => ({}) },
+
+    // ── Documents Checklist ───────────────────────────────────────
+    documentsChecklist: { type: documentsChecklistSchema, default: () => ({}) },
 
     // ── Stats ─────────────────────────────────────────────────────
     universityCount: { type: Number, default: 0 },

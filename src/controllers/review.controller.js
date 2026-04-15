@@ -77,7 +77,7 @@ exports.updateMeta = async (req, res, next) => {
     const meta = await ReviewMeta.findOneAndUpdate(
       { key: "global" },
       { $set: { averageRating, totalReviews } },
-      { new: true, upsert: true }
+      { returnDocument: "after", upsert: true }
     );
     res.json({
       data: { averageRating: meta.averageRating, totalReviews: meta.totalReviews },
@@ -93,7 +93,7 @@ exports.update = async (req, res, next) => {
     const review = await Review.findByIdAndUpdate(
       req.params.id,
       { $set: req.body },
-      { new: true, runValidators: false }
+      { returnDocument: "after", runValidators: false }
     );
 
     if (!review) {

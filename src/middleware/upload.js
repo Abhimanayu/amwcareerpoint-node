@@ -7,7 +7,7 @@ const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const folder = req.body.folder || "general";
+    const folder = String(req.body.folder || "general").trim();
     const dir = path.join(__dirname, "../../uploads", folder);
     fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);

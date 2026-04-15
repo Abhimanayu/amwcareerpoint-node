@@ -10,6 +10,7 @@ const Country      = require("../models/Country");
 const University   = require("../models/University");
 const { Blog, BlogCategory } = require("../models/Blog");
 const Enquiry      = require("../models/Enquiry");
+const Faq          = require("../models/Faq");
 
 const makeSlug = (t) => slugify(t, { lower: true, strict: true, trim: true });
 
@@ -374,7 +375,7 @@ async function seed() {
   const catVisa         = categories.find(c => c.name === "Visa & Documentation")._id;
   const catFees         = categories.find(c => c.name === "Fee Structure")._id;
 
-  // ── 6. Blogs (10) ────────────────────────────────────────────────
+  // ── 4. Blogs (10) ────────────────────────────────────────────────
   await Blog.deleteMany({});
   const blogs = await Blog.insertMany([
     {
@@ -480,7 +481,38 @@ async function seed() {
   ]);
   console.log(`✅ ${blogs.length} blogs seeded`);
 
-  // ── 7. Enquiries (10) ─────────────────────────────────────────────
+  // ── 5. FAQs (page-level) ──────────────────────────────────────
+  await Faq.deleteMany({});
+  const faqs = await Faq.insertMany([
+    // Home page FAQs
+    { question: "What is AMW Career Point?",                             answer: "AMW Career Point is a leading overseas education consultancy specializing in MBBS admissions abroad for Indian students. We have helped over 2,000 students secure admissions in top NMC-approved universities.",       page: "home",     sortOrder: 1 },
+    { question: "Which countries do you offer MBBS admissions in?",      answer: "We offer MBBS admissions in Russia, Uzbekistan, Kazakhstan, China, Philippines, Georgia, Bangladesh, Nepal, Kyrgyzstan, and Egypt. All universities we recommend are NMC-approved.",                             page: "home",     sortOrder: 2 },
+    { question: "Is NEET mandatory for MBBS abroad?",                    answer: "Yes, as per NMC (National Medical Commission) regulations, NEET qualification is mandatory for Indian students to study MBBS abroad and practice medicine in India.",                               page: "home",     sortOrder: 3 },
+    { question: "What is the total cost of MBBS abroad?",                answer: "The total cost varies by country. It ranges from approximately ₹15-20 lakh for Uzbekistan/Kyrgyzstan to ₹35-50 lakh for Russia/Philippines over the full course duration including tuition and hostel.",page: "home",     sortOrder: 4 },
+    { question: "How do I apply?",                                        answer: "Simply fill out the enquiry form on our website or call our helpline. Our counsellors will guide you through country selection, document preparation, university application, and visa processing.",          page: "home",     sortOrder: 5 },
+    { question: "Are AMW Career Point's services free?",                 answer: "Our initial counselling consultation is completely free. Service charges apply only after your admission is confirmed and you are fully satisfied with the university and package offered.",               page: "home",     sortOrder: 6 },
+
+    // Contact page FAQs
+    { question: "What are your working hours?",                          answer: "We are available Monday to Saturday, 9:00 AM to 7:00 PM IST. For urgent queries, you can also reach us via WhatsApp outside of office hours.",                                                               page: "contact",  sortOrder: 1 },
+    { question: "Do you have offices across India?",                     answer: "Our main office is in Lucknow. We also have representatives in Delhi, Mumbai, Patna, Ranchi, and Hyderabad. Contact us to arrange an in-person consultation at the nearest location.",                        page: "contact",  sortOrder: 2 },
+    { question: "Can I schedule an online consultation?",                answer: "Yes! We offer free online consultations via Zoom, Google Meet, or WhatsApp video call. Book your slot by filling out the contact form or calling our helpline.",                                          page: "contact",  sortOrder: 3 },
+
+    // Country page FAQs — Russia
+    { question: "Is MBBS degree from Russia valid in India?",            answer: "Yes. Degrees from NMC-approved Russian universities are valid in India. Students must clear the FMGE (Foreign Medical Graduate Examination) after returning to India to practice.",                        page: "country",  pageSlug: "russia",      sortOrder: 1 },
+    { question: "What is the medium of instruction in Russia?",          answer: "English medium programs are available at all NMC-approved Russian universities. Some universities also offer Russian-medium programs at lower fees.",                                                       page: "country",  pageSlug: "russia",      sortOrder: 2 },
+    { question: "How cold does it get in Russia?",                       answer: "Temperatures in major university cities can drop to -20°C to -35°C in winter. Students must be prepared with warm clothing. Summers are pleasant at 20-25°C.",                                              page: "country",  pageSlug: "russia",      sortOrder: 3 },
+
+    // Country page FAQs — Uzbekistan
+    { question: "How far is Uzbekistan from India?",                     answer: "Tashkent, the capital of Uzbekistan, is approximately 3-4 hours by direct flight from major Indian cities like Delhi and Mumbai. This makes it very convenient for students.",                              page: "country",  pageSlug: "uzbekistan",  sortOrder: 1 },
+    { question: "Is food available for Indian students in Uzbekistan?",  answer: "Yes, Indian food is widely available in Tashkent and Samarkand. University hostels often have Indian-friendly messs and there are Indian restaurants in major cities.",                                     page: "country",  pageSlug: "uzbekistan",  sortOrder: 2 },
+
+    // General FAQs
+    { question: "What is FMGE and when do I need to clear it?",          answer: "FMGE (Foreign Medical Graduate Examination), now called NExT, is a screening test conducted by NMC that you must pass after completing MBBS abroad to get a license to practice medicine in India.",   page: "general",  sortOrder: 1 },
+    { question: "Can I transfer to an Indian college after studying abroad?", answer: "No, transfer back to an Indian college is generally not permitted. Students must complete the full MBBS program at the foreign university they enrolled in.",                                          page: "general",  sortOrder: 2 },
+  ]);
+  console.log(`✅ ${faqs.length} faqs seeded`);
+
+  // ── 6. Enquiries (10) ─────────────────────────────────────────────
   await Enquiry.deleteMany({});
   const enquiries = await Enquiry.insertMany([
     { name: "Amit Sharma",    email: "amit@example.com",    phone: "+91 9876543210", interestedCountry: "Russia",      source: "homepage-form", message: "I want to study MBBS in Russia. Please guide me on the process and fees.", status: "new" },
@@ -502,6 +534,7 @@ async function seed() {
   console.log(`   Universities:     ${universities.length}`);
   console.log(`   Blog Categories:  ${categories.length}`);
   console.log(`   Blogs:            ${blogs.length}`);
+  console.log(`   FAQs:             ${faqs.length}`);
   console.log(`   Enquiries:        ${enquiries.length}`);
   console.log("─────────────────────────────────────────");
   console.log("\n🔑 Login credentials:");

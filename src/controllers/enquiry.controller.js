@@ -79,7 +79,7 @@ exports.updateStatus = async (req, res, next) => {
     const enquiry = await Enquiry.findByIdAndUpdate(
       req.params.id,
       { $set: updates },
-      { new: true, runValidators: false }
+      { returnDocument: "after", runValidators: false }
     );
 
     if (!enquiry) {

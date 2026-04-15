@@ -168,7 +168,7 @@ exports.update = async (req, res, next) => {
     const blog = await Blog.findByIdAndUpdate(
       id,
       { $set: updates },
-      { new: true, runValidators: false }
+      { returnDocument: "after", runValidators: false }
     ).populate(CATEGORY_POPULATE);
 
     if (!blog) {
@@ -247,7 +247,7 @@ exports.updateCategory = async (req, res, next) => {
     const category = await BlogCategory.findByIdAndUpdate(
       req.params.id,
       { $set: { name: name.trim() } },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     if (!category) {

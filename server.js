@@ -15,6 +15,7 @@ const blogRoutes         = require("./src/routes/blog.routes");
 const blogCategoryRoutes = require("./src/routes/blogCategory.routes");
 const enquiryRoutes      = require("./src/routes/enquiry.routes");
 const mediaRoutes        = require("./src/routes/media.routes");
+const faqRoutes          = require("./src/routes/faq.routes");
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
@@ -66,7 +67,8 @@ app.get("/api/v1", (req, res) => {
       blogs:          "/api/v1/blogs",
       blogCategories: "/api/v1/blog-categories",
       enquiries:      "/api/v1/enquiries",
-      media:          "/api/v1/media",
+      media:           "/api/v1/media",
+      faqs:            "/api/v1/faqs",
     },
   });
 });
@@ -79,6 +81,7 @@ app.use("/api/v1/blogs",           blogRoutes);
 app.use("/api/v1/blog-categories", blogCategoryRoutes);
 app.use("/api/v1/enquiries",       enquiryRoutes);
 app.use("/api/v1/media",           mediaRoutes);
+app.use("/api/v1/faqs",            faqRoutes);
 
 // ── 404 Handler ───────────────────────────────────────────────────
 app.use((req, res) => {

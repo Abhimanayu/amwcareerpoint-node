@@ -11,6 +11,25 @@ const parseSort = (sort = "-createdAt") => {
 
 const COUNTRY_POPULATE = { path: "country", select: "_id name slug flagImage" };
 
+/**
+ * Trim all image URL fields to prevent hidden newline characters (\r\n)
+ * that cause 404s when Express tries to serve the static file.
+ */
+const trimImageFields = (obj) => {
+  const URL_FIELDS = ["logo", "heroImage", "bannerImage", "cardImage"];
+  for (const field of URL_FIELDS) {
+    if (obj[field] && typeof obj[field] === "string") {
+      obj[field] = obj[field].trim();
+    }
+  }
+  // gallery is an array of URL strings
+  if (Array.isArray(obj.gallery)) {
+    obj.gallery = obj.gallery
+      .map((u) => (typeof u === "string" ? u.trim() : u))
+      .filter((u) => u);
+  }
+};
+
 // GET /universities
 exports.list = async (req, res, next) => {
   try {
@@ -124,6 +143,9 @@ exports.create = async (req, res, next) => {
     if (Array.isArray(body.highlights))  body.highlights  = body.highlights.filter(h => h && h.label);
     if (Array.isArray(body.faqs))        body.faqs        = body.faqs.filter(f => f && f.question);
 
+    // Trim all image URL fields to remove hidden newline characters
+    trimImageFields(body);
+
     const university = await University.create({ ...body, slug });
     const populated  = await University.findById(university._id).populate(COUNTRY_POPULATE).lean();
 
@@ -171,10 +193,13 @@ exports.update = async (req, res, next) => {
     if (Array.isArray(updates.highlights))  updates.highlights  = updates.highlights.filter(h => h && h.label);
     if (Array.isArray(updates.faqs))        updates.faqs        = updates.faqs.filter(f => f && f.question);
 
+    // Trim all image URL fields to remove hidden newline characters
+    trimImageFields(updates);
+
     const university = await University.findByIdAndUpdate(
       id,
       { $set: updates },
-      { new: true, runValidators: false }
+      { returnDocument: "after", runValidators: false }
     ).populate(COUNTRY_POPULATE);
 
     if (!university) {

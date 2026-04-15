@@ -7,8 +7,8 @@ exports.upload = async (req, res, next) => {
       });
     }
 
-    const folder  = req.body.folder || "general";
-    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
+    const folder  = String(req.body.folder || "general").trim();
+    const baseUrl = String(process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`).trim();
     const url     = `${baseUrl}/uploads/${folder}/${req.file.filename}`;
 
     res.json({ data: { url } });

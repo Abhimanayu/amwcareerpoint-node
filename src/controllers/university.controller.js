@@ -1,8 +1,9 @@
-const slugify    = require("slugify");
+const slugify = require("slugify");
 const University = require("../models/University");
-const Country    = require("../models/Country");
+const Country = require("../models/Country");
 
-const makeSlug = (name) => slugify(name, { lower: true, strict: true, trim: true });
+const makeSlug = (name) =>
+  slugify(name, { lower: true, strict: true, trim: true });
 
 const parseSort = (sort = "-createdAt") => {
   if (sort.startsWith("-")) return { [sort.slice(1)]: -1 };
@@ -33,18 +34,26 @@ const trimImageFields = (obj) => {
 // GET /universities
 exports.list = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, sort = "-createdAt", status, country, featured } = req.query;
+    const {
+      page = 1,
+      limit = 10,
+      sort = "-createdAt",
+      status,
+      country,
+      featured,
+    } = req.query;
 
-    const pageNum  = Math.max(1, parseInt(page));
+    const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
-    const skip     = (pageNum - 1) * limitNum;
+    const skip = (pageNum - 1) * limitNum;
 
     const filter = {};
-    if (status === "all")           { /* no filter */ }
-    else if (status === "inactive")  filter.status   = "inactive";
-    else                             filter.status   = "active";
+    if (status === "all") {
+      /* no filter */
+    } else if (status === "inactive") filter.status = "inactive";
+    else filter.status = "active";
 
-    if (featured === "true")  filter.featured = true;
+    if (featured === "true") filter.featured = true;
 
     // Filter by country: supports ObjectId or slug
     if (country) {
@@ -66,6 +75,15 @@ exports.list = async (req, res, next) => {
       University.countDocuments(filter),
     ]);
 
+    // Trim all image URLs to prevent newline characters
+    data.forEach((university) => {
+      trimImageFields(university);
+      // Also trim country flag image if populated
+      if (university.country && university.country.flagImage) {
+        university.country.flagImage = university.country.flagImage.trim();
+      }
+    });
+
     res.json({ data, total, page: pageNum, limit: limitNum });
   } catch (err) {
     next(err);
@@ -84,6 +102,14 @@ exports.detail = async (req, res, next) => {
         error: { code: "NOT_FOUND", message: "University not found" },
       });
     }
+
+    // Trim all image URLs to prevent newline characters
+    trimImageFields(university);
+    // Also trim country flag image if populated
+    if (university.country && university.country.flagImage) {
+      university.country.flagImage = university.country.flagImage.trim();
+    }
+
     res.json({ data: university });
   } catch (err) {
     next(err);
@@ -133,21 +159,30 @@ exports.create = async (req, res, next) => {
     const exists = await University.findOne({ slug });
     if (exists) {
       return res.status(409).json({
-        error: { code: "VALIDATION_ERROR", message: "A university with this name already exists" },
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "A university with this name already exists",
+        },
       });
     }
 
     // Filter empty strings from array fields
-    if (Array.isArray(body.gallery))     body.gallery     = body.gallery.filter(u => u && u.trim());
-    if (Array.isArray(body.recognition)) body.recognition = body.recognition.filter(r => r && r.trim());
-    if (Array.isArray(body.highlights))  body.highlights  = body.highlights.filter(h => h && h.label);
-    if (Array.isArray(body.faqs))        body.faqs        = body.faqs.filter(f => f && f.question);
+    if (Array.isArray(body.gallery))
+      body.gallery = body.gallery.filter((u) => u && u.trim());
+    if (Array.isArray(body.recognition))
+      body.recognition = body.recognition.filter((r) => r && r.trim());
+    if (Array.isArray(body.highlights))
+      body.highlights = body.highlights.filter((h) => h && h.label);
+    if (Array.isArray(body.faqs))
+      body.faqs = body.faqs.filter((f) => f && f.question);
 
     // Trim all image URL fields to remove hidden newline characters
     trimImageFields(body);
 
     const university = await University.create({ ...body, slug });
-    const populated  = await University.findById(university._id).populate(COUNTRY_POPULATE).lean();
+    const populated = await University.findById(university._id)
+      .populate(COUNTRY_POPULATE)
+      .lean();
 
     res.status(201).json({ data: populated });
   } catch (err) {
@@ -158,7 +193,7 @@ exports.create = async (req, res, next) => {
 // PUT /universities/:id
 exports.update = async (req, res, next) => {
   try {
-    const { id }  = req.params;
+    const { id } = req.params;
     const updates = { ...req.body };
 
     if (updates.country) {
@@ -179,19 +214,29 @@ exports.update = async (req, res, next) => {
         ? slugify(updates.slug, { lower: true, strict: true, trim: true })
         : makeSlug(updates.name);
 
-      const exists = await University.findOne({ slug: updates.slug, _id: { $ne: id } });
+      const exists = await University.findOne({
+        slug: updates.slug,
+        _id: { $ne: id },
+      });
       if (exists) {
         return res.status(409).json({
-          error: { code: "VALIDATION_ERROR", message: "A university with this slug already exists" },
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "A university with this slug already exists",
+          },
         });
       }
     }
 
     // Filter empty strings from array fields
-    if (Array.isArray(updates.gallery))     updates.gallery     = updates.gallery.filter(u => u && u.trim());
-    if (Array.isArray(updates.recognition)) updates.recognition = updates.recognition.filter(r => r && r.trim());
-    if (Array.isArray(updates.highlights))  updates.highlights  = updates.highlights.filter(h => h && h.label);
-    if (Array.isArray(updates.faqs))        updates.faqs        = updates.faqs.filter(f => f && f.question);
+    if (Array.isArray(updates.gallery))
+      updates.gallery = updates.gallery.filter((u) => u && u.trim());
+    if (Array.isArray(updates.recognition))
+      updates.recognition = updates.recognition.filter((r) => r && r.trim());
+    if (Array.isArray(updates.highlights))
+      updates.highlights = updates.highlights.filter((h) => h && h.label);
+    if (Array.isArray(updates.faqs))
+      updates.faqs = updates.faqs.filter((f) => f && f.question);
 
     // Trim all image URL fields to remove hidden newline characters
     trimImageFields(updates);
@@ -199,7 +244,7 @@ exports.update = async (req, res, next) => {
     const university = await University.findByIdAndUpdate(
       id,
       { $set: updates },
-      { returnDocument: "after", runValidators: false }
+      { returnDocument: "after", runValidators: false },
     ).populate(COUNTRY_POPULATE);
 
     if (!university) {

@@ -93,3 +93,18 @@ exports.updateStatus = async (req, res, next) => {
     next(err);
   }
 };
+
+// DELETE /enquiries/:id  (Admin)
+exports.remove = async (req, res, next) => {
+  try {
+    const enquiry = await Enquiry.findByIdAndDelete(req.params.id);
+    if (!enquiry) {
+      return res.status(404).json({
+        error: { code: "NOT_FOUND", message: "Enquiry not found" },
+      });
+    }
+    res.json({ data: { message: "Enquiry deleted successfully" } });
+  } catch (err) {
+    next(err);
+  }
+};

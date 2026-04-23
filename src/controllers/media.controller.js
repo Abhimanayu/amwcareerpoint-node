@@ -1,26 +1,14 @@
 const fs = require("fs");
 const path = require("path");
+const { uploadBuffer, destroy, getResource } = require("../config/cloudinary");
+
+// Whitelist of allowed folder values
+const ALLOWED_FOLDERS = ["countries", "universities", "blogs", "counsellors", "reviews", "general"];
 
 // POST /media/upload
 exports.upload = async (req, res, next) => {
-  console.log("🚨 MEDIA CONTROLLER CALLED - NEW VERSION");
   try {
-    console.log("📤 Upload request received:");
-    console.log("  Body:", req.body);
-    console.log(
-      "  File info:",
-      req.file
-        ? {
-            filename: req.file.originalname,
-            mimetype: req.file.mimetype,
-            size: req.file.size,
-            buffer: req.file.buffer ? "Buffer present" : "No buffer",
-          }
-        : "No file",
-    );
-
     if (!req.file) {
-      console.log("❌ No file in request");
       return res.status(400).json({
         error: {
           code: "VALIDATION_ERROR",
@@ -30,131 +18,105 @@ exports.upload = async (req, res, next) => {
       });
     }
 
-    // Handle folder and file saving manually
-    // Support folder from body, query param, or default to "general"
-    const folder = String(req.body.folder || req.query.folder || "general").trim();
-    // Sanitize folder name to prevent path traversal
-    const safeFolder = folder.replace(/[^a-zA-Z0-9_-]/g, "");
-    const ext = path.extname(req.file.originalname).toLowerCase();
+    // Sanitize & whitelist folder
+    const rawFolder = String(req.body.folder || req.query.folder || "general").trim();
+    const safeFolder = rawFolder.replace(/[^a-zA-Z0-9_-]/g, "");
+    const folder = ALLOWED_FOLDERS.includes(safeFolder) ? safeFolder : "general";
+
+    const ext = path.extname(req.file.originalname).toLowerCase().replace(".", "");
     const timestamp = Date.now();
     const random = Math.round(Math.random() * 1e6);
-    const filename = `${timestamp}-${random}${ext}`;
+    const publicIdBase = `${timestamp}-${random}`;
 
-    // Create target directory
-    const uploadsDir = path.join(__dirname, "../../uploads");
-    const targetDir = path.join(uploadsDir, safeFolder);
+    console.log(`☁️  Uploading to Cloudinary: amw/${folder}/${publicIdBase}`);
 
-    console.log(`🗂️ Saving file manually:`);
-    console.log(`  Folder: ${safeFolder}`);
-    console.log(`  Target dir: ${targetDir}`);
-    console.log(`  Filename: ${filename}`);
+    const result = await uploadBuffer(req.file.buffer, {
+      folder: `amw/${folder}`,
+      public_id: publicIdBase,
+      format: ext || undefined,
+    });
 
-    // Ensure directory exists
-    try {
-      if (!fs.existsSync(targetDir)) {
-        fs.mkdirSync(targetDir, { recursive: true });
-        console.log(`📁 Created directory: ${targetDir}`);
-      }
-    } catch (dirError) {
-      console.error("❌ Error creating directory:", dirError);
-      return res.status(500).json({
-        error: {
-          code: "DIRECTORY_ERROR",
-          message: "Failed to create upload directory",
-          timestamp: new Date().toISOString(),
-        },
-      });
-    }
+    console.log(`✅ Cloudinary upload OK: ${result.secure_url}`);
 
-    // Save file from buffer
-    const filePath = path.join(targetDir, filename);
-    try {
-      fs.writeFileSync(filePath, req.file.buffer);
-      console.log(`✅ File saved to: ${filePath}`);
-    } catch (saveError) {
-      console.error("❌ Error saving file:", saveError);
-      return res.status(500).json({
-        error: {
-          code: "FILE_SAVE_ERROR",
-          message: "Failed to save uploaded file",
-          timestamp: new Date().toISOString(),
-        },
-      });
-    }
-
-    // Verify file was actually saved
-    if (!fs.existsSync(filePath)) {
-      console.log("❌ File verification failed - not found at:", filePath);
-      return res.status(500).json({
-        error: {
-          code: "FILE_VERIFICATION_ERROR",
-          message: "File save verification failed",
-          timestamp: new Date().toISOString(),
-        },
-      });
-    }
-
-    const baseUrl = String(
-      process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`,
-    ).trim();
-    const url = `${baseUrl}/uploads/${safeFolder}/${filename}`;
-
-    console.log(`✅ Upload completed successfully:`);
-    console.log(`  File path: ${filePath}`);
-    console.log(`  Public URL: ${url}`);
-    console.log(`  File size: ${req.file.size} bytes`);
-
-    // Return comprehensive response
     res.json({
       data: {
-        url,
-        filename: filename,
+        url: result.secure_url,
+        publicId: result.public_id,
+        filename: `${publicIdBase}.${ext || "png"}`,
         originalName: req.file.originalname,
         size: req.file.size,
         mimetype: req.file.mimetype,
-        folder: safeFolder,
+        folder,
         uploadedAt: new Date().toISOString(),
       },
     });
   } catch (err) {
     console.error("❌ Upload error:", err);
+
+    // Surface Cloudinary-specific errors clearly
+    if (err.http_code || err.message?.includes("Cloudinary")) {
+      return res.status(502).json({
+        error: {
+          code: "CLOUDINARY_ERROR",
+          message: "Image upload to cloud storage failed",
+          details: err.message,
+          timestamp: new Date().toISOString(),
+        },
+      });
+    }
     next(err);
   }
 };
 
 // GET /media/verify/:folder/:filename
+// Checks Cloudinary first (by convention public_id = amw/<folder>/<stem>),
+// then falls back to local disk for legacy assets.
 exports.verify = async (req, res, next) => {
   try {
     const { folder, filename } = req.params;
-    const uploadsDir = path.join(__dirname, "../../uploads");
-    const filePath = path.join(uploadsDir, folder, filename);
+    const stem = path.parse(filename).name; // strip extension
+    const publicId = `amw/${folder}/${stem}`;
 
-    console.log(`🔍 Verifying file: ${folder}/${filename}`);
-    console.log(`  Full path: ${filePath}`);
-
-    if (!fs.existsSync(filePath)) {
-      console.log("❌ File not found");
-      return res.status(404).json({
-        exists: false,
+    // 1. Try Cloudinary
+    const resource = await getResource(publicId);
+    if (resource) {
+      return res.json({
+        exists: true,
+        source: "cloudinary",
         path: `${folder}/${filename}`,
-        error: "File not found",
+        url: resource.secure_url,
+        size: resource.bytes,
+        created: resource.created_at,
         timestamp: new Date().toISOString(),
       });
     }
 
-    const stats = fs.statSync(filePath);
-    const baseUrl = String(
-      process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`,
-    ).trim();
+    // 2. Fallback: local disk
+    const uploadsDir = path.join(__dirname, "../../uploads");
+    const filePath = path.join(uploadsDir, folder, filename);
 
-    console.log("✅ File found");
-    res.json({
-      exists: true,
+    if (fs.existsSync(filePath)) {
+      const stats = fs.statSync(filePath);
+      const baseUrl = String(
+        process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`,
+      ).trim();
+
+      return res.json({
+        exists: true,
+        source: "local",
+        path: `${folder}/${filename}`,
+        url: `${baseUrl}/uploads/${folder}/${filename}`,
+        size: stats.size,
+        created: stats.birthtime,
+        modified: stats.mtime,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    return res.status(404).json({
+      exists: false,
       path: `${folder}/${filename}`,
-      url: `${baseUrl}/uploads/${folder}/${filename}`,
-      size: stats.size,
-      created: stats.birthtime,
-      modified: stats.mtime,
+      error: "File not found",
       timestamp: new Date().toISOString(),
     });
   } catch (err) {
@@ -163,30 +125,44 @@ exports.verify = async (req, res, next) => {
   }
 };
 
-// DELETE /media/delete/:folder/:filename - Optional cleanup endpoint
+// DELETE /media/delete/:folder/:filename
+// Deletes from Cloudinary first, then falls back to local disk.
 exports.delete = async (req, res, next) => {
   try {
     const { folder, filename } = req.params;
+    const stem = path.parse(filename).name;
+    const publicId = `amw/${folder}/${stem}`;
+
+    // 1. Try Cloudinary
+    const cloudResult = await destroy(publicId);
+    if (cloudResult.result === "ok") {
+      return res.json({
+        message: "File deleted successfully",
+        source: "cloudinary",
+        publicId,
+        path: `${folder}/${filename}`,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // 2. Fallback: local disk
     const uploadsDir = path.join(__dirname, "../../uploads");
     const filePath = path.join(uploadsDir, folder, filename);
-
-    console.log(`🗑️ Deleting file: ${folder}/${filename}`);
 
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({
         error: {
           code: "FILE_NOT_FOUND",
-          message: "File not found",
+          message: "File not found in cloud storage or on disk",
           timestamp: new Date().toISOString(),
         },
       });
     }
 
     fs.unlinkSync(filePath);
-    console.log(`✅ File deleted: ${filePath}`);
-
     res.json({
       message: "File deleted successfully",
+      source: "local",
       path: `${folder}/${filename}`,
       timestamp: new Date().toISOString(),
     });

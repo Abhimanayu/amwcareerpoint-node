@@ -14,7 +14,7 @@ exports.list = async (req, res, next) => {
       limit    = 50,
       sort     = "sortOrder",
       status,
-      page: faqPage,  // the FAQ "page" filter (home/country/...)
+      faqPage,    // FAQ page scope filter (home/country/...) — use ?faqPage=home
       pageSlug,
     } = req.query;
 

@@ -6,6 +6,8 @@ const enquirySchema = new mongoose.Schema(
     email:             { type: String, required: true, trim: true, lowercase: true },
     phone:             { type: String, required: true, trim: true },
     interestedCountry: { type: String, default: "" },
+    preferredCountry:  { type: String, default: "" },
+    neetScore:         { type: String, default: "" },
     source:            { type: String, default: "" },
     message:           { type: String, default: "" },
     status:            { type: String, enum: ["new", "contacted", "converted", "closed"], default: "new" },

@@ -36,8 +36,11 @@ exports.list = async (req, res, next) => {
       }
     }
 
+    const LIST_FIELDS = '_id title slug excerpt coverImage category author tags status featured createdAt updatedAt';
+
     const [data, total] = await Promise.all([
       Blog.find(filter)
+        .select(LIST_FIELDS)
         .populate(CATEGORY_POPULATE)
         .sort(parseSort(sort))
         .skip(skip)

@@ -65,8 +65,11 @@ exports.list = async (req, res, next) => {
       }
     }
 
+    const LIST_FIELDS = '_id name slug country description logo heroImage annualFees courseDuration medium featured status createdAt';
+
     const [data, total] = await Promise.all([
       University.find(filter)
+        .select(LIST_FIELDS)
         .populate(COUNTRY_POPULATE)
         .sort(parseSort(sort))
         .skip(skip)

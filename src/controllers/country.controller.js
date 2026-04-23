@@ -149,8 +149,10 @@ exports.list = async (req, res, next) => {
     else if (status === "inactive") filter.status = "inactive";
     else                            filter.status = "active";
 
+    const LIST_FIELDS = '_id name slug tagline description flagImage heroImage cardImage feeRange duration livingCost currency universityCount sortOrder status isFeatured';
+
     const [data, total] = await Promise.all([
-      Country.find(filter).sort(parseSort(sort)).skip(skip).limit(limitNum).lean(),
+      Country.find(filter).select(LIST_FIELDS).sort(parseSort(sort)).skip(skip).limit(limitNum).lean(),
       Country.countDocuments(filter),
     ]);
 

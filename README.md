@@ -38,6 +38,7 @@ node/
 ├── .env                    ← Environment variables
 ├── src/
 │   ├── config/db.js        ← MongoDB connection
+│   ├── config/cloudinary.js ← Cloudinary upload helpers
 │   ├── middleware/
 │   │   ├── auth.js         ← JWT auth + blacklist
 │   │   ├── errorHandler.js ← Global error handler
@@ -106,18 +107,49 @@ Authorization: Bearer <token>
 
 ---
 
-## 🖼️ Image Upload
+## 🖼️ Image Upload (Cloudinary)
 
+New uploads are stored in **Cloudinary** (not local disk). Legacy files already on disk continue to be served from `/uploads`.
+
+### Upload
 ```
 POST /api/v1/media/upload
+Authorization: Bearer <token>
 Content-Type: multipart/form-data
 
 Fields:
-  file   → image file (JPG/PNG/WebP, max 5MB)
-  folder → countries | universities | blogs | counsellors
+  file   → image file (JPEG/PNG/WebP/GIF/BMP, max 10 MB)
+  folder → countries | universities | blogs | counsellors | reviews | general
 ```
 
-Uploaded images are served at: `http://localhost:3000/uploads/<folder>/<filename>`
+**Example success response:**
+```json
+{
+  "data": {
+    "url": "https://res.cloudinary.com/<cloud>/image/upload/v.../amw/blogs/1713800000-12345.png",
+    "publicId": "amw/blogs/1713800000-12345",
+    "filename": "1713800000-12345.png",
+    "originalName": "photo.png",
+    "size": 204800,
+    "mimetype": "image/png",
+    "folder": "blogs",
+    "uploadedAt": "2026-04-22T12:00:00.000Z"
+  }
+}
+```
+
+### Verify
+```
+GET /api/v1/media/verify/:folder/:filename
+```
+Checks Cloudinary first, then falls back to local disk.
+
+### Delete
+```
+DELETE /api/v1/media/delete/:folder/:filename
+Authorization: Bearer <token>
+```
+Deletes from Cloudinary first, then falls back to local disk.
 
 ---
 
@@ -135,3 +167,6 @@ Uploaded images are served at: `http://localhost:3000/uploads/<folder>/<filename
 | `CORS_ORIGIN` | `*` | Allowed CORS origins |
 | `ADMIN_EMAIL` | `admin@amwcareerpoint.com` | Seed admin email |
 | `ADMIN_PASSWORD` | `Admin@123456` | Seed admin password |
+| `CLOUDINARY_CLOUD_NAME` | — | Cloudinary cloud name (**required**) |
+| `CLOUDINARY_API_KEY` | — | Cloudinary API key (**required**) |
+| `CLOUDINARY_API_SECRET` | — | Cloudinary API secret (**required**) |

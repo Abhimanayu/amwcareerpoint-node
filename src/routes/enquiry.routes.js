@@ -8,5 +8,6 @@ router.post("/", ctrl.submit);
 // Admin
 router.get("/", authMiddleware, ctrl.list);
 router.put("/:id", authMiddleware, ctrl.updateStatus);
+router.delete("/:id", authMiddleware, ctrl.remove);
 
 module.exports = router;

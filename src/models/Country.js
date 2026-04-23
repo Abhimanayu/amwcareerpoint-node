@@ -118,6 +118,8 @@ const seoSchema = new mongoose.Schema(
     metaTitle: { type: String, default: null, maxlength: 60 },
     metaDescription: { type: String, default: null, maxlength: 160 },
     keywords: { type: String, default: null },
+    canonicalUrl: { type: String, default: null },
+    schemaMarkup: { type: String, default: null },
   },
   { _id: false }
 );

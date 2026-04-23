@@ -23,6 +23,8 @@ const blogSchema = new mongoose.Schema(
       metaTitle:       { type: String, default: "" },
       metaDescription: { type: String, default: "" },
       keywords:        { type: String, default: "" },
+      canonicalUrl:    { type: String, default: "" },
+      schemaMarkup:    { type: String, default: "" },
     },
   },
   { timestamps: true }

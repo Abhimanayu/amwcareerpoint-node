@@ -31,6 +31,21 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
+  // Malformed JSON body
+  if (
+    err.type === "entity.parse.failed" ||
+    (err instanceof SyntaxError && err.status === 400) ||
+    (err instanceof SyntaxError && err.message && err.message.includes("JSON"))
+  ) {
+    return res.status(400).json({
+      error: {
+        code: "INVALID_JSON",
+        message: "Malformed JSON in request body",
+        timestamp: new Date().toISOString(),
+      },
+    });
+  }
+
   // Mongoose duplicate key
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue || {})[0] || "field";
@@ -170,12 +185,8 @@ const errorHandler = (err, req, res, next) => {
   res.status(err.status || 500).json({
     error: {
       code: "INTERNAL_ERROR",
-      message:
-        process.env.NODE_ENV === "production"
-          ? "Internal server error"
-          : err.message,
+      message: "Internal server error",
       timestamp: new Date().toISOString(),
-      ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
     },
   });
 };

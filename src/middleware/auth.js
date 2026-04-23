@@ -2,6 +2,10 @@ const jwt = require("jsonwebtoken");
 
 // In-memory token blacklist for logout
 const tokenBlacklist = new Set();
+// In-memory blacklist for refresh tokens invalidated on logout
+const refreshTokenBlacklist = new Set();
+// Track active refresh tokens per user (userId -> Set of tokens)
+const userRefreshTokens = new Map();
 
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -31,4 +35,4 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-module.exports = { authMiddleware, tokenBlacklist };
+module.exports = { authMiddleware, tokenBlacklist, refreshTokenBlacklist, userRefreshTokens };

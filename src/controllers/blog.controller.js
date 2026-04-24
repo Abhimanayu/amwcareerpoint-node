@@ -13,7 +13,7 @@ const CATEGORY_POPULATE = { path: "category", select: "_id name" };
 // GET /blogs
 exports.list = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, sort = "-createdAt", status, category, featured } = req.query;
+    const { page = 1, limit = 10, sort = "-createdAt", status, category, featured, q } = req.query;
 
     const pageNum  = Math.max(1, parseInt(page));
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
@@ -25,6 +25,17 @@ exports.list = async (req, res, next) => {
     else                            filter.status   = "published";
 
     if (featured === "true") filter.featured = true;
+
+    // Text search across title, excerpt, tags, and author
+    if (q && q.trim()) {
+      const searchRegex = new RegExp(q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+      filter.$or = [
+        { title: searchRegex },
+        { excerpt: searchRegex },
+        { tags: searchRegex },
+        { author: searchRegex },
+      ];
+    }
 
     if (category) {
       // Support category by ObjectId or name

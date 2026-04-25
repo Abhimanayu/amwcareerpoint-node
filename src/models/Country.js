@@ -103,6 +103,15 @@ const documentsChecklistSchema = new mongoose.Schema(
   { _id: false }
 );
 
+// ── Country FAQ sub-schema ───────────────────────────────────────────────
+const countryFaqSchema = new mongoose.Schema(
+  {
+    question: { type: String, required: true, trim: true, maxlength: 300 },
+    answer:   { type: String, required: true, trim: true, maxlength: 2000 },
+  },
+  { _id: false }
+);
+
 // features can be either strings OR objects {icon, title, description}
 const featureSchema = new mongoose.Schema(
   {
@@ -187,6 +196,16 @@ const countrySchema = new mongoose.Schema(
 
     // ── Documents Checklist ───────────────────────────────────────
     documentsChecklist: { type: documentsChecklistSchema, default: () => ({}) },
+
+    // ── FAQs ──────────────────────────────────────────────────────
+    faqs: {
+      type:    [countryFaqSchema],
+      default: [],
+      validate: {
+        validator: (arr) => arr.length <= 12,
+        message:  "faqs can have at most 12 items",
+      },
+    },
 
     // ── Stats ─────────────────────────────────────────────────────
     universityCount: { type: Number, default: 0 },

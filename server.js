@@ -233,6 +233,39 @@ const limiter = rateLimit({
 });
 app.use("/api/v1", limiter);
 
+// ── Stricter limiter for auth endpoints (login/refresh) ───────────
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) =>
+    res.status(429).json({
+      error: {
+        code: "RATE_LIMITED",
+        message: "Too many login attempts, please try again after 15 minutes",
+      },
+    }),
+});
+app.use("/api/v1/auth/login", authLimiter);
+app.use("/api/v1/auth/refresh", authLimiter);
+
+// ── Stricter limiter for public enquiry submissions ───────────────
+const enquiryLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) =>
+    res.status(429).json({
+      error: {
+        code: "RATE_LIMITED",
+        message: "Too many enquiry submissions, please try again later",
+      },
+    }),
+});
+app.use("/api/v1/enquiries", enquiryLimiter);
+
 app.get("/api/v1", (req, res) => {
   res.json({
     message: "AMW Career Point API v1",

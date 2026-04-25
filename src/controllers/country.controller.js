@@ -209,6 +209,23 @@ exports.create = async (req, res, next) => {
     if (Array.isArray(body.features))          body.features          = body.features.filter(f => f && f.title);
     if (Array.isArray(body.admissionProcess))  body.admissionProcess  = body.admissionProcess.filter(s => s && s.title);
 
+    // Sanitize FAQs
+    if (body.faqs !== undefined) {
+      if (!Array.isArray(body.faqs)) {
+        return res.status(400).json({
+          error: { code: "VALIDATION_ERROR", message: "faqs must be an array" },
+        });
+      }
+      body.faqs = body.faqs
+        .filter(f => f && typeof f === "object" && f.question && String(f.question).trim() && f.answer && String(f.answer).trim())
+        .map(f => ({ question: String(f.question).trim(), answer: String(f.answer).trim() }));
+      if (body.faqs.length > 12) {
+        return res.status(400).json({
+          error: { code: "VALIDATION_ERROR", message: "faqs can have at most 12 items" },
+        });
+      }
+    }
+
     // Validate & sanitize supportExperience
     if (body.supportExperience !== undefined) {
       const result = sanitizeSupportExperience(body.supportExperience);
@@ -298,6 +315,23 @@ exports.update = async (req, res, next) => {
     if (Array.isArray(updates.eligibility))       updates.eligibility       = updates.eligibility.filter(e => e && e.trim());
     if (Array.isArray(updates.features))          updates.features          = updates.features.filter(f => f && f.title);
     if (Array.isArray(updates.admissionProcess))  updates.admissionProcess  = updates.admissionProcess.filter(s => s && s.title);
+
+    // Sanitize FAQs
+    if (updates.faqs !== undefined) {
+      if (!Array.isArray(updates.faqs)) {
+        return res.status(400).json({
+          error: { code: "VALIDATION_ERROR", message: "faqs must be an array" },
+        });
+      }
+      updates.faqs = updates.faqs
+        .filter(f => f && typeof f === "object" && f.question && String(f.question).trim() && f.answer && String(f.answer).trim())
+        .map(f => ({ question: String(f.question).trim(), answer: String(f.answer).trim() }));
+      if (updates.faqs.length > 12) {
+        return res.status(400).json({
+          error: { code: "VALIDATION_ERROR", message: "faqs can have at most 12 items" },
+        });
+      }
+    }
 
     // Validate & sanitize supportExperience
     if (updates.supportExperience !== undefined) {

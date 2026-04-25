@@ -266,12 +266,13 @@ const enquiryLimiter = rateLimit({
     }),
 });
 
-// General API fallback — catches admin/write routes not covered above
+// General API fallback — skip requests already handled by a specific limiter
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req._rateLimitApplied === true,
   handler: (req, res) =>
     res.status(429).json({
       error: {
@@ -281,15 +282,25 @@ const apiLimiter = rateLimit({
     }),
 });
 
+// Helper: marks the request so the general apiLimiter skips it
+const markLimited = (req, res, next) => { req._rateLimitApplied = true; next(); };
+
+// Cache headers for public GET list/detail endpoints (browser 60s, CDN 120s)
+const publicCacheHeaders = (req, res, next) => {
+  res.set("Cache-Control", "public, max-age=60, s-maxage=120, stale-while-revalidate=300");
+  res.set("Vary", "Accept-Encoding");
+  next();
+};
+
 // ── Apply specific limiters FIRST (before general fallback) ───────
 // Auth
-app.use("/api/v1/auth/login", authLimiter);
-app.use("/api/v1/auth/refresh", authLimiter);
+app.use("/api/v1/auth/login", markLimited, authLimiter);
+app.use("/api/v1/auth/refresh", markLimited, authLimiter);
 
 // Enquiry
-app.use("/api/v1/enquiries", enquiryLimiter);
+app.use("/api/v1/enquiries", markLimited, enquiryLimiter);
 
-// Public GET content routes — only apply to GET method
+// Public GET content routes — rate limit + cache headers (GET only)
 const publicGetPaths = [
   "/api/v1/countries",
   "/api/v1/universities",
@@ -298,8 +309,8 @@ const publicGetPaths = [
   "/api/v1/faqs",
 ];
 publicGetPaths.forEach((routePath) => {
-  app.get(routePath, publicReadLimiter);
-  app.get(`${routePath}/:slug`, publicReadLimiter);
+  app.get(routePath, markLimited, publicReadLimiter, publicCacheHeaders);
+  app.get(`${routePath}/:slug`, markLimited, publicReadLimiter, publicCacheHeaders);
 });
 
 // General fallback limiter for all other /api/v1 routes (admin, media, etc.)

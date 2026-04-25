@@ -265,6 +265,21 @@ exports.detail = async (req, res, next) => {
   }
 };
 
+// GET /countries/admin/:id — admin fetch by MongoDB _id
+exports.detailById = async (req, res, next) => {
+  try {
+    const country = await Country.findById(req.params.id).lean();
+    if (!country) {
+      return res.status(404).json({
+        error: { code: "NOT_FOUND", message: "Country not found" },
+      });
+    }
+    res.json({ data: country });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // POST /countries
 exports.create = async (req, res, next) => {
   try {

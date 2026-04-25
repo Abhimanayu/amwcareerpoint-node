@@ -6,6 +6,7 @@ const { authMiddleware } = require("../middleware/auth");
 router.get("/", ctrl.list);
 
 // Admin-only static routes BEFORE /:slug or /:id
+router.get("/admin/:id", authMiddleware, ctrl.detailById);
 router.put("/reorder", authMiddleware, ctrl.reorder);
 
 // Public

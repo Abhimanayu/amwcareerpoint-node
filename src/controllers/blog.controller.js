@@ -101,6 +101,25 @@ exports.detail = async (req, res, next) => {
   }
 };
 
+// GET /blogs/admin/:id — admin fetch by MongoDB _id
+exports.detailById = async (req, res, next) => {
+  try {
+    const blog = await Blog.findById(req.params.id)
+      .populate(CATEGORY_POPULATE)
+      .lean();
+
+    if (!blog) {
+      return res.status(404).json({
+        error: { code: "NOT_FOUND", message: "Blog post not found" },
+      });
+    }
+
+    res.json({ data: blog });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // POST /blogs
 exports.create = async (req, res, next) => {
   try {

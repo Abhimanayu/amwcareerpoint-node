@@ -120,6 +120,30 @@ exports.detail = async (req, res, next) => {
   }
 };
 
+// GET /universities/admin/:id — admin fetch by MongoDB _id
+exports.detailById = async (req, res, next) => {
+  try {
+    const university = await University.findById(req.params.id)
+      .populate(COUNTRY_POPULATE)
+      .lean();
+
+    if (!university) {
+      return res.status(404).json({
+        error: { code: "NOT_FOUND", message: "University not found" },
+      });
+    }
+
+    trimImageFields(university);
+    if (university.country && university.country.flagImage) {
+      university.country.flagImage = university.country.flagImage.trim();
+    }
+
+    res.json({ data: university });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // POST /universities
 exports.create = async (req, res, next) => {
   try {

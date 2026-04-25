@@ -45,9 +45,9 @@ exports.list = async (req, res, next) => {
   try {
     const { page = 1, limit = 15, sort = "-createdAt", status } = req.query;
 
-    const pageNum  = Math.max(1, parseInt(page));
+    const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
-    const skip     = (pageNum - 1) * limitNum;
+    const skip = (pageNum - 1) * limitNum;
 
     const filter = {};
     if (status && status !== "all") filter.status = status;
@@ -58,7 +58,11 @@ exports.list = async (req, res, next) => {
     };
 
     const [data, total] = await Promise.all([
-      Enquiry.find(filter).sort(parseSort(sort)).skip(skip).limit(limitNum).lean(),
+      Enquiry.find(filter)
+        .sort(parseSort(sort))
+        .skip(skip)
+        .limit(limitNum)
+        .lean(),
       Enquiry.countDocuments(filter),
     ]);
 
@@ -73,13 +77,13 @@ exports.updateStatus = async (req, res, next) => {
   try {
     const { status, notes } = req.body;
     const updates = {};
-    if (status    !== undefined) updates.status = status;
-    if (notes     !== undefined) updates.notes  = notes;
+    if (status !== undefined) updates.status = status;
+    if (notes !== undefined) updates.notes = notes;
 
     const enquiry = await Enquiry.findByIdAndUpdate(
       req.params.id,
       { $set: updates },
-      { returnDocument: "after", runValidators: false }
+      { returnDocument: "after", runValidators: false },
     );
 
     if (!enquiry) {

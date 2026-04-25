@@ -1,7 +1,8 @@
 const slugify = require("slugify");
 const { Blog, BlogCategory } = require("../models/Blog");
 
-const makeSlug = (title) => slugify(title, { lower: true, strict: true, trim: true });
+const makeSlug = (title) =>
+  slugify(title, { lower: true, strict: true, trim: true });
 
 const parseSort = (sort = "-createdAt") => {
   if (sort.startsWith("-")) return { [sort.slice(1)]: -1 };
@@ -13,22 +14,34 @@ const CATEGORY_POPULATE = { path: "category", select: "_id name" };
 // GET /blogs
 exports.list = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, sort = "-createdAt", status, category, featured, q } = req.query;
+    const {
+      page = 1,
+      limit = 10,
+      sort = "-createdAt",
+      status,
+      category,
+      featured,
+      q,
+    } = req.query;
 
-    const pageNum  = Math.max(1, parseInt(page));
+    const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
-    const skip     = (pageNum - 1) * limitNum;
+    const skip = (pageNum - 1) * limitNum;
 
     const filter = {};
-    if (status === "all")          { /* no filter */ }
-    else if (status === "draft")    filter.status   = "draft";
-    else                            filter.status   = "published";
+    if (status === "all") {
+      /* no filter */
+    } else if (status === "draft") filter.status = "draft";
+    else filter.status = "published";
 
     if (featured === "true") filter.featured = true;
 
     // Text search across title, excerpt, tags, and author
     if (q && q.trim()) {
-      const searchRegex = new RegExp(q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+      const searchRegex = new RegExp(
+        q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+        "i",
+      );
       filter.$or = [
         { title: searchRegex },
         { excerpt: searchRegex },
@@ -42,12 +55,15 @@ exports.list = async (req, res, next) => {
       if (category.match(/^[0-9a-fA-F]{24}$/)) {
         filter.category = category;
       } else {
-        const cat = await BlogCategory.findOne({ name: new RegExp(`^${category}$`, "i") }).lean();
+        const cat = await BlogCategory.findOne({
+          name: new RegExp(`^${category}$`, "i"),
+        }).lean();
         if (cat) filter.category = cat._id;
       }
     }
 
-    const LIST_FIELDS = '_id title slug excerpt coverImage category author tags status featured createdAt updatedAt';
+    const LIST_FIELDS =
+      "_id title slug excerpt coverImage category author tags status featured createdAt updatedAt";
 
     const [data, total] = await Promise.all([
       Blog.find(filter)
@@ -130,14 +146,20 @@ exports.create = async (req, res, next) => {
     const exists = await Blog.findOne({ slug });
     if (exists) {
       return res.status(409).json({
-        error: { code: "VALIDATION_ERROR", message: "A blog with this title already exists" },
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "A blog with this title already exists",
+        },
       });
     }
 
-    if (Array.isArray(body.tags)) body.tags = body.tags.filter(t => t && t.trim());
+    if (Array.isArray(body.tags))
+      body.tags = body.tags.filter((t) => t && t.trim());
 
-    const blog     = await Blog.create({ ...body, slug });
-    const populated = await Blog.findById(blog._id).populate(CATEGORY_POPULATE).lean();
+    const blog = await Blog.create({ ...body, slug });
+    const populated = await Blog.findById(blog._id)
+      .populate(CATEGORY_POPULATE)
+      .lean();
 
     res.status(201).json({ data: populated });
   } catch (err) {
@@ -148,7 +170,7 @@ exports.create = async (req, res, next) => {
 // PUT /blogs/:id
 exports.update = async (req, res, next) => {
   try {
-    const { id }  = req.params;
+    const { id } = req.params;
     const updates = { ...req.body };
 
     if (updates.category) {
@@ -169,20 +191,27 @@ exports.update = async (req, res, next) => {
         ? slugify(updates.slug, { lower: true, strict: true, trim: true })
         : makeSlug(updates.title);
 
-      const exists = await Blog.findOne({ slug: updates.slug, _id: { $ne: id } });
+      const exists = await Blog.findOne({
+        slug: updates.slug,
+        _id: { $ne: id },
+      });
       if (exists) {
         return res.status(409).json({
-          error: { code: "VALIDATION_ERROR", message: "A blog with this slug already exists" },
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "A blog with this slug already exists",
+          },
         });
       }
     }
 
-    if (Array.isArray(updates.tags)) updates.tags = updates.tags.filter(t => t && t.trim());
+    if (Array.isArray(updates.tags))
+      updates.tags = updates.tags.filter((t) => t && t.trim());
 
     const blog = await Blog.findByIdAndUpdate(
       id,
       { $set: updates },
-      { returnDocument: "after", runValidators: false }
+      { returnDocument: "after", runValidators: false },
     ).populate(CATEGORY_POPULATE);
 
     if (!blog) {
@@ -230,14 +259,22 @@ exports.createCategory = async (req, res, next) => {
     const { name } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({
-        error: { code: "VALIDATION_ERROR", message: "Category name is required" },
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Category name is required",
+        },
       });
     }
 
-    const exists = await BlogCategory.findOne({ name: new RegExp(`^${name.trim()}$`, "i") });
+    const exists = await BlogCategory.findOne({
+      name: new RegExp(`^${name.trim()}$`, "i"),
+    });
     if (exists) {
       return res.status(409).json({
-        error: { code: "VALIDATION_ERROR", message: "Category with this name already exists" },
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Category with this name already exists",
+        },
       });
     }
 
@@ -254,14 +291,17 @@ exports.updateCategory = async (req, res, next) => {
     const { name } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({
-        error: { code: "VALIDATION_ERROR", message: "Category name is required" },
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Category name is required",
+        },
       });
     }
 
     const category = await BlogCategory.findByIdAndUpdate(
       req.params.id,
       { $set: { name: name.trim() } },
-      { returnDocument: "after" }
+      { returnDocument: "after" },
     );
 
     if (!category) {

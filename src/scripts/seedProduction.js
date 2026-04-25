@@ -52,44 +52,118 @@ const countries = [
       "No upper age limit for most universities",
     ],
     features: [
-      { title: "Affordable Tuition", description: "Annual fees as low as ₹3 lakh, making it accessible for most families" },
-      { title: "Global Recognition", description: "Degrees recognized by NMC, WHO, and medical councils worldwide" },
-      { title: "English Medium", description: "Complete MBBS curriculum taught in English at top universities" },
-      { title: "No Donation", description: "Transparent admission process with no capitation or donation fees" },
-      { title: "Advanced Infrastructure", description: "Modern labs, simulation centers, and teaching hospitals" },
+      {
+        title: "Affordable Tuition",
+        description:
+          "Annual fees as low as ₹3 lakh, making it accessible for most families",
+      },
+      {
+        title: "Global Recognition",
+        description:
+          "Degrees recognized by NMC, WHO, and medical councils worldwide",
+      },
+      {
+        title: "English Medium",
+        description:
+          "Complete MBBS curriculum taught in English at top universities",
+      },
+      {
+        title: "No Donation",
+        description:
+          "Transparent admission process with no capitation or donation fees",
+      },
+      {
+        title: "Advanced Infrastructure",
+        description: "Modern labs, simulation centers, and teaching hospitals",
+      },
     ],
     admissionProcess: [
-      { step: 1, title: "Submit Application", description: "Fill out the online application form with academic documents and a valid NEET scorecard." },
-      { step: 2, title: "Receive Invitation Letter", description: "Upon acceptance, the university issues an official invitation letter for visa processing." },
-      { step: 3, title: "Apply for Student Visa", description: "Submit the invitation letter, passport, and other documents to the Russian embassy for a student visa." },
-      { step: 4, title: "Travel & Registration", description: "Arrive in Russia, complete university registration, medical check-up, and hostel allotment." },
-      { step: 5, title: "Begin Academic Session", description: "Attend orientation and start the first semester of the MBBS program." },
+      {
+        step: 1,
+        title: "Submit Application",
+        description:
+          "Fill out the online application form with academic documents and a valid NEET scorecard.",
+      },
+      {
+        step: 2,
+        title: "Receive Invitation Letter",
+        description:
+          "Upon acceptance, the university issues an official invitation letter for visa processing.",
+      },
+      {
+        step: 3,
+        title: "Apply for Student Visa",
+        description:
+          "Submit the invitation letter, passport, and other documents to the Russian embassy for a student visa.",
+      },
+      {
+        step: 4,
+        title: "Travel & Registration",
+        description:
+          "Arrive in Russia, complete university registration, medical check-up, and hostel allotment.",
+      },
+      {
+        step: 5,
+        title: "Begin Academic Session",
+        description:
+          "Attend orientation and start the first semester of the MBBS program.",
+      },
     ],
     supportExperience: {
       eyebrow: "Why Choose Russia",
       title: "Comprehensive Support for Your Medical Journey",
-      description: "AMW Career Point provides end-to-end assistance for students pursuing MBBS in Russia — from university selection and documentation to visa processing and post-arrival support.",
+      description:
+        "AMW Career Point provides end-to-end assistance for students pursuing MBBS in Russia — from university selection and documentation to visa processing and post-arrival support.",
       progressItems: [
         { label: "University Placement Rate", value: 98, status: "Excellent" },
         { label: "Visa Approval Rate", value: 95, status: "High" },
         { label: "Student Satisfaction", value: 92, status: "Excellent" },
       ],
       supportCards: [
-        { title: "Admission Guidance", subtitle: "Complete application support" },
-        { title: "Visa Assistance", subtitle: "Documentation and embassy coordination" },
-        { title: "Travel Arrangements", subtitle: "Flights, pickup, and accommodation" },
-        { title: "Post-Arrival Support", subtitle: "Registration, SIM, bank account help" },
+        {
+          title: "Admission Guidance",
+          subtitle: "Complete application support",
+        },
+        {
+          title: "Visa Assistance",
+          subtitle: "Documentation and embassy coordination",
+        },
+        {
+          title: "Travel Arrangements",
+          subtitle: "Flights, pickup, and accommodation",
+        },
+        {
+          title: "Post-Arrival Support",
+          subtitle: "Registration, SIM, bank account help",
+        },
       ],
     },
     studentLife: {
       eyebrow: "Student Life",
       title: "Living and Studying in Russia",
-      description: "Russia offers a vibrant student experience with modern campuses, diverse cultural events, and Indian communities in every major university city.",
+      description:
+        "Russia offers a vibrant student experience with modern campuses, diverse cultural events, and Indian communities in every major university city.",
       cards: [
-        { title: "Campus Life", description: "Well-equipped hostels, libraries, sports facilities, and student lounges on campus." },
-        { title: "Indian Community", description: "Active Indian student associations organize festivals, cultural events, and support networks." },
-        { title: "Food & Dining", description: "Indian restaurants and mess facilities serve home-style food in most university cities." },
-        { title: "Safety & Transport", description: "Russia has a reliable metro and bus system, and university campuses are generally safe." },
+        {
+          title: "Campus Life",
+          description:
+            "Well-equipped hostels, libraries, sports facilities, and student lounges on campus.",
+        },
+        {
+          title: "Indian Community",
+          description:
+            "Active Indian student associations organize festivals, cultural events, and support networks.",
+        },
+        {
+          title: "Food & Dining",
+          description:
+            "Indian restaurants and mess facilities serve home-style food in most university cities.",
+        },
+        {
+          title: "Safety & Transport",
+          description:
+            "Russia has a reliable metro and bus system, and university campuses are generally safe.",
+        },
       ],
     },
     documentsChecklist: {
@@ -108,7 +182,8 @@ const countries = [
     },
     seo: {
       metaTitle: "MBBS in Russia 2025 – Fees, Admission, Top Universities",
-      metaDescription: "Study MBBS in Russia with NMC-recognized universities. Affordable fees starting ₹3 lakh/year. Get complete admission guidance from AMW Career Point.",
+      metaDescription:
+        "Study MBBS in Russia with NMC-recognized universities. Affordable fees starting ₹3 lakh/year. Get complete admission guidance from AMW Career Point.",
     },
     isFeatured: true,
     sortOrder: 1,
@@ -118,7 +193,8 @@ const countries = [
     name: "Georgia",
     slug: "georgia",
     countryCode: "ge",
-    tagline: "European-standard medical education in a safe, student-friendly country",
+    tagline:
+      "European-standard medical education in a safe, student-friendly country",
     description:
       "Georgia has rapidly emerged as a top destination for Indian medical students. Located at the crossroads of Europe and Asia, Georgia offers affordable, high-quality MBBS programs taught entirely in English. Georgian medical universities follow a European credit-based curriculum and are recognized by NMC, WHO, and WFME. With no language barrier, low cost of living, and a welcoming culture, Georgia is an excellent choice for aspiring doctors.",
     flagImage: "",
@@ -146,42 +222,109 @@ const countries = [
       "No language proficiency test required",
     ],
     features: [
-      { title: "European Curriculum", description: "Modern ECTS-based curriculum aligned with European medical standards" },
-      { title: "English Medium", description: "Entire MBBS course delivered in English — no language barrier" },
-      { title: "Safe Country", description: "One of the safest countries in Europe with low crime rates" },
-      { title: "NMC Recognized", description: "Graduates eligible to appear for FMGE/NExT screening test in India" },
+      {
+        title: "European Curriculum",
+        description:
+          "Modern ECTS-based curriculum aligned with European medical standards",
+      },
+      {
+        title: "English Medium",
+        description:
+          "Entire MBBS course delivered in English — no language barrier",
+      },
+      {
+        title: "Safe Country",
+        description:
+          "One of the safest countries in Europe with low crime rates",
+      },
+      {
+        title: "NMC Recognized",
+        description:
+          "Graduates eligible to appear for FMGE/NExT screening test in India",
+      },
     ],
     admissionProcess: [
-      { step: 1, title: "Submit Application", description: "Apply online with Class 12 marksheets, NEET scorecard, and passport copy." },
-      { step: 2, title: "Receive Offer Letter", description: "University reviews and issues an official letter of acceptance." },
-      { step: 3, title: "Pay Initial Fees", description: "Pay the first-year tuition fee to confirm your admission." },
-      { step: 4, title: "Visa Application", description: "Apply for a Georgian student visa at the embassy with required documents." },
-      { step: 5, title: "Travel & Enrollment", description: "Arrive in Georgia, complete registration, and begin classes." },
+      {
+        step: 1,
+        title: "Submit Application",
+        description:
+          "Apply online with Class 12 marksheets, NEET scorecard, and passport copy.",
+      },
+      {
+        step: 2,
+        title: "Receive Offer Letter",
+        description:
+          "University reviews and issues an official letter of acceptance.",
+      },
+      {
+        step: 3,
+        title: "Pay Initial Fees",
+        description:
+          "Pay the first-year tuition fee to confirm your admission.",
+      },
+      {
+        step: 4,
+        title: "Visa Application",
+        description:
+          "Apply for a Georgian student visa at the embassy with required documents.",
+      },
+      {
+        step: 5,
+        title: "Travel & Enrollment",
+        description:
+          "Arrive in Georgia, complete registration, and begin classes.",
+      },
     ],
     supportExperience: {
       eyebrow: "Why Choose Georgia",
       title: "Your Path to a European Medical Degree",
-      description: "AMW Career Point guides you through every step — from choosing the right university in Georgia to settling into campus life.",
+      description:
+        "AMW Career Point guides you through every step — from choosing the right university in Georgia to settling into campus life.",
       progressItems: [
         { label: "University Placement Rate", value: 97, status: "Excellent" },
         { label: "Visa Approval Rate", value: 96, status: "High" },
         { label: "Student Satisfaction", value: 94, status: "Excellent" },
       ],
       supportCards: [
-        { title: "University Selection", subtitle: "Personalized counselling and comparison" },
-        { title: "Documentation", subtitle: "Complete paperwork and attestation help" },
-        { title: "Visa Processing", subtitle: "Embassy appointment and follow-up" },
-        { title: "Arrival Support", subtitle: "Airport pickup, hostel, and orientation" },
+        {
+          title: "University Selection",
+          subtitle: "Personalized counselling and comparison",
+        },
+        {
+          title: "Documentation",
+          subtitle: "Complete paperwork and attestation help",
+        },
+        {
+          title: "Visa Processing",
+          subtitle: "Embassy appointment and follow-up",
+        },
+        {
+          title: "Arrival Support",
+          subtitle: "Airport pickup, hostel, and orientation",
+        },
       ],
     },
     studentLife: {
       eyebrow: "Student Life",
       title: "Experience Georgia as a Medical Student",
-      description: "Georgia offers a unique blend of European culture, warm hospitality, and modern campus facilities for international students.",
+      description:
+        "Georgia offers a unique blend of European culture, warm hospitality, and modern campus facilities for international students.",
       cards: [
-        { title: "Modern Campuses", description: "State-of-the-art classrooms, labs, and simulation centres at top universities." },
-        { title: "Cultural Experience", description: "Explore historic Tbilisi, vibrant nightlife, and Georgian cuisine and traditions." },
-        { title: "Affordable Living", description: "Comfortable hostels and city apartments available at budget-friendly prices." },
+        {
+          title: "Modern Campuses",
+          description:
+            "State-of-the-art classrooms, labs, and simulation centres at top universities.",
+        },
+        {
+          title: "Cultural Experience",
+          description:
+            "Explore historic Tbilisi, vibrant nightlife, and Georgian cuisine and traditions.",
+        },
+        {
+          title: "Affordable Living",
+          description:
+            "Comfortable hostels and city apartments available at budget-friendly prices.",
+        },
       ],
     },
     documentsChecklist: {
@@ -199,7 +342,8 @@ const countries = [
     },
     seo: {
       metaTitle: "MBBS in Georgia 2025 – Fees, Admission, Universities",
-      metaDescription: "Study MBBS in Georgia with European-standard education. NMC recognized, English medium, affordable fees. Apply through AMW Career Point.",
+      metaDescription:
+        "Study MBBS in Georgia with European-standard education. NMC recognized, English medium, affordable fees. Apply through AMW Career Point.",
     },
     isFeatured: true,
     sortOrder: 2,
@@ -236,41 +380,102 @@ const countries = [
       "Valid Indian passport",
     ],
     features: [
-      { title: "Globally Ranked", description: "Universities like Kazakh National Medical University feature in world rankings" },
-      { title: "Clinical Focus", description: "Strong clinical exposure from early years with hospital rotations" },
-      { title: "Affordable", description: "Total MBBS cost significantly lower than private colleges in India" },
-      { title: "Safe Environment", description: "Politically stable country with good law and order" },
+      {
+        title: "Globally Ranked",
+        description:
+          "Universities like Kazakh National Medical University feature in world rankings",
+      },
+      {
+        title: "Clinical Focus",
+        description:
+          "Strong clinical exposure from early years with hospital rotations",
+      },
+      {
+        title: "Affordable",
+        description:
+          "Total MBBS cost significantly lower than private colleges in India",
+      },
+      {
+        title: "Safe Environment",
+        description: "Politically stable country with good law and order",
+      },
     ],
     admissionProcess: [
-      { step: 1, title: "Apply Online", description: "Submit application with academic transcripts, NEET score, and passport copy." },
-      { step: 2, title: "Admission Confirmation", description: "Receive official acceptance and invitation letter from the university." },
-      { step: 3, title: "Visa Processing", description: "Apply for a student visa at the Kazakhstan embassy with invitation letter." },
-      { step: 4, title: "Arrival & Registration", description: "Complete university enrollment, medical check-up, and hostel allocation." },
+      {
+        step: 1,
+        title: "Apply Online",
+        description:
+          "Submit application with academic transcripts, NEET score, and passport copy.",
+      },
+      {
+        step: 2,
+        title: "Admission Confirmation",
+        description:
+          "Receive official acceptance and invitation letter from the university.",
+      },
+      {
+        step: 3,
+        title: "Visa Processing",
+        description:
+          "Apply for a student visa at the Kazakhstan embassy with invitation letter.",
+      },
+      {
+        step: 4,
+        title: "Arrival & Registration",
+        description:
+          "Complete university enrollment, medical check-up, and hostel allocation.",
+      },
     ],
     supportExperience: {
       eyebrow: "Why Choose Kazakhstan",
       title: "Quality Medical Education in Central Asia",
-      description: "AMW Career Point offers complete support for admissions to Kazakhstan's top medical universities.",
+      description:
+        "AMW Career Point offers complete support for admissions to Kazakhstan's top medical universities.",
       progressItems: [
         { label: "Placement Success", value: 96, status: "Excellent" },
         { label: "Visa Approval Rate", value: 94, status: "High" },
         { label: "Student Satisfaction", value: 90, status: "Excellent" },
       ],
       supportCards: [
-        { title: "Expert Counselling", subtitle: "University and city-wise guidance" },
-        { title: "Visa Assistance", subtitle: "Complete documentation support" },
-        { title: "Pre-Departure Briefing", subtitle: "What to expect and pack" },
-        { title: "On-Ground Support", subtitle: "Local coordinators in Kazakhstan" },
+        {
+          title: "Expert Counselling",
+          subtitle: "University and city-wise guidance",
+        },
+        {
+          title: "Visa Assistance",
+          subtitle: "Complete documentation support",
+        },
+        {
+          title: "Pre-Departure Briefing",
+          subtitle: "What to expect and pack",
+        },
+        {
+          title: "On-Ground Support",
+          subtitle: "Local coordinators in Kazakhstan",
+        },
       ],
     },
     studentLife: {
       eyebrow: "Student Life",
       title: "Living in Kazakhstan",
-      description: "Kazakhstan offers a modern lifestyle with welcoming people, diverse cuisine, and a growing international student community.",
+      description:
+        "Kazakhstan offers a modern lifestyle with welcoming people, diverse cuisine, and a growing international student community.",
       cards: [
-        { title: "Modern Cities", description: "Almaty and Astana are cosmopolitan cities with malls, cafes, and parks." },
-        { title: "Hostel Facilities", description: "University hostels offer furnished rooms, Wi-Fi, and canteen services." },
-        { title: "Indian Restaurants", description: "Indian eateries and grocery stores are available near most universities." },
+        {
+          title: "Modern Cities",
+          description:
+            "Almaty and Astana are cosmopolitan cities with malls, cafes, and parks.",
+        },
+        {
+          title: "Hostel Facilities",
+          description:
+            "University hostels offer furnished rooms, Wi-Fi, and canteen services.",
+        },
+        {
+          title: "Indian Restaurants",
+          description:
+            "Indian eateries and grocery stores are available near most universities.",
+        },
       ],
     },
     documentsChecklist: {
@@ -288,7 +493,8 @@ const countries = [
     },
     seo: {
       metaTitle: "MBBS in Kazakhstan 2025 – Fees, Universities, Admission",
-      metaDescription: "Study MBBS in Kazakhstan at globally ranked, NMC-recognized universities. Affordable fees, English medium. Apply with AMW Career Point.",
+      metaDescription:
+        "Study MBBS in Kazakhstan at globally ranked, NMC-recognized universities. Affordable fees, English medium. Apply with AMW Career Point.",
     },
     isFeatured: true,
     sortOrder: 3,
@@ -325,41 +531,96 @@ const countries = [
       "Valid Indian passport",
     ],
     features: [
-      { title: "Most Affordable", description: "Total MBBS cost under ₹20 lakhs for the entire course" },
-      { title: "Quick Admission", description: "Streamlined process with admissions confirmed in weeks" },
-      { title: "Practical Training", description: "Clinical rotations begin from early semesters" },
-      { title: "Recognized Globally", description: "Degrees accepted by NMC, WHO, and ECFMG" },
+      {
+        title: "Most Affordable",
+        description: "Total MBBS cost under ₹20 lakhs for the entire course",
+      },
+      {
+        title: "Quick Admission",
+        description: "Streamlined process with admissions confirmed in weeks",
+      },
+      {
+        title: "Practical Training",
+        description: "Clinical rotations begin from early semesters",
+      },
+      {
+        title: "Recognized Globally",
+        description: "Degrees accepted by NMC, WHO, and ECFMG",
+      },
     ],
     admissionProcess: [
-      { step: 1, title: "Submit Documents", description: "Send scanned copies of marksheets, NEET score, and passport for evaluation." },
-      { step: 2, title: "Get Admission Letter", description: "Receive an official acceptance letter from the chosen university." },
-      { step: 3, title: "Visa Application", description: "Apply for a Kyrgyz student visa with the admission letter and supporting documents." },
-      { step: 4, title: "Travel & Enroll", description: "Fly to Kyrgyzstan, complete registration, and move into the university hostel." },
+      {
+        step: 1,
+        title: "Submit Documents",
+        description:
+          "Send scanned copies of marksheets, NEET score, and passport for evaluation.",
+      },
+      {
+        step: 2,
+        title: "Get Admission Letter",
+        description:
+          "Receive an official acceptance letter from the chosen university.",
+      },
+      {
+        step: 3,
+        title: "Visa Application",
+        description:
+          "Apply for a Kyrgyz student visa with the admission letter and supporting documents.",
+      },
+      {
+        step: 4,
+        title: "Travel & Enroll",
+        description:
+          "Fly to Kyrgyzstan, complete registration, and move into the university hostel.",
+      },
     ],
     supportExperience: {
       eyebrow: "Why Choose Kyrgyzstan",
       title: "Affordable Medical Education Within Reach",
-      description: "AMW Career Point makes MBBS in Kyrgyzstan accessible with full counselling, documentation, and travel assistance.",
+      description:
+        "AMW Career Point makes MBBS in Kyrgyzstan accessible with full counselling, documentation, and travel assistance.",
       progressItems: [
         { label: "Placement Success", value: 95, status: "Excellent" },
         { label: "Visa Approval Rate", value: 93, status: "High" },
         { label: "Student Satisfaction", value: 89, status: "Good" },
       ],
       supportCards: [
-        { title: "Budget Planning", subtitle: "Fee breakdowns and payment schedules" },
-        { title: "Document Preparation", subtitle: "Attestation and apostille support" },
-        { title: "Visa Guidance", subtitle: "Complete visa filing and tracking" },
+        {
+          title: "Budget Planning",
+          subtitle: "Fee breakdowns and payment schedules",
+        },
+        {
+          title: "Document Preparation",
+          subtitle: "Attestation and apostille support",
+        },
+        {
+          title: "Visa Guidance",
+          subtitle: "Complete visa filing and tracking",
+        },
         { title: "Student Welfare", subtitle: "On-ground support in Bishkek" },
       ],
     },
     studentLife: {
       eyebrow: "Student Life",
       title: "Your Life in Kyrgyzstan",
-      description: "Kyrgyzstan offers a peaceful, community-driven student experience with affordable living and scenic surroundings.",
+      description:
+        "Kyrgyzstan offers a peaceful, community-driven student experience with affordable living and scenic surroundings.",
       cards: [
-        { title: "Affordable Living", description: "One of the cheapest countries for international students with low rent and food costs." },
-        { title: "Natural Beauty", description: "Surrounded by mountains, lakes, and scenic landscapes perfect for weekend trips." },
-        { title: "Indian Community", description: "Active student groups celebrate Indian festivals and organize cultural events." },
+        {
+          title: "Affordable Living",
+          description:
+            "One of the cheapest countries for international students with low rent and food costs.",
+        },
+        {
+          title: "Natural Beauty",
+          description:
+            "Surrounded by mountains, lakes, and scenic landscapes perfect for weekend trips.",
+        },
+        {
+          title: "Indian Community",
+          description:
+            "Active student groups celebrate Indian festivals and organize cultural events.",
+        },
       ],
     },
     documentsChecklist: {
@@ -376,7 +637,8 @@ const countries = [
     },
     seo: {
       metaTitle: "MBBS in Kyrgyzstan 2025 – Fees, Admission, Universities",
-      metaDescription: "Study MBBS in Kyrgyzstan at NMC-approved universities. Fees from ₹2.5 lakh/year. Hassle-free admission via AMW Career Point.",
+      metaDescription:
+        "Study MBBS in Kyrgyzstan at NMC-approved universities. Fees from ₹2.5 lakh/year. Hassle-free admission via AMW Career Point.",
     },
     isFeatured: false,
     sortOrder: 4,
@@ -413,41 +675,102 @@ const countries = [
       "Valid Indian passport",
     ],
     features: [
-      { title: "Government-Backed", description: "Strong government investment in medical education infrastructure" },
-      { title: "Cultural Proximity", description: "Warm, hospitable people with cultural similarities to India" },
-      { title: "Low Cost", description: "One of the most affordable MBBS programs globally" },
-      { title: "NMC Approved", description: "Graduates can appear for FMGE/NExT screening test in India" },
+      {
+        title: "Government-Backed",
+        description:
+          "Strong government investment in medical education infrastructure",
+      },
+      {
+        title: "Cultural Proximity",
+        description:
+          "Warm, hospitable people with cultural similarities to India",
+      },
+      {
+        title: "Low Cost",
+        description: "One of the most affordable MBBS programs globally",
+      },
+      {
+        title: "NMC Approved",
+        description:
+          "Graduates can appear for FMGE/NExT screening test in India",
+      },
     ],
     admissionProcess: [
-      { step: 1, title: "Apply with Documents", description: "Submit academic certificates, NEET scorecard, and passport for admission review." },
-      { step: 2, title: "Receive Acceptance", description: "University issues an official offer letter and invitation for visa." },
-      { step: 3, title: "Visa Processing", description: "Apply for an Uzbek student visa with all required documentation." },
-      { step: 4, title: "Arrive & Register", description: "Complete enrollment, medical examination, and hostel check-in on arrival." },
+      {
+        step: 1,
+        title: "Apply with Documents",
+        description:
+          "Submit academic certificates, NEET scorecard, and passport for admission review.",
+      },
+      {
+        step: 2,
+        title: "Receive Acceptance",
+        description:
+          "University issues an official offer letter and invitation for visa.",
+      },
+      {
+        step: 3,
+        title: "Visa Processing",
+        description:
+          "Apply for an Uzbek student visa with all required documentation.",
+      },
+      {
+        step: 4,
+        title: "Arrive & Register",
+        description:
+          "Complete enrollment, medical examination, and hostel check-in on arrival.",
+      },
     ],
     supportExperience: {
       eyebrow: "Why Choose Uzbekistan",
       title: "An Emerging Medical Education Destination",
-      description: "AMW Career Point helps students navigate admissions to Uzbekistan's best medical universities with personalized support.",
+      description:
+        "AMW Career Point helps students navigate admissions to Uzbekistan's best medical universities with personalized support.",
       progressItems: [
         { label: "Placement Success", value: 94, status: "Excellent" },
         { label: "Visa Approval Rate", value: 92, status: "High" },
         { label: "Student Satisfaction", value: 88, status: "Good" },
       ],
       supportCards: [
-        { title: "University Matching", subtitle: "Best-fit university recommendations" },
-        { title: "Visa Coordination", subtitle: "Embassy-level documentation support" },
-        { title: "Travel Planning", subtitle: "Flight booking and airport pickup" },
-        { title: "Local Assistance", subtitle: "On-ground coordinators in Tashkent" },
+        {
+          title: "University Matching",
+          subtitle: "Best-fit university recommendations",
+        },
+        {
+          title: "Visa Coordination",
+          subtitle: "Embassy-level documentation support",
+        },
+        {
+          title: "Travel Planning",
+          subtitle: "Flight booking and airport pickup",
+        },
+        {
+          title: "Local Assistance",
+          subtitle: "On-ground coordinators in Tashkent",
+        },
       ],
     },
     studentLife: {
       eyebrow: "Student Life",
       title: "Living in Uzbekistan",
-      description: "Uzbekistan offers a warm, welcoming environment with rich history, affordable living, and a growing international student community.",
+      description:
+        "Uzbekistan offers a warm, welcoming environment with rich history, affordable living, and a growing international student community.",
       cards: [
-        { title: "Historic Cities", description: "Explore Samarkand, Bukhara, and Tashkent — cities steeped in history and culture." },
-        { title: "Affordable Lifestyle", description: "Extremely low cost of living with comfortable hostel and food options." },
-        { title: "Friendly Locals", description: "Uzbek people are known for their hospitality and warmth towards Indian students." },
+        {
+          title: "Historic Cities",
+          description:
+            "Explore Samarkand, Bukhara, and Tashkent — cities steeped in history and culture.",
+        },
+        {
+          title: "Affordable Lifestyle",
+          description:
+            "Extremely low cost of living with comfortable hostel and food options.",
+        },
+        {
+          title: "Friendly Locals",
+          description:
+            "Uzbek people are known for their hospitality and warmth towards Indian students.",
+        },
       ],
     },
     documentsChecklist: {
@@ -465,7 +788,8 @@ const countries = [
     },
     seo: {
       metaTitle: "MBBS in Uzbekistan 2025 – Fees, Admission, Universities",
-      metaDescription: "Study MBBS in Uzbekistan with NMC-recognized, affordable medical universities. Complete admission support by AMW Career Point.",
+      metaDescription:
+        "Study MBBS in Uzbekistan with NMC-recognized, affordable medical universities. Complete admission support by AMW Career Point.",
     },
     isFeatured: false,
     sortOrder: 5,
@@ -486,7 +810,8 @@ const countries = [
     currency: "Philippine Peso (PHP)",
     livingCost: "₹12,000 – ₹20,000 per month",
     climate: "Tropical — warm and humid year-round",
-    language: "Filipino and English (English is official medium of instruction)",
+    language:
+      "Filipino and English (English is official medium of instruction)",
     highlights: [
       "US-based medical curriculum pattern",
       "Entire course taught in English",
@@ -503,43 +828,114 @@ const countries = [
       "Some universities require NMAT Philippines entrance exam",
     ],
     features: [
-      { title: "US-Pattern Curriculum", description: "MD program modeled on the American medical education system" },
-      { title: "100% English", description: "No language barrier — English is the medium of instruction and daily life" },
-      { title: "USMLE Pathway", description: "Curriculum prepares students for USMLE Steps, enabling US residency" },
-      { title: "NMC Recognized", description: "Graduates eligible for FMGE/NExT screening test to practice in India" },
+      {
+        title: "US-Pattern Curriculum",
+        description:
+          "MD program modeled on the American medical education system",
+      },
+      {
+        title: "100% English",
+        description:
+          "No language barrier — English is the medium of instruction and daily life",
+      },
+      {
+        title: "USMLE Pathway",
+        description:
+          "Curriculum prepares students for USMLE Steps, enabling US residency",
+      },
+      {
+        title: "NMC Recognized",
+        description:
+          "Graduates eligible for FMGE/NExT screening test to practice in India",
+      },
     ],
     admissionProcess: [
-      { step: 1, title: "Submit Application", description: "Apply with academic transcripts, NEET scorecard, and passport copy." },
-      { step: 2, title: "Entrance Assessment", description: "Some universities require the NMAT or their own entrance assessment." },
-      { step: 3, title: "Receive Acceptance", description: "University issues the official letter of acceptance and enrollment form." },
-      { step: 4, title: "Visa Application", description: "Apply for a Philippine student visa (9F) with required documents." },
-      { step: 5, title: "Travel & Start", description: "Arrive in the Philippines, complete enrollment, and begin the BS-MD program." },
+      {
+        step: 1,
+        title: "Submit Application",
+        description:
+          "Apply with academic transcripts, NEET scorecard, and passport copy.",
+      },
+      {
+        step: 2,
+        title: "Entrance Assessment",
+        description:
+          "Some universities require the NMAT or their own entrance assessment.",
+      },
+      {
+        step: 3,
+        title: "Receive Acceptance",
+        description:
+          "University issues the official letter of acceptance and enrollment form.",
+      },
+      {
+        step: 4,
+        title: "Visa Application",
+        description:
+          "Apply for a Philippine student visa (9F) with required documents.",
+      },
+      {
+        step: 5,
+        title: "Travel & Start",
+        description:
+          "Arrive in the Philippines, complete enrollment, and begin the BS-MD program.",
+      },
     ],
     supportExperience: {
       eyebrow: "Why Choose Philippines",
       title: "A Proven Path to a Global Medical Career",
-      description: "AMW Career Point offers full guidance for MBBS in the Philippines — from entrance prep to clinical rotations.",
+      description:
+        "AMW Career Point offers full guidance for MBBS in the Philippines — from entrance prep to clinical rotations.",
       progressItems: [
         { label: "Placement Success", value: 95, status: "Excellent" },
         { label: "Visa Approval Rate", value: 97, status: "Excellent" },
         { label: "Student Satisfaction", value: 93, status: "Excellent" },
       ],
       supportCards: [
-        { title: "Entrance Prep", subtitle: "NMAT guidance and study material" },
-        { title: "Admission Filing", subtitle: "Complete application management" },
-        { title: "Visa & Travel", subtitle: "Visa processing and flight coordination" },
-        { title: "On-Campus Support", subtitle: "Orientation and local coordinator" },
+        {
+          title: "Entrance Prep",
+          subtitle: "NMAT guidance and study material",
+        },
+        {
+          title: "Admission Filing",
+          subtitle: "Complete application management",
+        },
+        {
+          title: "Visa & Travel",
+          subtitle: "Visa processing and flight coordination",
+        },
+        {
+          title: "On-Campus Support",
+          subtitle: "Orientation and local coordinator",
+        },
       ],
     },
     studentLife: {
       eyebrow: "Student Life",
       title: "Living in the Philippines",
-      description: "The Philippines offers a vibrant, English-speaking environment with tropical beaches, friendly locals, and a strong Indian community.",
+      description:
+        "The Philippines offers a vibrant, English-speaking environment with tropical beaches, friendly locals, and a strong Indian community.",
       cards: [
-        { title: "English Everywhere", description: "Daily life is conducted in English, making it very comfortable for Indian students." },
-        { title: "Tropical Lifestyle", description: "Beautiful beaches, islands, and year-round warm weather for a refreshing student life." },
-        { title: "Affordable Food", description: "Good variety of Indian and local food at reasonable prices near university areas." },
-        { title: "Friendly Culture", description: "Filipinos are known for their warmth and friendliness towards foreign students." },
+        {
+          title: "English Everywhere",
+          description:
+            "Daily life is conducted in English, making it very comfortable for Indian students.",
+        },
+        {
+          title: "Tropical Lifestyle",
+          description:
+            "Beautiful beaches, islands, and year-round warm weather for a refreshing student life.",
+        },
+        {
+          title: "Affordable Food",
+          description:
+            "Good variety of Indian and local food at reasonable prices near university areas.",
+        },
+        {
+          title: "Friendly Culture",
+          description:
+            "Filipinos are known for their warmth and friendliness towards foreign students.",
+        },
       ],
     },
     documentsChecklist: {
@@ -558,7 +954,8 @@ const countries = [
     },
     seo: {
       metaTitle: "MBBS in Philippines 2025 – Fees, Admission, Universities",
-      metaDescription: "Study MBBS in Philippines with US-pattern curriculum. English medium, NMC recognized. Expert guidance from AMW Career Point.",
+      metaDescription:
+        "Study MBBS in Philippines with US-pattern curriculum. English medium, NMC recognized. Expert guidance from AMW Career Point.",
     },
     isFeatured: true,
     sortOrder: 6,
@@ -587,7 +984,12 @@ const universities = [
     medium: "English",
     hostelFees: "₹50,000 – ₹80,000 per year",
     eligibility: "50% in PCB (Class 12), NEET qualified, minimum age 17",
-    recognition: ["NMC (India)", "WHO", "ECFMG", "Ministry of Education, Russia"],
+    recognition: [
+      "NMC (India)",
+      "WHO",
+      "ECFMG",
+      "Ministry of Education, Russia",
+    ],
     highlights: [
       { label: "Established", value: "1804" },
       { label: "Global Ranking", value: "Top 500 (QS)" },
@@ -596,14 +998,31 @@ const universities = [
       { label: "Duration", value: "6 Years" },
     ],
     faqs: [
-      { question: "Is Kazan Federal University recognized by NMC?", answer: "Yes, Kazan Federal University is fully recognized by the National Medical Commission (NMC) of India and the WHO." },
-      { question: "What is the medium of instruction?", answer: "The MBBS program is taught entirely in English for international students." },
-      { question: "Is hostel accommodation available?", answer: "Yes, the university provides modern hostel facilities with furnished rooms, Wi-Fi, and canteen services." },
-      { question: "Can I practice in India after graduating?", answer: "Yes, after clearing the FMGE/NExT screening test, graduates can practice medicine in India." },
+      {
+        question: "Is Kazan Federal University recognized by NMC?",
+        answer:
+          "Yes, Kazan Federal University is fully recognized by the National Medical Commission (NMC) of India and the WHO.",
+      },
+      {
+        question: "What is the medium of instruction?",
+        answer:
+          "The MBBS program is taught entirely in English for international students.",
+      },
+      {
+        question: "Is hostel accommodation available?",
+        answer:
+          "Yes, the university provides modern hostel facilities with furnished rooms, Wi-Fi, and canteen services.",
+      },
+      {
+        question: "Can I practice in India after graduating?",
+        answer:
+          "Yes, after clearing the FMGE/NExT screening test, graduates can practice medicine in India.",
+      },
     ],
     seo: {
       metaTitle: "Kazan Federal University – MBBS, Fees, Admission",
-      metaDescription: "Study MBBS at Kazan Federal University, Russia. NMC recognized, English medium, affordable fees. Apply through AMW Career Point.",
+      metaDescription:
+        "Study MBBS at Kazan Federal University, Russia. NMC recognized, English medium, affordable fees. Apply through AMW Career Point.",
     },
     featured: true,
     status: "active",
@@ -631,13 +1050,26 @@ const universities = [
       { label: "Indian Students", value: "500+" },
     ],
     faqs: [
-      { question: "How much does MBBS cost at BSMU?", answer: "The annual tuition fee is approximately ₹3.5 lakh, making it one of the most affordable options in Russia." },
-      { question: "Is the degree valid in India?", answer: "Yes, BSMU is NMC-recognized. Graduates can appear for FMGE/NExT to practice in India." },
-      { question: "Is Indian food available?", answer: "Yes, there are Indian restaurants and mess facilities available near the campus." },
+      {
+        question: "How much does MBBS cost at BSMU?",
+        answer:
+          "The annual tuition fee is approximately ₹3.5 lakh, making it one of the most affordable options in Russia.",
+      },
+      {
+        question: "Is the degree valid in India?",
+        answer:
+          "Yes, BSMU is NMC-recognized. Graduates can appear for FMGE/NExT to practice in India.",
+      },
+      {
+        question: "Is Indian food available?",
+        answer:
+          "Yes, there are Indian restaurants and mess facilities available near the campus.",
+      },
     ],
     seo: {
       metaTitle: "Bashkir State Medical University – MBBS Fees & Admission",
-      metaDescription: "MBBS at Bashkir State Medical University, Ufa. NMC recognized, ₹3.5 lakh/year. Apply via AMW Career Point.",
+      metaDescription:
+        "MBBS at Bashkir State Medical University, Ufa. NMC recognized, ₹3.5 lakh/year. Apply via AMW Career Point.",
     },
     featured: false,
     status: "active",
@@ -658,7 +1090,12 @@ const universities = [
     medium: "English",
     hostelFees: "₹60,000 – ₹90,000 per year",
     eligibility: "50% in PCB (Class 12), NEET qualified, minimum age 17",
-    recognition: ["NMC (India)", "WHO", "WFME", "Ministry of Education, Georgia"],
+    recognition: [
+      "NMC (India)",
+      "WHO",
+      "WFME",
+      "Ministry of Education, Georgia",
+    ],
     highlights: [
       { label: "Established", value: "1918" },
       { label: "Ranking", value: "#1 in Georgia" },
@@ -667,14 +1104,31 @@ const universities = [
       { label: "Curriculum", value: "ECTS-based" },
     ],
     faqs: [
-      { question: "Is TSMU recognized by NMC India?", answer: "Yes, TSMU is recognized by NMC, WHO, and WFME — graduates can practice in India after clearing FMGE/NExT." },
-      { question: "What curriculum does TSMU follow?", answer: "TSMU follows the European Credit Transfer and Accumulation System (ECTS), aligned with EU medical education standards." },
-      { question: "Is Tbilisi safe for Indian students?", answer: "Yes, Georgia is one of the safest countries in Europe, and Tbilisi has a welcoming international community." },
-      { question: "Are there Indian students at TSMU?", answer: "Yes, TSMU has a significant Indian student population with active cultural associations." },
+      {
+        question: "Is TSMU recognized by NMC India?",
+        answer:
+          "Yes, TSMU is recognized by NMC, WHO, and WFME — graduates can practice in India after clearing FMGE/NExT.",
+      },
+      {
+        question: "What curriculum does TSMU follow?",
+        answer:
+          "TSMU follows the European Credit Transfer and Accumulation System (ECTS), aligned with EU medical education standards.",
+      },
+      {
+        question: "Is Tbilisi safe for Indian students?",
+        answer:
+          "Yes, Georgia is one of the safest countries in Europe, and Tbilisi has a welcoming international community.",
+      },
+      {
+        question: "Are there Indian students at TSMU?",
+        answer:
+          "Yes, TSMU has a significant Indian student population with active cultural associations.",
+      },
     ],
     seo: {
       metaTitle: "Tbilisi State Medical University – MBBS Fees & Admission",
-      metaDescription: "Study MBBS at Tbilisi State Medical University, Georgia. NMC recognized, ECTS curriculum, English medium. Apply via AMW Career Point.",
+      metaDescription:
+        "Study MBBS at Tbilisi State Medical University, Georgia. NMC recognized, ECTS curriculum, English medium. Apply via AMW Career Point.",
     },
     featured: true,
     status: "active",
@@ -702,13 +1156,25 @@ const universities = [
       { label: "Infrastructure", value: "Modern" },
     ],
     faqs: [
-      { question: "Is European University recognized by NMC?", answer: "Yes, it is recognized by both NMC India and the WHO." },
-      { question: "What makes European University different?", answer: "Modern infrastructure, simulation labs, and small class sizes ensure personalized attention for each student." },
-      { question: "What is the total cost of MBBS?", answer: "The total cost including tuition and hostel for 6 years is approximately ₹30–35 lakhs." },
+      {
+        question: "Is European University recognized by NMC?",
+        answer: "Yes, it is recognized by both NMC India and the WHO.",
+      },
+      {
+        question: "What makes European University different?",
+        answer:
+          "Modern infrastructure, simulation labs, and small class sizes ensure personalized attention for each student.",
+      },
+      {
+        question: "What is the total cost of MBBS?",
+        answer:
+          "The total cost including tuition and hostel for 6 years is approximately ₹30–35 lakhs.",
+      },
     ],
     seo: {
       metaTitle: "European University Georgia – MBBS Fees & Admission",
-      metaDescription: "MBBS at European University Georgia. Modern campus, NMC recognized, ₹4.5 lakh/year. Apply through AMW Career Point.",
+      metaDescription:
+        "MBBS at European University Georgia. Modern campus, NMC recognized, ₹4.5 lakh/year. Apply through AMW Career Point.",
     },
     featured: false,
     status: "active",
@@ -729,7 +1195,12 @@ const universities = [
     medium: "English",
     hostelFees: "₹50,000 – ₹70,000 per year",
     eligibility: "50% in PCB (Class 12), NEET qualified, minimum age 17",
-    recognition: ["NMC (India)", "WHO", "FAIMER", "Ministry of Health, Kazakhstan"],
+    recognition: [
+      "NMC (India)",
+      "WHO",
+      "FAIMER",
+      "Ministry of Health, Kazakhstan",
+    ],
     highlights: [
       { label: "Established", value: "1930" },
       { label: "Ranking", value: "#1 in Kazakhstan" },
@@ -738,13 +1209,26 @@ const universities = [
       { label: "Duration", value: "5+1 Years" },
     ],
     faqs: [
-      { question: "Is KazNMU a good university for Indian students?", answer: "Yes, KazNMU is the top-ranked medical university in Kazakhstan, recognized by NMC India, WHO, and FAIMER." },
-      { question: "What is Almaty like for students?", answer: "Almaty is a modern, cosmopolitan city with good transport, restaurants, and recreational options." },
-      { question: "Is clinical training provided?", answer: "Yes, the university has multiple affiliated teaching hospitals where students gain hands-on clinical experience." },
+      {
+        question: "Is KazNMU a good university for Indian students?",
+        answer:
+          "Yes, KazNMU is the top-ranked medical university in Kazakhstan, recognized by NMC India, WHO, and FAIMER.",
+      },
+      {
+        question: "What is Almaty like for students?",
+        answer:
+          "Almaty is a modern, cosmopolitan city with good transport, restaurants, and recreational options.",
+      },
+      {
+        question: "Is clinical training provided?",
+        answer:
+          "Yes, the university has multiple affiliated teaching hospitals where students gain hands-on clinical experience.",
+      },
     ],
     seo: {
       metaTitle: "Kazakh National Medical University – MBBS Fees & Admission",
-      metaDescription: "MBBS at Kazakh National Medical University, Almaty. #1 in Kazakhstan, NMC recognized. Apply via AMW Career Point.",
+      metaDescription:
+        "MBBS at Kazakh National Medical University, Almaty. #1 in Kazakhstan, NMC recognized. Apply via AMW Career Point.",
     },
     featured: true,
     status: "active",
@@ -772,13 +1256,25 @@ const universities = [
       { label: "Duration", value: "5+1 Years" },
     ],
     faqs: [
-      { question: "Is Al-Farabi University NMC recognized?", answer: "Yes, its medical program is recognized by NMC India and WHO." },
-      { question: "What is the campus like?", answer: "A large, well-maintained campus with libraries, labs, sports facilities, and comfortable hostels." },
-      { question: "Are scholarships available?", answer: "The university offers merit-based scholarships for high-performing international students." },
+      {
+        question: "Is Al-Farabi University NMC recognized?",
+        answer: "Yes, its medical program is recognized by NMC India and WHO.",
+      },
+      {
+        question: "What is the campus like?",
+        answer:
+          "A large, well-maintained campus with libraries, labs, sports facilities, and comfortable hostels.",
+      },
+      {
+        question: "Are scholarships available?",
+        answer:
+          "The university offers merit-based scholarships for high-performing international students.",
+      },
     ],
     seo: {
       metaTitle: "Al-Farabi Kazakh National University – MBBS Admission",
-      metaDescription: "Study MBBS at Al-Farabi Kazakh National University, Almaty. QS ranked, NMC recognized. Apply through AMW Career Point.",
+      metaDescription:
+        "Study MBBS at Al-Farabi Kazakh National University, Almaty. QS ranked, NMC recognized. Apply through AMW Career Point.",
     },
     featured: false,
     status: "active",
@@ -808,13 +1304,26 @@ const universities = [
       { label: "Indian Alumni", value: "2000+" },
     ],
     faqs: [
-      { question: "What is the total cost of MBBS at KSMA?", answer: "The total cost for 6 years, including tuition and hostel, is approximately ₹18–22 lakhs." },
-      { question: "Is KSMA recognized for practicing in India?", answer: "Yes, KSMA is NMC-recognized. Graduates can take the FMGE/NExT to practice in India." },
-      { question: "Is Bishkek safe for students?", answer: "Bishkek is a peaceful capital city with a sizable Indian student community and affordable living." },
+      {
+        question: "What is the total cost of MBBS at KSMA?",
+        answer:
+          "The total cost for 6 years, including tuition and hostel, is approximately ₹18–22 lakhs.",
+      },
+      {
+        question: "Is KSMA recognized for practicing in India?",
+        answer:
+          "Yes, KSMA is NMC-recognized. Graduates can take the FMGE/NExT to practice in India.",
+      },
+      {
+        question: "Is Bishkek safe for students?",
+        answer:
+          "Bishkek is a peaceful capital city with a sizable Indian student community and affordable living.",
+      },
     ],
     seo: {
       metaTitle: "Kyrgyz State Medical Academy – MBBS Fees & Admission",
-      metaDescription: "Study MBBS at Kyrgyz State Medical Academy, Bishkek. NMC recognized, fees from ₹3 lakh/year. Apply with AMW Career Point.",
+      metaDescription:
+        "Study MBBS at Kyrgyz State Medical Academy, Bishkek. NMC recognized, fees from ₹3 lakh/year. Apply with AMW Career Point.",
     },
     featured: true,
     status: "active",
@@ -842,13 +1351,26 @@ const universities = [
       { label: "Total Cost", value: "~₹15–18 Lakh" },
     ],
     faqs: [
-      { question: "Is Osh State University a good choice?", answer: "Yes, it is one of the most affordable NMC-recognized universities with a solid track record of Indian graduates." },
-      { question: "What is life like in Osh?", answer: "Osh is a quieter city compared to Bishkek, but has all basic amenities and a small Indian community." },
-      { question: "How is the clinical training?", answer: "Students get clinical rotations at affiliated government hospitals starting from the 3rd year." },
+      {
+        question: "Is Osh State University a good choice?",
+        answer:
+          "Yes, it is one of the most affordable NMC-recognized universities with a solid track record of Indian graduates.",
+      },
+      {
+        question: "What is life like in Osh?",
+        answer:
+          "Osh is a quieter city compared to Bishkek, but has all basic amenities and a small Indian community.",
+      },
+      {
+        question: "How is the clinical training?",
+        answer:
+          "Students get clinical rotations at affiliated government hospitals starting from the 3rd year.",
+      },
     ],
     seo: {
       metaTitle: "Osh State University – MBBS Fees & Admission",
-      metaDescription: "MBBS at Osh State University, Kyrgyzstan. Most affordable NMC-recognized option. Apply via AMW Career Point.",
+      metaDescription:
+        "MBBS at Osh State University, Kyrgyzstan. Most affordable NMC-recognized option. Apply via AMW Career Point.",
     },
     featured: false,
     status: "active",
@@ -878,13 +1400,26 @@ const universities = [
       { label: "Duration", value: "5+1 Years" },
     ],
     faqs: [
-      { question: "Is Tashkent Medical Academy NMC recognized?", answer: "Yes, TMA is fully recognized by NMC India and listed in the WHO World Directory of Medical Schools." },
-      { question: "What is life like in Tashkent?", answer: "Tashkent is a modern, affordable city with good public transport, parks, and a growing Indian community." },
-      { question: "Are there Indian students at TMA?", answer: "Yes, TMA has a growing number of Indian students each year, with active student associations." },
+      {
+        question: "Is Tashkent Medical Academy NMC recognized?",
+        answer:
+          "Yes, TMA is fully recognized by NMC India and listed in the WHO World Directory of Medical Schools.",
+      },
+      {
+        question: "What is life like in Tashkent?",
+        answer:
+          "Tashkent is a modern, affordable city with good public transport, parks, and a growing Indian community.",
+      },
+      {
+        question: "Are there Indian students at TMA?",
+        answer:
+          "Yes, TMA has a growing number of Indian students each year, with active student associations.",
+      },
     ],
     seo: {
       metaTitle: "Tashkent Medical Academy – MBBS Fees & Admission",
-      metaDescription: "Study MBBS at Tashkent Medical Academy, Uzbekistan. NMC recognized, ₹3.5 lakh/year. Apply via AMW Career Point.",
+      metaDescription:
+        "Study MBBS at Tashkent Medical Academy, Uzbekistan. NMC recognized, ₹3.5 lakh/year. Apply via AMW Career Point.",
     },
     featured: true,
     status: "active",
@@ -912,13 +1447,26 @@ const universities = [
       { label: "City", value: "Samarkand" },
     ],
     faqs: [
-      { question: "Why choose Samarkand for MBBS?", answer: "SamSMU offers very affordable fees, NMC recognition, and the unique experience of living in the ancient Silk Road city." },
-      { question: "Is the degree recognized internationally?", answer: "Yes, the degree is recognized by NMC India and WHO, allowing graduates to practice globally after clearing respective exams." },
-      { question: "How is the hostel and food?", answer: "University hostels are clean and affordable. Indian food options are available through local restaurants and student-run kitchens." },
+      {
+        question: "Why choose Samarkand for MBBS?",
+        answer:
+          "SamSMU offers very affordable fees, NMC recognition, and the unique experience of living in the ancient Silk Road city.",
+      },
+      {
+        question: "Is the degree recognized internationally?",
+        answer:
+          "Yes, the degree is recognized by NMC India and WHO, allowing graduates to practice globally after clearing respective exams.",
+      },
+      {
+        question: "How is the hostel and food?",
+        answer:
+          "University hostels are clean and affordable. Indian food options are available through local restaurants and student-run kitchens.",
+      },
     ],
     seo: {
       metaTitle: "Samarkand State Medical University – MBBS Admission",
-      metaDescription: "MBBS at Samarkand State Medical University, Uzbekistan. NMC recognized, ₹3 lakh/year. Apply with AMW Career Point.",
+      metaDescription:
+        "MBBS at Samarkand State Medical University, Uzbekistan. NMC recognized, ₹3 lakh/year. Apply with AMW Career Point.",
     },
     featured: false,
     status: "active",
@@ -932,7 +1480,8 @@ const universities = [
     description:
       "The University of Perpetual Help System DALTA (UPHSD) is one of the most popular universities among Indian students studying MBBS in the Philippines. Located in Las Piñas City, Metro Manila, UPHSD offers a US-based MD program taught entirely in English. The university has a well-equipped medical school with modern simulation labs, a university hospital, and experienced faculty. It is recognized by NMC and WHO, and its curriculum also prepares students for the USMLE, opening pathways for practice in the United States.",
     establishedYear: "1975",
-    ranking: "Among top medical schools in the Philippines for international students",
+    ranking:
+      "Among top medical schools in the Philippines for international students",
     accreditation: "NMC, WHO, CHED recognized",
     courseDuration: "5.5 years (BS + MD)",
     annualFees: "₹5,00,000 per year",
@@ -948,14 +1497,31 @@ const universities = [
       { label: "Program", value: "BS-MD Combined" },
     ],
     faqs: [
-      { question: "Is UPHSD recognized by NMC?", answer: "Yes, UPHSD is recognized by NMC India, WHO, and the Philippine Commission on Higher Education (CHED)." },
-      { question: "What is the BS-MD program?", answer: "It is a combined program: 1.5 years of BS in pre-medical sciences followed by 4 years of Doctor of Medicine (MD)." },
-      { question: "Does the curriculum prepare for USMLE?", answer: "Yes, the US-pattern curriculum aligns with USMLE preparation, enabling graduates to pursue residency in the US." },
-      { question: "Is Manila safe for students?", answer: "The university area in Las Piñas is a safe, residential neighborhood. The campus has 24/7 security." },
+      {
+        question: "Is UPHSD recognized by NMC?",
+        answer:
+          "Yes, UPHSD is recognized by NMC India, WHO, and the Philippine Commission on Higher Education (CHED).",
+      },
+      {
+        question: "What is the BS-MD program?",
+        answer:
+          "It is a combined program: 1.5 years of BS in pre-medical sciences followed by 4 years of Doctor of Medicine (MD).",
+      },
+      {
+        question: "Does the curriculum prepare for USMLE?",
+        answer:
+          "Yes, the US-pattern curriculum aligns with USMLE preparation, enabling graduates to pursue residency in the US.",
+      },
+      {
+        question: "Is Manila safe for students?",
+        answer:
+          "The university area in Las Piñas is a safe, residential neighborhood. The campus has 24/7 security.",
+      },
     ],
     seo: {
       metaTitle: "UPHSD Philippines – MBBS (MD) Fees & Admission",
-      metaDescription: "Study MBBS (MD) at University of Perpetual Help, Philippines. NMC recognized, English medium, US curriculum. Apply via AMW Career Point.",
+      metaDescription:
+        "Study MBBS (MD) at University of Perpetual Help, Philippines. NMC recognized, English medium, US curriculum. Apply via AMW Career Point.",
     },
     featured: true,
     status: "active",
@@ -983,13 +1549,26 @@ const universities = [
       { label: "Location", value: "Makati, Manila" },
     ],
     faqs: [
-      { question: "Is AMA School of Medicine NMC recognized?", answer: "Yes, it is recognized by NMC India, WHO, and the Philippine CHED." },
-      { question: "What clinical exposure does AMA provide?", answer: "Students undergo clinical rotations at affiliated hospitals in Metro Manila starting from the 3rd year of the MD program." },
-      { question: "What is the Indian student community like?", answer: "AMA has a notable Indian student body with community events and support groups for new arrivals." },
+      {
+        question: "Is AMA School of Medicine NMC recognized?",
+        answer:
+          "Yes, it is recognized by NMC India, WHO, and the Philippine CHED.",
+      },
+      {
+        question: "What clinical exposure does AMA provide?",
+        answer:
+          "Students undergo clinical rotations at affiliated hospitals in Metro Manila starting from the 3rd year of the MD program.",
+      },
+      {
+        question: "What is the Indian student community like?",
+        answer:
+          "AMA has a notable Indian student body with community events and support groups for new arrivals.",
+      },
     ],
     seo: {
       metaTitle: "AMA School of Medicine Philippines – MBBS Fees & Admission",
-      metaDescription: "MBBS (MD) at AMA School of Medicine, Philippines. NMC recognized, US curriculum, ₹4.5 lakh/year. Apply with AMW Career Point.",
+      metaDescription:
+        "MBBS (MD) at AMA School of Medicine, Philippines. NMC recognized, US curriculum, ₹4.5 lakh/year. Apply with AMW Career Point.",
     },
     featured: false,
     status: "active",
@@ -1012,15 +1591,22 @@ const blogs = [
   {
     title: "MBBS in Russia 2025: Complete Guide for Indian Students",
     slug: "mbbs-in-russia-complete-guide",
-    excerpt: "Everything you need to know about studying MBBS in Russia — from top universities and fees to admission process and student life.",
+    excerpt:
+      "Everything you need to know about studying MBBS in Russia — from top universities and fees to admission process and student life.",
     categoryName: "Country Guides",
     author: "AMW Career Point",
-    tags: ["MBBS in Russia", "Study Abroad", "Medical Education", "NMC Recognized"],
+    tags: [
+      "MBBS in Russia",
+      "Study Abroad",
+      "Medical Education",
+      "NMC Recognized",
+    ],
     status: "published",
     featured: true,
     seo: {
       metaTitle: "MBBS in Russia 2025 – Complete Guide | AMW Career Point",
-      metaDescription: "Comprehensive guide to studying MBBS in Russia for Indian students. Top universities, fees, eligibility, and admission process.",
+      metaDescription:
+        "Comprehensive guide to studying MBBS in Russia for Indian students. Top universities, fees, eligibility, and admission process.",
     },
     content: `<h2>Introduction</h2>
 <p>Russia has been a trusted destination for Indian medical students for over two decades. With more than 50 NMC-recognized universities, affordable tuition fees, and English-medium programs, Russia continues to attract thousands of Indian students every year. In this guide, we cover everything you need to know about pursuing MBBS in Russia in 2025.</p>
@@ -1054,15 +1640,22 @@ const blogs = [
   {
     title: "MBBS in Georgia: Why It's a Top Choice in 2025",
     slug: "mbbs-in-georgia-top-choice-2025",
-    excerpt: "Discover why Georgia is rapidly becoming one of the most preferred European destinations for Indian students pursuing MBBS abroad.",
+    excerpt:
+      "Discover why Georgia is rapidly becoming one of the most preferred European destinations for Indian students pursuing MBBS abroad.",
     categoryName: "Country Guides",
     author: "AMW Career Point",
-    tags: ["MBBS in Georgia", "European Medical Education", "Study Abroad", "ECTS Curriculum"],
+    tags: [
+      "MBBS in Georgia",
+      "European Medical Education",
+      "Study Abroad",
+      "ECTS Curriculum",
+    ],
     status: "published",
     featured: true,
     seo: {
       metaTitle: "MBBS in Georgia 2025 – Why Choose Georgia | AMW Career Point",
-      metaDescription: "Top reasons to study MBBS in Georgia. European ECTS curriculum, English medium, NMC recognized. Guide by AMW Career Point.",
+      metaDescription:
+        "Top reasons to study MBBS in Georgia. European ECTS curriculum, English medium, NMC recognized. Guide by AMW Career Point.",
     },
     content: `<h2>Introduction</h2>
 <p>Georgia, located at the crossroads of Europe and Asia, has emerged as one of the most attractive destinations for Indian students seeking MBBS abroad. With European-standard education, full English-medium programs, NMC recognition, and a safe living environment, Georgia offers an exceptional value proposition for aspiring doctors. This guide explores everything you need to know about pursuing MBBS in Georgia in 2025.</p>
@@ -1093,15 +1686,23 @@ const blogs = [
   {
     title: "MBBS in Kazakhstan: Affordable Excellence in Central Asia",
     slug: "mbbs-in-kazakhstan-affordable-excellence",
-    excerpt: "Kazakhstan offers globally ranked medical universities at affordable prices. Here's your complete guide to studying MBBS in Kazakhstan.",
+    excerpt:
+      "Kazakhstan offers globally ranked medical universities at affordable prices. Here's your complete guide to studying MBBS in Kazakhstan.",
     categoryName: "Country Guides",
     author: "AMW Career Point",
-    tags: ["MBBS in Kazakhstan", "Central Asia", "Affordable MBBS", "NMC Recognized"],
+    tags: [
+      "MBBS in Kazakhstan",
+      "Central Asia",
+      "Affordable MBBS",
+      "NMC Recognized",
+    ],
     status: "published",
     featured: false,
     seo: {
-      metaTitle: "MBBS in Kazakhstan 2025 – Affordable & Ranked | AMW Career Point",
-      metaDescription: "Study MBBS in Kazakhstan at globally ranked universities. Complete guide on fees, eligibility, and top universities by AMW Career Point.",
+      metaTitle:
+        "MBBS in Kazakhstan 2025 – Affordable & Ranked | AMW Career Point",
+      metaDescription:
+        "Study MBBS in Kazakhstan at globally ranked universities. Complete guide on fees, eligibility, and top universities by AMW Career Point.",
     },
     content: `<h2>Introduction</h2>
 <p>Kazakhstan, the largest country in Central Asia, has become an increasingly popular destination for Indian students pursuing medical education abroad. Home to several globally ranked universities, Kazakhstan offers high-quality MBBS programs at competitive prices. With NMC and WHO recognition, English-medium instruction, and modern medical infrastructure, Kazakhstan presents a strong case for aspiring doctors.</p>
@@ -1132,15 +1733,23 @@ const blogs = [
   {
     title: "NEET Score and MBBS Abroad: What You Need to Know in 2025",
     slug: "neet-score-mbbs-abroad-2025",
-    excerpt: "Understand the NEET requirements for studying MBBS abroad, minimum qualifying scores, and how to choose the right country based on your marks.",
+    excerpt:
+      "Understand the NEET requirements for studying MBBS abroad, minimum qualifying scores, and how to choose the right country based on your marks.",
     categoryName: "Exam Preparation",
     author: "AMW Career Point",
-    tags: ["NEET", "MBBS Abroad", "NMC Guidelines", "Eligibility", "NEET Score"],
+    tags: [
+      "NEET",
+      "MBBS Abroad",
+      "NMC Guidelines",
+      "Eligibility",
+      "NEET Score",
+    ],
     status: "published",
     featured: true,
     seo: {
       metaTitle: "NEET Score for MBBS Abroad 2025 – Requirements & Guide",
-      metaDescription: "Minimum NEET score needed for MBBS abroad in 2025. Country-wise requirements, NMC rules, and expert guidance by AMW Career Point.",
+      metaDescription:
+        "Minimum NEET score needed for MBBS abroad in 2025. Country-wise requirements, NMC rules, and expert guidance by AMW Career Point.",
     },
     content: `<h2>Introduction</h2>
 <p>If you're planning to study MBBS abroad, understanding the NEET requirements is crucial. As per NMC (National Medical Commission) guidelines, NEET qualification is mandatory for all Indian students seeking admission to foreign medical universities. This article breaks down the NEET score requirements, eligibility criteria, and how your score can influence your choice of country and university.</p>
@@ -1171,7 +1780,8 @@ const blogs = [
   {
     title: "NMC, FMGE, and NExT Exam: What Every MBBS Abroad Student Must Know",
     slug: "nmc-fmge-next-exam-guide",
-    excerpt: "A clear breakdown of FMGE, NExT, and NMC registration — the essential steps for Indian students returning from MBBS abroad.",
+    excerpt:
+      "A clear breakdown of FMGE, NExT, and NMC registration — the essential steps for Indian students returning from MBBS abroad.",
     categoryName: "Exam Preparation",
     author: "AMW Career Point",
     tags: ["NMC", "FMGE", "NExT Exam", "Screening Test", "MBBS Abroad"],
@@ -1179,7 +1789,8 @@ const blogs = [
     featured: false,
     seo: {
       metaTitle: "NMC, FMGE & NExT Exam Guide – MBBS Abroad Students",
-      metaDescription: "Complete guide to FMGE, NExT exam, and NMC registration for MBBS abroad graduates. Everything you need to know, by AMW Career Point.",
+      metaDescription:
+        "Complete guide to FMGE, NExT exam, and NMC registration for MBBS abroad graduates. Everything you need to know, by AMW Career Point.",
     },
     content: `<h2>Introduction</h2>
 <p>For Indian students studying MBBS abroad, the journey doesn't end with graduation — you must clear a screening test to practice medicine in India. The NMC (National Medical Commission) requires all foreign medical graduates to pass either the FMGE (Foreign Medical Graduate Examination) or the upcoming NExT (National Exit Test) to obtain a license to practice. This article explains both exams, their differences, and how to prepare effectively.</p>
@@ -1210,15 +1821,23 @@ const blogs = [
   {
     title: "How to Choose the Right Country for MBBS Abroad",
     slug: "how-to-choose-right-country-mbbs-abroad",
-    excerpt: "Confused between Russia, Georgia, Kazakhstan, and other countries for MBBS? Here's a structured approach to making the right decision.",
+    excerpt:
+      "Confused between Russia, Georgia, Kazakhstan, and other countries for MBBS? Here's a structured approach to making the right decision.",
     categoryName: "Admission Guidance",
     author: "AMW Career Point",
-    tags: ["Country Selection", "MBBS Abroad", "Comparison", "Admission Guidance"],
+    tags: [
+      "Country Selection",
+      "MBBS Abroad",
+      "Comparison",
+      "Admission Guidance",
+    ],
     status: "published",
     featured: false,
     seo: {
-      metaTitle: "How to Choose the Best Country for MBBS Abroad | AMW Career Point",
-      metaDescription: "Structured guide to choosing the right country for MBBS abroad. Compare Russia, Georgia, Kazakhstan & more. Expert advice by AMW Career Point.",
+      metaTitle:
+        "How to Choose the Best Country for MBBS Abroad | AMW Career Point",
+      metaDescription:
+        "Structured guide to choosing the right country for MBBS abroad. Compare Russia, Georgia, Kazakhstan & more. Expert advice by AMW Career Point.",
     },
     content: `<h2>Introduction</h2>
 <p>Choosing the right country for MBBS abroad is one of the most important decisions you'll make in your medical career. With multiple options — Russia, Georgia, Kazakhstan, Kyrgyzstan, Uzbekistan, Philippines — it can feel overwhelming. This article provides a clear, structured framework to help you evaluate and compare destinations based on what matters most: recognition, fees, quality, and lifestyle.</p>
@@ -1252,7 +1871,8 @@ const blogs = [
   {
     title: "MBBS Abroad Fee Comparison 2025: Country-by-Country Breakdown",
     slug: "mbbs-abroad-fee-comparison-2025",
-    excerpt: "A detailed comparison of MBBS fees across Russia, Georgia, Kazakhstan, Kyrgyzstan, Uzbekistan, and the Philippines — updated for 2025.",
+    excerpt:
+      "A detailed comparison of MBBS fees across Russia, Georgia, Kazakhstan, Kyrgyzstan, Uzbekistan, and the Philippines — updated for 2025.",
     categoryName: "MBBS Abroad",
     author: "AMW Career Point",
     tags: ["Fee Comparison", "MBBS Abroad", "Budget Planning", "Tuition Fees"],
@@ -1260,7 +1880,8 @@ const blogs = [
     featured: true,
     seo: {
       metaTitle: "MBBS Abroad Fee Comparison 2025 | AMW Career Point",
-      metaDescription: "Compare MBBS abroad fees for 2025 — Russia, Georgia, Kazakhstan, Philippines & more. Complete cost breakdown by AMW Career Point.",
+      metaDescription:
+        "Compare MBBS abroad fees for 2025 — Russia, Georgia, Kazakhstan, Philippines & more. Complete cost breakdown by AMW Career Point.",
     },
     content: `<h2>Introduction</h2>
 <p>One of the first questions parents and students ask about MBBS abroad is: "How much will it cost?" This article provides a transparent, up-to-date comparison of MBBS fees across the six most popular destinations for Indian students in 2025. We break down tuition, hostel, living costs, and the total estimated budget for each country.</p>
@@ -1294,7 +1915,8 @@ const blogs = [
   {
     title: "Student Life Abroad: What to Expect as an MBBS Student",
     slug: "student-life-abroad-mbbs",
-    excerpt: "Moving abroad for MBBS is a big step. Here's what daily life looks like for Indian medical students studying in Russia, Georgia, and beyond.",
+    excerpt:
+      "Moving abroad for MBBS is a big step. Here's what daily life looks like for Indian medical students studying in Russia, Georgia, and beyond.",
     categoryName: "Student Life",
     author: "AMW Career Point",
     tags: ["Student Life", "MBBS Abroad", "Living Abroad", "Indian Students"],
@@ -1302,7 +1924,8 @@ const blogs = [
     featured: false,
     seo: {
       metaTitle: "Student Life Abroad for MBBS Students | AMW Career Point",
-      metaDescription: "What daily life is like for Indian MBBS students abroad. Hostel, food, culture, and tips for adjusting. Guide by AMW Career Point.",
+      metaDescription:
+        "What daily life is like for Indian MBBS students abroad. Hostel, food, culture, and tips for adjusting. Guide by AMW Career Point.",
     },
     content: `<h2>Introduction</h2>
 <p>Studying MBBS abroad is not just about academics — it's about living independently in a new country for 5 to 6 years. For many Indian students, this is their first time away from home, and naturally, there are a lot of questions about daily life, food, safety, and social activities. This article gives you an honest, detailed picture of what student life looks like in popular MBBS destinations.</p>
@@ -1340,7 +1963,8 @@ const blogs = [
 // ═══════════════════════════════════════════════════════════════════
 
 async function main() {
-  const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/amwcareerpoint";
+  const uri =
+    process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/amwcareerpoint";
   console.log(`\n🔌 Connecting to: ${uri}`);
   await mongoose.connect(uri);
   console.log(`✅ Connected to: ${mongoose.connection.name}\n`);
@@ -1362,8 +1986,12 @@ async function main() {
 
   // Update universityCount on each country
   for (const slug of Object.keys(countryMap)) {
-    const count = await University.countDocuments({ country: countryMap[slug] });
-    await Country.findByIdAndUpdate(countryMap[slug], { universityCount: count });
+    const count = await University.countDocuments({
+      country: countryMap[slug],
+    });
+    await Country.findByIdAndUpdate(countryMap[slug], {
+      universityCount: count,
+    });
   }
 
   // ── 2. Seed universities ──────────────────────────────────────
@@ -1376,7 +2004,9 @@ async function main() {
     }
     const countryId = countryMap[u.countrySlug];
     if (!countryId) {
-      console.log(`   ❌ Country slug "${u.countrySlug}" not found for university "${u.name}", skipping`);
+      console.log(
+        `   ❌ Country slug "${u.countrySlug}" not found for university "${u.name}", skipping`,
+      );
       continue;
     }
     const { countrySlug, ...uData } = u;
@@ -1387,8 +2017,12 @@ async function main() {
 
   // Update universityCount after universities are seeded
   for (const slug of Object.keys(countryMap)) {
-    const count = await University.countDocuments({ country: countryMap[slug] });
-    await Country.findByIdAndUpdate(countryMap[slug], { universityCount: count });
+    const count = await University.countDocuments({
+      country: countryMap[slug],
+    });
+    await Country.findByIdAndUpdate(countryMap[slug], {
+      universityCount: count,
+    });
   }
 
   // ── 3. Seed blog categories ───────────────────────────────────

@@ -1,7 +1,8 @@
 const slugify = require("slugify");
-const Country  = require("../models/Country");
+const Country = require("../models/Country");
 
-const makeSlug = (name) => slugify(name, { lower: true, strict: true, trim: true });
+const makeSlug = (name) =>
+  slugify(name, { lower: true, strict: true, trim: true });
 
 // Parse sort param: "-sortOrder" → {sortOrder:-1}, "name" → {name:1}
 const parseSort = (sort = "-sortOrder") => {
@@ -31,42 +32,85 @@ const sanitizeSupportExperience = (se) => {
   const value = { ...se };
 
   // eyebrow / title / description — just length guards (schema enforces too)
-  if (value.eyebrow     && value.eyebrow.length     > 80)  return { ok: false, error: "supportExperience.eyebrow must be ≤ 80 characters" };
-  if (value.title       && value.title.length       > 180) return { ok: false, error: "supportExperience.title must be ≤ 180 characters" };
-  if (value.description && value.description.length > 800) return { ok: false, error: "supportExperience.description must be ≤ 800 characters" };
+  if (value.eyebrow && value.eyebrow.length > 80)
+    return {
+      ok: false,
+      error: "supportExperience.eyebrow must be ≤ 80 characters",
+    };
+  if (value.title && value.title.length > 180)
+    return {
+      ok: false,
+      error: "supportExperience.title must be ≤ 180 characters",
+    };
+  if (value.description && value.description.length > 800)
+    return {
+      ok: false,
+      error: "supportExperience.description must be ≤ 800 characters",
+    };
 
   // progressItems
   if (value.progressItems !== undefined) {
-    if (!Array.isArray(value.progressItems)) return { ok: false, error: "supportExperience.progressItems must be an array" };
-    if (value.progressItems.length > 6)      return { ok: false, error: "supportExperience.progressItems can have at most 6 items" };
+    if (!Array.isArray(value.progressItems))
+      return {
+        ok: false,
+        error: "supportExperience.progressItems must be an array",
+      };
+    if (value.progressItems.length > 6)
+      return {
+        ok: false,
+        error: "supportExperience.progressItems can have at most 6 items",
+      };
 
     for (let i = 0; i < value.progressItems.length; i++) {
       const item = value.progressItems[i];
-      if (!item || typeof item !== "object") return { ok: false, error: `progressItems[${i}] must be an object` };
-      if (!item.label || !String(item.label).trim()) return { ok: false, error: `progressItems[${i}].label is required` };
+      if (!item || typeof item !== "object")
+        return { ok: false, error: `progressItems[${i}] must be an object` };
+      if (!item.label || !String(item.label).trim())
+        return { ok: false, error: `progressItems[${i}].label is required` };
       const val = Number(item.value);
-      if (isNaN(val) || val < 0 || val > 100) return { ok: false, error: `progressItems[${i}].value must be a number between 0 and 100` };
+      if (isNaN(val) || val < 0 || val > 100)
+        return {
+          ok: false,
+          error: `progressItems[${i}].value must be a number between 0 and 100`,
+        };
     }
     // clean: drop empty items
     value.progressItems = value.progressItems
       .filter((p) => p && typeof p === "object" && p.label)
-      .map((p) => ({ label: String(p.label).trim(), value: Number(p.value), status: p.status ? String(p.status).trim() : "Included" }));
+      .map((p) => ({
+        label: String(p.label).trim(),
+        value: Number(p.value),
+        status: p.status ? String(p.status).trim() : "Included",
+      }));
   }
 
   // supportCards
   if (value.supportCards !== undefined) {
-    if (!Array.isArray(value.supportCards)) return { ok: false, error: "supportExperience.supportCards must be an array" };
-    if (value.supportCards.length > 4)      return { ok: false, error: "supportExperience.supportCards can have at most 4 items" };
+    if (!Array.isArray(value.supportCards))
+      return {
+        ok: false,
+        error: "supportExperience.supportCards must be an array",
+      };
+    if (value.supportCards.length > 4)
+      return {
+        ok: false,
+        error: "supportExperience.supportCards can have at most 4 items",
+      };
 
     for (let i = 0; i < value.supportCards.length; i++) {
       const card = value.supportCards[i];
-      if (!card || typeof card !== "object") return { ok: false, error: `supportCards[${i}] must be an object` };
-      if (!card.title || !String(card.title).trim()) return { ok: false, error: `supportCards[${i}].title is required` };
+      if (!card || typeof card !== "object")
+        return { ok: false, error: `supportCards[${i}] must be an object` };
+      if (!card.title || !String(card.title).trim())
+        return { ok: false, error: `supportCards[${i}].title is required` };
     }
     // clean
     value.supportCards = value.supportCards
       .filter((c) => c && typeof c === "object" && c.title)
-      .map((c) => ({ title: String(c.title).trim(), subtitle: c.subtitle ? String(c.subtitle).trim() : "" }));
+      .map((c) => ({
+        title: String(c.title).trim(),
+        subtitle: c.subtitle ? String(c.subtitle).trim() : "",
+      }));
   }
 
   return { ok: true, value };
@@ -80,26 +124,42 @@ const sanitizeStudentLife = (sl) => {
 
   const value = { ...sl };
 
-  if (value.eyebrow     && value.eyebrow.length     > 80)   return { ok: false, error: "studentLife.eyebrow must be ≤ 80 characters" };
-  if (value.title       && value.title.length       > 180)  return { ok: false, error: "studentLife.title must be ≤ 180 characters" };
-  if (value.description && value.description.length > 1000) return { ok: false, error: "studentLife.description must be ≤ 1000 characters" };
+  if (value.eyebrow && value.eyebrow.length > 80)
+    return { ok: false, error: "studentLife.eyebrow must be ≤ 80 characters" };
+  if (value.title && value.title.length > 180)
+    return { ok: false, error: "studentLife.title must be ≤ 180 characters" };
+  if (value.description && value.description.length > 1000)
+    return {
+      ok: false,
+      error: "studentLife.description must be ≤ 1000 characters",
+    };
 
   if (value.cards !== undefined) {
-    if (!Array.isArray(value.cards)) return { ok: false, error: "studentLife.cards must be an array" };
-    if (value.cards.length > 6)      return { ok: false, error: "studentLife.cards can have at most 6 items" };
+    if (!Array.isArray(value.cards))
+      return { ok: false, error: "studentLife.cards must be an array" };
+    if (value.cards.length > 6)
+      return { ok: false, error: "studentLife.cards can have at most 6 items" };
 
     for (let i = 0; i < value.cards.length; i++) {
       const card = value.cards[i];
-      if (!card || typeof card !== "object") return { ok: false, error: `studentLife.cards[${i}] must be an object` };
-      if (!card.title || !String(card.title).trim()) return { ok: false, error: `studentLife.cards[${i}].title is required` };
+      if (!card || typeof card !== "object")
+        return {
+          ok: false,
+          error: `studentLife.cards[${i}] must be an object`,
+        };
+      if (!card.title || !String(card.title).trim())
+        return {
+          ok: false,
+          error: `studentLife.cards[${i}].title is required`,
+        };
     }
-    
+
     value.cards = value.cards
       .filter((c) => c && typeof c === "object" && c.title)
-      .map((c) => ({ 
-         icon: c.icon ? String(c.icon).trim() : null,
-         title: String(c.title).trim(), 
-         description: c.description ? String(c.description).trim() : "" 
+      .map((c) => ({
+        icon: c.icon ? String(c.icon).trim() : null,
+        title: String(c.title).trim(),
+        description: c.description ? String(c.description).trim() : "",
       }));
   }
 
@@ -114,19 +174,40 @@ const sanitizeDocumentsChecklist = (dc) => {
 
   const value = { ...dc };
 
-  if (value.eyebrow && value.eyebrow.length > 80)  return { ok: false, error: "documentsChecklist.eyebrow must be ≤ 80 characters" };
-  if (value.title   && value.title.length   > 180) return { ok: false, error: "documentsChecklist.title must be ≤ 180 characters" };
+  if (value.eyebrow && value.eyebrow.length > 80)
+    return {
+      ok: false,
+      error: "documentsChecklist.eyebrow must be ≤ 80 characters",
+    };
+  if (value.title && value.title.length > 180)
+    return {
+      ok: false,
+      error: "documentsChecklist.title must be ≤ 180 characters",
+    };
 
   if (value.items !== undefined) {
-    if (!Array.isArray(value.items)) return { ok: false, error: "documentsChecklist.items must be an array" };
-    if (value.items.length > 12)     return { ok: false, error: "documentsChecklist.items can have at most 12 items" };
+    if (!Array.isArray(value.items))
+      return { ok: false, error: "documentsChecklist.items must be an array" };
+    if (value.items.length > 12)
+      return {
+        ok: false,
+        error: "documentsChecklist.items can have at most 12 items",
+      };
 
     for (let i = 0; i < value.items.length; i++) {
       const item = value.items[i];
-      if (!item || typeof item !== "object") return { ok: false, error: `documentsChecklist.items[${i}] must be an object` };
-      if (!item.label || !String(item.label).trim()) return { ok: false, error: `documentsChecklist.items[${i}].label is required` };
+      if (!item || typeof item !== "object")
+        return {
+          ok: false,
+          error: `documentsChecklist.items[${i}] must be an object`,
+        };
+      if (!item.label || !String(item.label).trim())
+        return {
+          ok: false,
+          error: `documentsChecklist.items[${i}].label is required`,
+        };
     }
-    
+
     value.items = value.items
       .filter((item) => item && typeof item === "object" && item.label)
       .map((item) => ({ label: String(item.label).trim() }));
@@ -140,19 +221,26 @@ exports.list = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, sort = "-sortOrder", status } = req.query;
 
-    const pageNum  = Math.max(1, parseInt(page));
+    const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
-    const skip     = (pageNum - 1) * limitNum;
+    const skip = (pageNum - 1) * limitNum;
 
     const filter = {};
-    if (status === "all")          { /* no filter */ }
-    else if (status === "inactive") filter.status = "inactive";
-    else                            filter.status = "active";
+    if (status === "all") {
+      /* no filter */
+    } else if (status === "inactive") filter.status = "inactive";
+    else filter.status = "active";
 
-    const LIST_FIELDS = '_id name slug tagline description flagImage heroImage cardImage feeRange duration livingCost currency universityCount sortOrder status isFeatured';
+    const LIST_FIELDS =
+      "_id name slug tagline description flagImage heroImage cardImage feeRange duration livingCost currency universityCount sortOrder status isFeatured";
 
     const [data, total] = await Promise.all([
-      Country.find(filter).select(LIST_FIELDS).sort(parseSort(sort)).skip(skip).limit(limitNum).lean(),
+      Country.find(filter)
+        .select(LIST_FIELDS)
+        .sort(parseSort(sort))
+        .skip(skip)
+        .limit(limitNum)
+        .lean(),
       Country.countDocuments(filter),
     ]);
 
@@ -196,18 +284,27 @@ exports.create = async (req, res, next) => {
       ? slugify(body.slug, { lower: true, strict: true, trim: true })
       : makeSlug(body.name);
 
-    const exists = await Country.findOne({ $or: [{ slug }, { name: body.name }] });
+    const exists = await Country.findOne({
+      $or: [{ slug }, { name: body.name }],
+    });
     if (exists) {
       return res.status(409).json({
-        error: { code: "VALIDATION_ERROR", message: "A country with this name or slug already exists" },
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "A country with this name or slug already exists",
+        },
       });
     }
 
     // Filter empty strings from array fields
-    if (Array.isArray(body.highlights))       body.highlights       = body.highlights.filter(h => h && h.trim());
-    if (Array.isArray(body.eligibility))       body.eligibility       = body.eligibility.filter(e => e && e.trim());
-    if (Array.isArray(body.features))          body.features          = body.features.filter(f => f && f.title);
-    if (Array.isArray(body.admissionProcess))  body.admissionProcess  = body.admissionProcess.filter(s => s && s.title);
+    if (Array.isArray(body.highlights))
+      body.highlights = body.highlights.filter((h) => h && h.trim());
+    if (Array.isArray(body.eligibility))
+      body.eligibility = body.eligibility.filter((e) => e && e.trim());
+    if (Array.isArray(body.features))
+      body.features = body.features.filter((f) => f && f.title);
+    if (Array.isArray(body.admissionProcess))
+      body.admissionProcess = body.admissionProcess.filter((s) => s && s.title);
 
     // Sanitize FAQs
     if (body.faqs !== undefined) {
@@ -217,11 +314,25 @@ exports.create = async (req, res, next) => {
         });
       }
       body.faqs = body.faqs
-        .filter(f => f && typeof f === "object" && f.question && String(f.question).trim() && f.answer && String(f.answer).trim())
-        .map(f => ({ question: String(f.question).trim(), answer: String(f.answer).trim() }));
+        .filter(
+          (f) =>
+            f &&
+            typeof f === "object" &&
+            f.question &&
+            String(f.question).trim() &&
+            f.answer &&
+            String(f.answer).trim(),
+        )
+        .map((f) => ({
+          question: String(f.question).trim(),
+          answer: String(f.answer).trim(),
+        }));
       if (body.faqs.length > 12) {
         return res.status(400).json({
-          error: { code: "VALIDATION_ERROR", message: "faqs can have at most 12 items" },
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "faqs can have at most 12 items",
+          },
         });
       }
     }
@@ -294,27 +405,39 @@ exports.reorder = async (req, res, next) => {
 // PUT /countries/:id
 exports.update = async (req, res, next) => {
   try {
-    const { id }   = req.params;
-    const updates  = { ...req.body };
+    const { id } = req.params;
+    const updates = { ...req.body };
 
     if (updates.name || updates.slug) {
       updates.slug = updates.slug
         ? slugify(updates.slug, { lower: true, strict: true, trim: true })
         : makeSlug(updates.name);
 
-      const exists = await Country.findOne({ slug: updates.slug, _id: { $ne: id } });
+      const exists = await Country.findOne({
+        slug: updates.slug,
+        _id: { $ne: id },
+      });
       if (exists) {
         return res.status(409).json({
-          error: { code: "VALIDATION_ERROR", message: "A country with this slug already exists" },
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "A country with this slug already exists",
+          },
         });
       }
     }
 
     // Filter empty strings from array fields
-    if (Array.isArray(updates.highlights))       updates.highlights       = updates.highlights.filter(h => h && h.trim());
-    if (Array.isArray(updates.eligibility))       updates.eligibility       = updates.eligibility.filter(e => e && e.trim());
-    if (Array.isArray(updates.features))          updates.features          = updates.features.filter(f => f && f.title);
-    if (Array.isArray(updates.admissionProcess))  updates.admissionProcess  = updates.admissionProcess.filter(s => s && s.title);
+    if (Array.isArray(updates.highlights))
+      updates.highlights = updates.highlights.filter((h) => h && h.trim());
+    if (Array.isArray(updates.eligibility))
+      updates.eligibility = updates.eligibility.filter((e) => e && e.trim());
+    if (Array.isArray(updates.features))
+      updates.features = updates.features.filter((f) => f && f.title);
+    if (Array.isArray(updates.admissionProcess))
+      updates.admissionProcess = updates.admissionProcess.filter(
+        (s) => s && s.title,
+      );
 
     // Sanitize FAQs
     if (updates.faqs !== undefined) {
@@ -324,11 +447,25 @@ exports.update = async (req, res, next) => {
         });
       }
       updates.faqs = updates.faqs
-        .filter(f => f && typeof f === "object" && f.question && String(f.question).trim() && f.answer && String(f.answer).trim())
-        .map(f => ({ question: String(f.question).trim(), answer: String(f.answer).trim() }));
+        .filter(
+          (f) =>
+            f &&
+            typeof f === "object" &&
+            f.question &&
+            String(f.question).trim() &&
+            f.answer &&
+            String(f.answer).trim(),
+        )
+        .map((f) => ({
+          question: String(f.question).trim(),
+          answer: String(f.answer).trim(),
+        }));
       if (updates.faqs.length > 12) {
         return res.status(400).json({
-          error: { code: "VALIDATION_ERROR", message: "faqs can have at most 12 items" },
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "faqs can have at most 12 items",
+          },
         });
       }
     }
@@ -372,7 +509,7 @@ exports.update = async (req, res, next) => {
     const country = await Country.findByIdAndUpdate(
       id,
       { $set: updates },
-      { returnDocument: "after", runValidators: false }
+      { returnDocument: "after", runValidators: false },
     );
 
     if (!country) {

@@ -65,10 +65,14 @@ function matchesAny(value, patterns) {
   return patterns.some((p) => p.test(value));
 }
 
-function isTestRecord(doc, { slugField = "slug", nameField = "name", emailField = null } = {}) {
+function isTestRecord(
+  doc,
+  { slugField = "slug", nameField = "name", emailField = null } = {},
+) {
   if (slugField && matchesAny(doc[slugField], TEST_SLUG_PATTERNS)) return true;
   if (nameField && matchesAny(doc[nameField], TEST_NAME_PATTERNS)) return true;
-  if (emailField && matchesAny(doc[emailField], TEST_EMAIL_PATTERNS)) return true;
+  if (emailField && matchesAny(doc[emailField], TEST_EMAIL_PATTERNS))
+    return true;
   return false;
 }
 
@@ -81,7 +85,9 @@ async function cleanCollection(Model, label, opts = {}) {
     return 0;
   }
 
-  console.log(`  🗑️  ${label}: ${toDelete.length} test records out of ${docs.length} total`);
+  console.log(
+    `  🗑️  ${label}: ${toDelete.length} test records out of ${docs.length} total`,
+  );
   for (const d of toDelete) {
     const display = d.slug || d.name || d.title || d.email || d._id;
     console.log(`      - ${display}`);
@@ -98,7 +104,8 @@ async function cleanCollection(Model, label, opts = {}) {
 
 // ── Main ─────────────────────────────────────────────────────────
 async function main() {
-  const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/amwcareerpoint";
+  const uri =
+    process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/amwcareerpoint";
   console.log(`\n🔌 Connecting to: ${uri}`);
   await mongoose.connect(uri);
   console.log(`✅ Connected to: ${mongoose.connection.name}\n`);
@@ -118,13 +125,35 @@ async function main() {
 
   console.log("📋 Scanning collections for test/dummy data...\n");
 
-  total += await cleanCollection(Country, "Countries", { slugField: "slug", nameField: "name" });
-  total += await cleanCollection(University, "Universities", { slugField: "slug", nameField: "name" });
-  total += await cleanCollection(Blog, "Blogs", { slugField: "slug", nameField: "title" });
-  total += await cleanCollection(Faq, "FAQs", { slugField: null, nameField: "question" });
-  total += await cleanCollection(Enquiry, "Enquiries", { slugField: null, nameField: "name", emailField: "email" });
-  total += await cleanCollection(Review, "Reviews", { slugField: null, nameField: "studentName" });
-  total += await cleanCollection(Counsellor, "Counsellors", { slugField: null, nameField: "name" });
+  total += await cleanCollection(Country, "Countries", {
+    slugField: "slug",
+    nameField: "name",
+  });
+  total += await cleanCollection(University, "Universities", {
+    slugField: "slug",
+    nameField: "name",
+  });
+  total += await cleanCollection(Blog, "Blogs", {
+    slugField: "slug",
+    nameField: "title",
+  });
+  total += await cleanCollection(Faq, "FAQs", {
+    slugField: null,
+    nameField: "question",
+  });
+  total += await cleanCollection(Enquiry, "Enquiries", {
+    slugField: null,
+    nameField: "name",
+    emailField: "email",
+  });
+  total += await cleanCollection(Review, "Reviews", {
+    slugField: null,
+    nameField: "studentName",
+  });
+  total += await cleanCollection(Counsellor, "Counsellors", {
+    slugField: null,
+    nameField: "name",
+  });
 
   console.log("\n───────────────────────────────────────────────────");
   if (DRY_RUN) {
@@ -146,7 +175,15 @@ async function main() {
     Review.countDocuments(),
     Counsellor.countDocuments(),
   ]);
-  const labels = ["Countries", "Universities", "Blogs", "FAQs", "Enquiries", "Reviews", "Counsellors"];
+  const labels = [
+    "Countries",
+    "Universities",
+    "Blogs",
+    "FAQs",
+    "Enquiries",
+    "Reviews",
+    "Counsellors",
+  ];
   labels.forEach((l, i) => console.log(`   ${l}: ${counts[i]}`));
 
   await mongoose.disconnect();

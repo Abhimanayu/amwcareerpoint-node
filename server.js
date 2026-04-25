@@ -21,6 +21,9 @@ const faqRoutes = require("./src/routes/faq.routes");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust first proxy (Hostinger/nginx) so rate limiters see real client IP
+app.set("trust proxy", 1);
+
 console.log("🔧 Registering immediate health endpoints...");
 
 // ── IMMEDIATE HEALTH ENDPOINTS (BEFORE ANY MIDDLEWARE) ───────────
@@ -217,10 +220,11 @@ app.get("/api/v1/verify-file/:folder/:filename", (req, res) => {
   }
 });
 
-// ── Rate limiter — 200 requests per 15 min per IP ─────────────────
-const limiter = rateLimit({
+// ── Rate Limiters ─────────────────────────────────────────────────
+// Public read-only GET routes — generous limit for normal browsing
+const publicReadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 600,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) =>
@@ -231,9 +235,8 @@ const limiter = rateLimit({
       },
     }),
 });
-app.use("/api/v1", limiter);
 
-// ── Stricter limiter for auth endpoints (login/refresh) ───────────
+// Auth routes — strict to prevent brute force
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 15,
@@ -247,10 +250,8 @@ const authLimiter = rateLimit({
       },
     }),
 });
-app.use("/api/v1/auth/login", authLimiter);
-app.use("/api/v1/auth/refresh", authLimiter);
 
-// ── Stricter limiter for public enquiry submissions ───────────────
+// Enquiry submissions — strict to prevent spam
 const enquiryLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -264,7 +265,45 @@ const enquiryLimiter = rateLimit({
       },
     }),
 });
+
+// General API fallback — catches admin/write routes not covered above
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) =>
+    res.status(429).json({
+      error: {
+        code: "RATE_LIMITED",
+        message: "Too many requests, please try again later",
+      },
+    }),
+});
+
+// ── Apply specific limiters FIRST (before general fallback) ───────
+// Auth
+app.use("/api/v1/auth/login", authLimiter);
+app.use("/api/v1/auth/refresh", authLimiter);
+
+// Enquiry
 app.use("/api/v1/enquiries", enquiryLimiter);
+
+// Public GET content routes — only apply to GET method
+const publicGetPaths = [
+  "/api/v1/countries",
+  "/api/v1/universities",
+  "/api/v1/blogs",
+  "/api/v1/blog-categories",
+  "/api/v1/faqs",
+];
+publicGetPaths.forEach((routePath) => {
+  app.get(routePath, publicReadLimiter);
+  app.get(`${routePath}/:slug`, publicReadLimiter);
+});
+
+// General fallback limiter for all other /api/v1 routes (admin, media, etc.)
+app.use("/api/v1", apiLimiter);
 
 app.get("/api/v1", (req, res) => {
   res.json({

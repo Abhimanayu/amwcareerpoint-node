@@ -265,6 +265,61 @@ exports.detail = async (req, res, next) => {
   }
 };
 
+/**
+ * Ensure all expected nested fields are present with proper defaults.
+ * Covers documents created before a schema field was added.
+ */
+const ensureFullCountryShape = (doc) => {
+  const defaults = {
+    countryCode: null,
+    tagline: null,
+    description: null,
+    flagImage: null,
+    heroImage: null,
+    bannerImage: null,
+    cardImage: null,
+    headerColor: null,
+    feeRange: null,
+    feeRangeUSD: null,
+    duration: null,
+    highlights: [],
+    features: [],
+    eligibility: [],
+    admissionProcess: [],
+    climate: null,
+    language: null,
+    currency: null,
+    livingCost: null,
+    visaInfo: null,
+    seo: { metaTitle: null, metaDescription: null, keywords: null, canonicalUrl: null, schemaMarkup: null },
+    metaTitle: null,
+    metaDescription: null,
+    supportExperience: { eyebrow: "", title: "", description: "", progressItems: [], supportCards: [] },
+    studentLife: { eyebrow: "", title: "", description: "", cards: [] },
+    documentsChecklist: { eyebrow: "", title: "", items: [] },
+    faqs: [],
+    universityCount: 0,
+    isFeatured: false,
+    sortOrder: 0,
+    status: "active",
+  };
+
+  for (const [key, fallback] of Object.entries(defaults)) {
+    if (doc[key] === undefined || doc[key] === null) {
+      // For nested objects, also fill sub-fields
+      doc[key] = fallback;
+    } else if (fallback && typeof fallback === "object" && !Array.isArray(fallback)) {
+      // Merge missing sub-fields for nested objects
+      for (const [sub, subVal] of Object.entries(fallback)) {
+        if (doc[key][sub] === undefined || doc[key][sub] === null) {
+          doc[key][sub] = subVal;
+        }
+      }
+    }
+  }
+  return doc;
+};
+
 // GET /countries/admin/:id — admin fetch by MongoDB _id
 exports.detailById = async (req, res, next) => {
   try {
@@ -274,7 +329,7 @@ exports.detailById = async (req, res, next) => {
         error: { code: "NOT_FOUND", message: "Country not found" },
       });
     }
-    res.json({ data: country });
+    res.json({ data: ensureFullCountryShape(country) });
   } catch (err) {
     next(err);
   }

@@ -461,7 +461,7 @@ exports.create = async (req, res, next) => {
 
     const country = await Country.create({ ...body, slug });
 
-    res.status(201).json({ data: country.toObject() });
+    res.status(201).json({ data: ensureFullCountryShape(country.toObject()) });
   } catch (err) {
     next(err);
   }
@@ -604,7 +604,7 @@ exports.update = async (req, res, next) => {
       });
     }
 
-    res.json({ data: country.toObject() });
+    res.json({ data: ensureFullCountryShape(country.toObject()) });
   } catch (err) {
     next(err);
   }

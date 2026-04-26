@@ -291,10 +291,22 @@ const ensureFullCountryShape = (doc) => {
     currency: null,
     livingCost: null,
     visaInfo: null,
-    seo: { metaTitle: null, metaDescription: null, keywords: null, canonicalUrl: null, schemaMarkup: null },
+    seo: {
+      metaTitle: null,
+      metaDescription: null,
+      keywords: null,
+      canonicalUrl: null,
+      schemaMarkup: null,
+    },
     metaTitle: null,
     metaDescription: null,
-    supportExperience: { eyebrow: "", title: "", description: "", progressItems: [], supportCards: [] },
+    supportExperience: {
+      eyebrow: "",
+      title: "",
+      description: "",
+      progressItems: [],
+      supportCards: [],
+    },
     studentLife: { eyebrow: "", title: "", description: "", cards: [] },
     documentsChecklist: { eyebrow: "", title: "", items: [] },
     faqs: [],
@@ -308,7 +320,11 @@ const ensureFullCountryShape = (doc) => {
     if (doc[key] === undefined || doc[key] === null) {
       // For nested objects, also fill sub-fields
       doc[key] = fallback;
-    } else if (fallback && typeof fallback === "object" && !Array.isArray(fallback)) {
+    } else if (
+      fallback &&
+      typeof fallback === "object" &&
+      !Array.isArray(fallback)
+    ) {
       // Merge missing sub-fields for nested objects
       for (const [sub, subVal] of Object.entries(fallback)) {
         if (doc[key][sub] === undefined || doc[key][sub] === null) {

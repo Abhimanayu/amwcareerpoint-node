@@ -57,7 +57,7 @@ const studentLifeCardSchema = new mongoose.Schema(
   {
     icon: { type: String, default: null },
     title: { type: String, required: true, trim: true, maxlength: 100 },
-    description: { type: String, default: "", trim: true, maxlength: 300 },
+    description: { type: String, default: "", trim: true, maxlength: 500 },
   },
   { _id: false },
 );
@@ -82,7 +82,7 @@ const studentLifeSchema = new mongoose.Schema(
 // ── Documents Checklist sub-schemas ──────────────────────────────────────────
 const documentsChecklistItemSchema = new mongoose.Schema(
   {
-    label: { type: String, required: true, trim: true, maxlength: 140 },
+    label: { type: String, required: true, trim: true, maxlength: 180 },
   },
   { _id: false },
 );
@@ -124,7 +124,7 @@ const featureSchema = new mongoose.Schema(
 
 const seoSchema = new mongoose.Schema(
   {
-    metaTitle: { type: String, default: null, maxlength: 60 },
+    metaTitle: { type: String, default: null, maxlength: 70 },
     metaDescription: { type: String, default: null, maxlength: 160 },
     keywords: { type: String, default: null },
     canonicalUrl: { type: String, default: null },
@@ -191,7 +191,7 @@ const countrySchema = new mongoose.Schema(
     seo: { type: seoSchema, default: () => ({}) },
 
     // ── Legacy flat SEO fields (still supported) ─────────────────
-    metaTitle: { type: String, default: null, maxlength: 60 },
+    metaTitle: { type: String, default: null, maxlength: 70 },
     metaDescription: { type: String, default: null, maxlength: 160 },
 
     // ── Support Experience ────────────────────────────────────────

@@ -32,20 +32,20 @@ const sanitizeSupportExperience = (se) => {
   const value = { ...se };
 
   // eyebrow / title / description — just length guards (schema enforces too)
-  if (value.eyebrow && value.eyebrow.length > 80)
+  if (value.eyebrow && value.eyebrow.length > 100)
     return {
       ok: false,
-      error: "supportExperience.eyebrow must be ≤ 80 characters",
+      error: "supportExperience.eyebrow must be ≤ 100 characters",
     };
   if (value.title && value.title.length > 180)
     return {
       ok: false,
       error: "supportExperience.title must be ≤ 180 characters",
     };
-  if (value.description && value.description.length > 800)
+  if (value.description && value.description.length > 1200)
     return {
       ok: false,
-      error: "supportExperience.description must be ≤ 800 characters",
+      error: "supportExperience.description must be ≤ 1200 characters",
     };
 
   // progressItems
@@ -91,10 +91,10 @@ const sanitizeSupportExperience = (se) => {
         ok: false,
         error: "supportExperience.supportCards must be an array",
       };
-    if (value.supportCards.length > 4)
+    if (value.supportCards.length > 6)
       return {
         ok: false,
-        error: "supportExperience.supportCards can have at most 4 items",
+        error: "supportExperience.supportCards can have at most 6 items",
       };
 
     for (let i = 0; i < value.supportCards.length; i++) {
@@ -128,10 +128,10 @@ const sanitizeStudentLife = (sl) => {
     return { ok: false, error: "studentLife.eyebrow must be ≤ 80 characters" };
   if (value.title && value.title.length > 180)
     return { ok: false, error: "studentLife.title must be ≤ 180 characters" };
-  if (value.description && value.description.length > 1000)
+  if (value.description && value.description.length > 1200)
     return {
       ok: false,
-      error: "studentLife.description must be ≤ 1000 characters",
+      error: "studentLife.description must be ≤ 1200 characters",
     };
 
   if (value.cards !== undefined) {
@@ -174,15 +174,15 @@ const sanitizeDocumentsChecklist = (dc) => {
 
   const value = { ...dc };
 
-  if (value.eyebrow && value.eyebrow.length > 80)
+  if (value.eyebrow && value.eyebrow.length > 140)
     return {
       ok: false,
-      error: "documentsChecklist.eyebrow must be ≤ 80 characters",
+      error: "documentsChecklist.eyebrow must be ≤ 140 characters",
     };
-  if (value.title && value.title.length > 180)
+  if (value.title && value.title.length > 300)
     return {
       ok: false,
-      error: "documentsChecklist.title must be ≤ 180 characters",
+      error: "documentsChecklist.title must be ≤ 300 characters",
     };
 
   if (value.items !== undefined) {

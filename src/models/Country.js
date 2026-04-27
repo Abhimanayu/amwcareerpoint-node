@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const admissionStepSchema = new mongoose.Schema(
   {
     step: { type: Number, required: true },
-    title: { type: String, required: true, maxlength: 100 },
-    description: { type: String, required: true, maxlength: 500 },
+    title: { type: String, required: true, maxlength: 160 },
+    description: { type: String, required: true, maxlength: 1200 },
   },
   { _id: false },
 );
@@ -12,26 +12,26 @@ const admissionStepSchema = new mongoose.Schema(
 // ── Support Experience sub-schemas ───────────────────────────────────────────
 const progressItemSchema = new mongoose.Schema(
   {
-    label: { type: String, required: true, trim: true, maxlength: 120 },
+    label: { type: String, required: true, trim: true, maxlength: 160 },
     value: { type: Number, required: true, min: 0, max: 100 },
-    status: { type: String, default: "Included", maxlength: 60 },
+    status: { type: String, default: "Included", maxlength: 40 },
   },
   { _id: false },
 );
 
 const supportCardSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true, trim: true, maxlength: 80 },
-    subtitle: { type: String, default: "", trim: true, maxlength: 120 },
+    title: { type: String, required: true, trim: true, maxlength: 60 },
+    subtitle: { type: String, default: "", trim: true, maxlength: 180 },
   },
   { _id: false },
 );
 
 const supportExperienceSchema = new mongoose.Schema(
   {
-    eyebrow: { type: String, default: "", trim: true, maxlength: 80 },
+    eyebrow: { type: String, default: "", trim: true, maxlength: 100 },
     title: { type: String, default: "", trim: true, maxlength: 180 },
-    description: { type: String, default: "", trim: true, maxlength: 800 },
+    description: { type: String, default: "", trim: true, maxlength: 1200 },
     progressItems: {
       type: [progressItemSchema],
       default: [],
@@ -44,8 +44,8 @@ const supportExperienceSchema = new mongoose.Schema(
       type: [supportCardSchema],
       default: [],
       validate: {
-        validator: (arr) => arr.length <= 4,
-        message: "supportCards can have at most 4 items",
+        validator: (arr) => arr.length <= 6,
+        message: "supportCards can have at most 6 items",
       },
     },
   },
@@ -56,8 +56,8 @@ const supportExperienceSchema = new mongoose.Schema(
 const studentLifeCardSchema = new mongoose.Schema(
   {
     icon: { type: String, default: null },
-    title: { type: String, required: true, trim: true, maxlength: 100 },
-    description: { type: String, default: "", trim: true, maxlength: 500 },
+    title: { type: String, required: true, trim: true, maxlength: 90 },
+    description: { type: String, default: "", trim: true, maxlength: 800 },
   },
   { _id: false },
 );
@@ -66,7 +66,7 @@ const studentLifeSchema = new mongoose.Schema(
   {
     eyebrow: { type: String, default: "", trim: true, maxlength: 80 },
     title: { type: String, default: "", trim: true, maxlength: 180 },
-    description: { type: String, default: "", trim: true, maxlength: 1000 },
+    description: { type: String, default: "", trim: true, maxlength: 1200 },
     cards: {
       type: [studentLifeCardSchema],
       default: [],
@@ -82,15 +82,15 @@ const studentLifeSchema = new mongoose.Schema(
 // ── Documents Checklist sub-schemas ──────────────────────────────────────────
 const documentsChecklistItemSchema = new mongoose.Schema(
   {
-    label: { type: String, required: true, trim: true, maxlength: 180 },
+    label: { type: String, required: true, trim: true, maxlength: 260 },
   },
   { _id: false },
 );
 
 const documentsChecklistSchema = new mongoose.Schema(
   {
-    eyebrow: { type: String, default: "", trim: true, maxlength: 80 },
-    title: { type: String, default: "", trim: true, maxlength: 180 },
+    eyebrow: { type: String, default: "", trim: true, maxlength: 140 },
+    title: { type: String, default: "", trim: true, maxlength: 300 },
     items: {
       type: [documentsChecklistItemSchema],
       default: [],
@@ -106,8 +106,8 @@ const documentsChecklistSchema = new mongoose.Schema(
 // ── Country FAQ sub-schema ───────────────────────────────────────────────
 const countryFaqSchema = new mongoose.Schema(
   {
-    question: { type: String, required: true, trim: true, maxlength: 300 },
-    answer: { type: String, required: true, trim: true, maxlength: 2000 },
+    question: { type: String, required: true, trim: true, maxlength: 450 },
+    answer: { type: String, required: true, trim: true, maxlength: 4000 },
   },
   { _id: false },
 );
@@ -116,8 +116,8 @@ const countryFaqSchema = new mongoose.Schema(
 const featureSchema = new mongoose.Schema(
   {
     icon: { type: String, default: null },
-    title: { type: String, required: true },
-    description: { type: String, default: null },
+    title: { type: String, required: true, maxlength: 120 },
+    description: { type: String, default: null, maxlength: 900 },
   },
   { _id: false },
 );
@@ -151,8 +151,8 @@ const countrySchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    tagline: { type: String, default: null, maxlength: 200 },
-    description: { type: String, default: null, maxlength: 5000 },
+    tagline: { type: String, default: null, maxlength: 260 },
+    description: { type: String, default: null, maxlength: 6000 },
 
     // ── Images (support both naming conventions) ─────────────────
     flagImage: { type: String, default: null }, // frontend: flagImage

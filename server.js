@@ -251,10 +251,12 @@ const authLimiter = rateLimit({
     }),
 });
 
-// Enquiry submissions — strict to prevent spam
+
+
+// Enquiry submissions — strict on POST to prevent spam, admin reads use general limiter
 const enquiryLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 25,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) =>
@@ -269,7 +271,7 @@ const enquiryLimiter = rateLimit({
 // General API fallback — skip requests already handled by a specific limiter
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 500,
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) => req._rateLimitApplied === true,
@@ -297,8 +299,8 @@ const publicCacheHeaders = (req, res, next) => {
 app.use("/api/v1/auth/login", markLimited, authLimiter);
 app.use("/api/v1/auth/refresh", markLimited, authLimiter);
 
-// Enquiry
-app.use("/api/v1/enquiries", markLimited, enquiryLimiter);
+// Enquiry — strict limiter only on POST (contact form), admin reads use general limiter
+app.post("/api/v1/enquiries", markLimited, enquiryLimiter);
 
 // Public GET content routes — rate limit + cache headers (GET only)
 const publicGetPaths = [

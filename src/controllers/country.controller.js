@@ -4,10 +4,13 @@ const Country = require("../models/Country");
 const makeSlug = (name) =>
   slugify(name, { lower: true, strict: true, trim: true });
 
-// Parse sort param: "-sortOrder" → {sortOrder:-1}, "name" → {name:1}
+// Parse sort param: "-sortOrder" → {sortOrder:-1, createdAt:-1, _id:-1}
+// Always appends createdAt and _id as tiebreakers for deterministic pagination.
 const parseSort = (sort = "-sortOrder") => {
-  if (sort.startsWith("-")) return { [sort.slice(1)]: -1 };
-  return { [sort]: 1 };
+  const primary = sort.startsWith("-")
+    ? { [sort.slice(1)]: -1 }
+    : { [sort]: 1 };
+  return { ...primary, createdAt: -1, _id: -1 };
 };
 
 /**

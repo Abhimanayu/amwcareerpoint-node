@@ -224,7 +224,7 @@ const countrySchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-countrySchema.index({ status: 1, sortOrder: 1 });
+countrySchema.index({ status: 1, sortOrder: -1, createdAt: -1, _id: -1 });
 countrySchema.index({ isFeatured: 1 });
 
 module.exports = mongoose.model("Country", countrySchema);

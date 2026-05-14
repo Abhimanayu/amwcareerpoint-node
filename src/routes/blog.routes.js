@@ -4,6 +4,7 @@ const { authMiddleware } = require("../middleware/auth");
 
 // Blog posts
 router.get("/", ctrl.list);
+router.get("/admin/list", authMiddleware, ctrl.listAdmin);
 router.get("/admin/:id", authMiddleware, ctrl.detailById);
 router.get("/:slug", ctrl.detail);
 router.post("/", authMiddleware, ctrl.create);

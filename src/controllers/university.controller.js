@@ -12,6 +12,13 @@ const parseSort = (sort = "-createdAt") => {
 
 const COUNTRY_POPULATE = { path: "country", select: "_id name slug flagImage" };
 
+const buildListStatusFilter = (status, allowStatusOverride = false) => {
+  if (!allowStatusOverride) return { status: "active" };
+  if (status === "all") return {};
+  if (status === "inactive") return { status: "inactive" };
+  return { status: "active" };
+};
+
 /**
  * Trim all image URL fields to prevent hidden newline characters (\r\n)
  * that cause 404s when Express tries to serve the static file.
@@ -31,8 +38,7 @@ const trimImageFields = (obj) => {
   }
 };
 
-// GET /universities
-exports.list = async (req, res, next) => {
+const listImpl = async (req, res, next, allowStatusOverride = false) => {
   try {
     const {
       page = 1,
@@ -47,11 +53,7 @@ exports.list = async (req, res, next) => {
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
     const skip = (pageNum - 1) * limitNum;
 
-    const filter = {};
-    if (status === "all") {
-      /* no filter */
-    } else if (status === "inactive") filter.status = "inactive";
-    else filter.status = "active";
+    const filter = buildListStatusFilter(status, allowStatusOverride);
 
     if (featured === "true") filter.featured = true;
 
@@ -66,7 +68,7 @@ exports.list = async (req, res, next) => {
     }
 
     const LIST_FIELDS =
-      "_id name slug country description logo heroImage annualFees courseDuration medium featured status createdAt";
+      "_id name slug country description logo heroImage annualFees courseDuration medium featured status createdAt updatedAt";
 
     const [data, total] = await Promise.all([
       University.find(filter)
@@ -94,10 +96,19 @@ exports.list = async (req, res, next) => {
   }
 };
 
+// GET /universities
+exports.list = async (req, res, next) => listImpl(req, res, next, false);
+
+// GET /universities/admin/list
+exports.listAdmin = async (req, res, next) => listImpl(req, res, next, true);
+
 // GET /universities/:slug
 exports.detail = async (req, res, next) => {
   try {
-    const university = await University.findOne({ slug: req.params.slug })
+    const university = await University.findOne({
+      slug: req.params.slug,
+      status: "active",
+    })
       .populate(COUNTRY_POPULATE)
       .lean();
 

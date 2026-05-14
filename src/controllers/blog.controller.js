@@ -11,8 +11,14 @@ const parseSort = (sort = "-createdAt") => {
 
 const CATEGORY_POPULATE = { path: "category", select: "_id name" };
 
-// GET /blogs
-exports.list = async (req, res, next) => {
+const buildListStatusFilter = (status, allowStatusOverride = false) => {
+  if (!allowStatusOverride) return { status: "published" };
+  if (status === "all") return {};
+  if (status === "draft") return { status: "draft" };
+  return { status: "published" };
+};
+
+const listImpl = async (req, res, next, allowStatusOverride = false) => {
   try {
     const {
       page = 1,
@@ -28,11 +34,7 @@ exports.list = async (req, res, next) => {
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
     const skip = (pageNum - 1) * limitNum;
 
-    const filter = {};
-    if (status === "all") {
-      /* no filter */
-    } else if (status === "draft") filter.status = "draft";
-    else filter.status = "published";
+    const filter = buildListStatusFilter(status, allowStatusOverride);
 
     if (featured === "true") filter.featured = true;
 
@@ -82,10 +84,19 @@ exports.list = async (req, res, next) => {
   }
 };
 
+// GET /blogs
+exports.list = async (req, res, next) => listImpl(req, res, next, false);
+
+// GET /blogs/admin/list
+exports.listAdmin = async (req, res, next) => listImpl(req, res, next, true);
+
 // GET /blogs/:slug
 exports.detail = async (req, res, next) => {
   try {
-    const blog = await Blog.findOne({ slug: req.params.slug })
+    const blog = await Blog.findOne({
+      slug: req.params.slug,
+      status: "published",
+    })
       .populate(CATEGORY_POPULATE)
       .lean();
 

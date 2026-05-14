@@ -219,8 +219,14 @@ const sanitizeDocumentsChecklist = (dc) => {
   return { ok: true, value };
 };
 
-// GET /countries
-exports.list = async (req, res, next) => {
+const buildListStatusFilter = (status, allowStatusOverride = false) => {
+  if (!allowStatusOverride) return { status: "active" };
+  if (status === "all") return {};
+  if (status === "inactive") return { status: "inactive" };
+  return { status: "active" };
+};
+
+const listImpl = async (req, res, next, allowStatusOverride = false) => {
   try {
     const { page = 1, limit = 10, sort = "-sortOrder", status } = req.query;
 
@@ -228,14 +234,10 @@ exports.list = async (req, res, next) => {
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
     const skip = (pageNum - 1) * limitNum;
 
-    const filter = {};
-    if (status === "all") {
-      /* no filter */
-    } else if (status === "inactive") filter.status = "inactive";
-    else filter.status = "active";
+    const filter = buildListStatusFilter(status, allowStatusOverride);
 
     const LIST_FIELDS =
-      "_id name slug tagline description flagImage heroImage cardImage feeRange duration livingCost currency universityCount sortOrder status isFeatured";
+      "_id name slug tagline description flagImage heroImage cardImage feeRange duration livingCost currency universityCount sortOrder status isFeatured updatedAt";
 
     const [data, total] = await Promise.all([
       Country.find(filter)
@@ -253,10 +255,19 @@ exports.list = async (req, res, next) => {
   }
 };
 
+// GET /countries
+exports.list = async (req, res, next) => listImpl(req, res, next, false);
+
+// GET /countries/admin/list
+exports.listAdmin = async (req, res, next) => listImpl(req, res, next, true);
+
 // GET /countries/:slug
 exports.detail = async (req, res, next) => {
   try {
-    const country = await Country.findOne({ slug: req.params.slug }).lean();
+    const country = await Country.findOne({
+      slug: req.params.slug,
+      status: "active",
+    }).lean();
     if (!country) {
       return res.status(404).json({
         error: { code: "NOT_FOUND", message: "Country not found" },

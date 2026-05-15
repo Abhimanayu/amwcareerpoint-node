@@ -72,10 +72,19 @@ exports.list = async (req, res, next) => {
       filter.pageSlug = normalizePageSlug(pageSlug);
     }
 
-    const [data, total] = await Promise.all([
+    let [data, total] = await Promise.all([
       Faq.find(filter).sort(parseSort(sort)).skip(skip).limit(limitNum).lean(),
       Faq.countDocuments(filter),
     ]);
+
+    // About page fallback: if no about FAQs exist yet, reuse home FAQs.
+    if (filter.page === "about" && total === 0) {
+      const fallbackFilter = { ...filter, page: "home" };
+      [data, total] = await Promise.all([
+        Faq.find(fallbackFilter).sort(parseSort(sort)).skip(skip).limit(limitNum).lean(),
+        Faq.countDocuments(fallbackFilter),
+      ]);
+    }
 
     res.json({ data, total, page: pageNum, limit: limitNum });
   } catch (err) {

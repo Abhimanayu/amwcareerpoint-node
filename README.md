@@ -103,7 +103,38 @@ Authorization: Bearer <token>
 | POST | `/api/v1/enquiries` | No | Submit enquiry (public form) |
 | GET | `/api/v1/enquiries` | ✅ | List enquiries |
 | PUT | `/api/v1/enquiries/:id` | ✅ | Update enquiry status |
+| GET | `/api/v1/faqs` | No | List FAQs (supports `faqPage` and `pageSlug` filters) |
+| GET | `/api/v1/faqs/:id` | No | FAQ detail |
+| POST | `/api/v1/faqs` | ✅ | Create FAQ |
+| PUT | `/api/v1/faqs/reorder` | ✅ | Reorder FAQs |
+| PUT | `/api/v1/faqs/:id` | ✅ | Update FAQ |
+| DELETE | `/api/v1/faqs/:id` | ✅ | Delete FAQ |
 | POST | `/api/v1/media/upload` | ✅ | Upload image |
+
+---
+
+## ❓ FAQ API Rules
+
+- Allowed FAQ pages (`page` and `faqPage`): `home`, `country`, `university`, `contact`, `general`, `about`
+- `pageSlug` is required only when `page` is `country` or `university`
+- For `home`, `contact`, `general`, and `about`, `pageSlug` is optional and stored as `null`
+
+### FAQ List Query Example
+```
+GET /api/v1/faqs?faqPage=about&status=active
+```
+
+### FAQ Create/Update Payload Rule
+```json
+{
+  "question": "Sample question?",
+  "answer": "Sample answer",
+  "page": "about",
+  "pageSlug": null
+}
+```
+
+If `page` is `country` or `university`, pass a non-empty `pageSlug` (for example: `russia` or `kazan-federal-university`).
 
 ---
 

@@ -1,5 +1,31 @@
 const Faq = require("../models/Faq");
 
+const ALLOWED_FAQ_PAGES = new Set(["home", "country", "university", "contact", "general", "about"]);
+const PAGES_REQUIRING_SLUG = new Set(["country", "university"]);
+
+const validationError = (res, details) =>
+  res.status(400).json({
+    error: {
+      code: "VALIDATION_ERROR",
+      message: "Validation failed",
+      details,
+    },
+  });
+
+const normalizePage = (value) => {
+  if (typeof value !== "string") return value;
+  return value.toLowerCase().trim();
+};
+
+const normalizePageSlug = (value) => {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== "string") return value;
+  const normalized = value.toLowerCase().trim();
+  return normalized || null;
+};
+
+const isValidFaqPage = (page) => ALLOWED_FAQ_PAGES.has(page);
+
 const parseSort = (sort = "sortOrder") => {
   if (sort.startsWith("-")) return { [sort.slice(1)]: -1 };
   return { [sort]: 1 };
@@ -14,12 +40,12 @@ exports.list = async (req, res, next) => {
       limit    = 50,
       sort     = "sortOrder",
       status,
-      faqPage,    // FAQ page scope filter (home/country/...) — use ?faqPage=home
+      faqPage,    // FAQ page scope filter (home/country/university/contact/general/about)
       pageSlug,
     } = req.query;
 
-    const pageNum  = Math.max(1, parseInt(page));
-    const limitNum = Math.min(200, Math.max(1, parseInt(limit)));
+    const pageNum  = Math.max(1, Number.parseInt(page, 10));
+    const limitNum = Math.min(200, Math.max(1, Number.parseInt(limit, 10)));
     const skip     = (pageNum - 1) * limitNum;
 
     const filter = {};
@@ -30,11 +56,20 @@ exports.list = async (req, res, next) => {
     else                            filter.status = "active";
 
     // Page filter (which page these FAQs belong to)
-    if (faqPage) filter.page = faqPage;
+    if (faqPage !== undefined) {
+      const normalizedFaqPage = normalizePage(faqPage);
+      if (!isValidFaqPage(normalizedFaqPage)) {
+        return validationError(res, [{
+          field: "faqPage",
+          message: "Invalid faqPage. Allowed values: home, country, university, contact, general, about",
+        }]);
+      }
+      filter.page = normalizedFaqPage;
+    }
 
     // PageSlug filter (e.g., specific country or university slug)
     if (pageSlug !== undefined) {
-      filter.pageSlug = pageSlug.toLowerCase();
+      filter.pageSlug = normalizePageSlug(pageSlug);
     }
 
     const [data, total] = await Promise.all([
@@ -68,36 +103,41 @@ exports.create = async (req, res, next) => {
   try {
     const body = { ...req.body };
 
-    if (!body.question || !body.question.trim()) {
-      return res.status(400).json({
-        error: {
-          code: "VALIDATION_ERROR",
-          message: "Validation failed",
-          details: [{ field: "question", message: "Question is required" }],
-        },
-      });
+    if (!body.question?.trim()) {
+      return validationError(res, [{ field: "question", message: "Question is required" }]);
     }
-    if (!body.answer || !body.answer.trim()) {
-      return res.status(400).json({
-        error: {
-          code: "VALIDATION_ERROR",
-          message: "Validation failed",
-          details: [{ field: "answer", message: "Answer is required" }],
-        },
-      });
-    }
-    if (!body.page) {
-      return res.status(400).json({
-        error: {
-          code: "VALIDATION_ERROR",
-          message: "Validation failed",
-          details: [{ field: "page", message: "Page is required (home/country/university/contact/general)" }],
-        },
-      });
+    if (!body.answer?.trim()) {
+      return validationError(res, [{ field: "answer", message: "Answer is required" }]);
     }
 
-    // Normalise pageSlug
-    if (body.pageSlug) body.pageSlug = body.pageSlug.toLowerCase().trim();
+    body.page = normalizePage(body.page);
+
+    if (!body.page) {
+      return validationError(res, [{
+        field: "page",
+        message: "Page is required (home/country/university/contact/general/about)",
+      }]);
+    }
+
+    if (!isValidFaqPage(body.page)) {
+      return validationError(res, [{
+        field: "page",
+        message: "Invalid page. Allowed values: home, country, university, contact, general, about",
+      }]);
+    }
+
+    body.pageSlug = normalizePageSlug(body.pageSlug);
+
+    if (PAGES_REQUIRING_SLUG.has(body.page) && !body.pageSlug) {
+      return validationError(res, [{
+        field: "pageSlug",
+        message: "pageSlug is required when page is country or university",
+      }]);
+    }
+
+    if (!PAGES_REQUIRING_SLUG.has(body.page)) {
+      body.pageSlug = null;
+    }
 
     const faq = await Faq.create(body);
     res.status(201).json({ data: faq.toObject() });
@@ -132,19 +172,41 @@ exports.update = async (req, res, next) => {
   try {
     const updates = { ...req.body };
 
-    if (updates.pageSlug) updates.pageSlug = updates.pageSlug.toLowerCase().trim();
+    if (Object.hasOwn(updates, "page")) {
+      updates.page = normalizePage(updates.page);
+    }
+    if (Object.hasOwn(updates, "pageSlug")) {
+      updates.pageSlug = normalizePageSlug(updates.pageSlug);
+    }
 
-    const faq = await Faq.findByIdAndUpdate(
-      req.params.id,
-      { $set: updates },
-      { returnDocument: "after", runValidators: false }
-    );
-
+    const faq = await Faq.findById(req.params.id);
     if (!faq) {
       return res.status(404).json({
         error: { code: "NOT_FOUND", message: "FAQ not found" },
       });
     }
+
+    Object.assign(faq, updates);
+
+    if (!isValidFaqPage(faq.page)) {
+      return validationError(res, [{
+        field: "page",
+        message: "Invalid page. Allowed values: home, country, university, contact, general, about",
+      }]);
+    }
+
+    if (PAGES_REQUIRING_SLUG.has(faq.page) && !normalizePageSlug(faq.pageSlug)) {
+      return validationError(res, [{
+        field: "pageSlug",
+        message: "pageSlug is required when page is country or university",
+      }]);
+    }
+
+    if (!PAGES_REQUIRING_SLUG.has(faq.page)) {
+      faq.pageSlug = null;
+    }
+
+    await faq.save();
 
     res.json({ data: faq.toObject() });
   } catch (err) {

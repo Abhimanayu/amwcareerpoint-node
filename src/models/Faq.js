@@ -5,7 +5,9 @@ const mongoose = require("mongoose");
  * University-specific FAQs remain embedded in the University model.
  *
  * page      : which page this FAQ belongs to
- * pageSlug  : optional — used when page='country' or page='university'
+ *             allowed values: home, country, university, contact, general, about
+ * pageSlug  : required only when page='country' or page='university'
+ *             optional/null for home, contact, general, about
  *             to scope FAQs to a specific country/university slug
  *             e.g. page='country', pageSlug='russia'
  */
@@ -16,10 +18,10 @@ const FaqSchema = new mongoose.Schema(
     page:      {
       type:     String,
       required: true,
-      enum:     ["home", "country", "university", "contact", "general"],
+      enum:     ["home", "country", "university", "contact", "general", "about"],
       default:  "general",
     },
-    pageSlug:  { type: String, default: "", trim: true, lowercase: true },
+    pageSlug:  { type: String, default: null, trim: true, lowercase: true },
     sortOrder: { type: Number, default: 0 },
     status:    { type: String, enum: ["active", "inactive"], default: "active" },
   },

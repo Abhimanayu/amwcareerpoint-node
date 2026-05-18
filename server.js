@@ -1,9 +1,30 @@
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, ".env") });
+
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 const fs = require("fs");
 const rateLimit = require("express-rate-limit");
+
+// ── Startup env validation ────────────────────────────────────────
+const REQUIRED_ENV = [
+  "MONGODB_URI",
+  "JWT_SECRET",
+  "CLOUDINARY_CLOUD_NAME",
+  "CLOUDINARY_API_KEY",
+  "CLOUDINARY_API_SECRET",
+];
+const missingEnv = REQUIRED_ENV.filter((k) => !process.env[k]);
+if (missingEnv.length > 0) {
+  console.error("❌ Missing required environment variables:", missingEnv.join(", "));
+  console.error("   Set them in Hostinger panel → Node.js → Environment Variables");
+  process.exit(1);
+}
+console.log("✅ All required env vars present");
+console.log(`   NODE_ENV   : ${process.env.NODE_ENV || "development"}`);
+console.log(`   CORS_ORIGIN: ${process.env.CORS_ORIGIN || "*"}`);
+console.log(`   BASE_URL   : ${process.env.BASE_URL || "(not set — will default to localhost)"}`);
+console.log(`   CLOUDINARY : ${process.env.CLOUDINARY_CLOUD_NAME}`);
 
 const connectDB = require("./src/config/db");
 const errorHandler = require("./src/middleware/errorHandler");

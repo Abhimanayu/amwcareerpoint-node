@@ -17,6 +17,7 @@ const blogCategoryRoutes = require("./src/routes/blogCategory.routes");
 const enquiryRoutes = require("./src/routes/enquiry.routes");
 const mediaRoutes = require("./src/routes/media.routes");
 const faqRoutes = require("./src/routes/faq.routes");
+const homeSettingsRoutes = require("./src/routes/homeSettings.routes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -309,6 +310,7 @@ const publicGetPaths = [
   "/api/v1/blogs",
   "/api/v1/blog-categories",
   "/api/v1/faqs",
+  "/api/v1/home-settings",
 ];
 publicGetPaths.forEach((routePath) => {
   app.get(routePath, markLimited, publicReadLimiter, publicCacheHeaders);
@@ -330,6 +332,7 @@ app.get("/api/v1", (req, res) => {
       enquiries: "/api/v1/enquiries",
       media: "/api/v1/media",
       faqs: "/api/v1/faqs",
+      homeSettings: "/api/v1/home-settings",
     },
   });
 });
@@ -343,6 +346,7 @@ app.use("/api/v1/blog-categories", blogCategoryRoutes);
 app.use("/api/v1/enquiries", enquiryRoutes);
 app.use("/api/v1/media", mediaRoutes);
 app.use("/api/v1/faqs", faqRoutes);
+app.use("/api/v1/home-settings", homeSettingsRoutes);
 
 // ── 404 Handler ───────────────────────────────────────────────────
 app.use((req, res) => {

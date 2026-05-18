@@ -131,10 +131,10 @@ const sanitizeStudentLife = (sl) => {
     return { ok: false, error: "studentLife.eyebrow must be ≤ 80 characters" };
   if (value.title && value.title.length > 180)
     return { ok: false, error: "studentLife.title must be ≤ 180 characters" };
-  if (value.description && value.description.length > 1200)
+  if (value.description && value.description.length > 5000)
     return {
       ok: false,
-      error: "studentLife.description must be ≤ 1200 characters",
+      error: "studentLife.description must be ≤ 5000 characters",
     };
 
   if (value.cards !== undefined) {

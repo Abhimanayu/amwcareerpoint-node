@@ -22,7 +22,7 @@ if (missingEnv.length > 0) {
 }
 console.log("✅ All required env vars present");
 console.log(`   NODE_ENV   : ${process.env.NODE_ENV || "development"}`);
-console.log(`   CORS_ORIGIN: ${process.env.CORS_ORIGIN || "*"}`);
+console.log(`   CORS_ORIGIN: ${process.env.CORS_ORIGIN || "https://amwcareerpoint.com,https://www.amwcareerpoint.com (default)"}`);
 console.log(`   BASE_URL   : ${process.env.BASE_URL || "(not set — will default to localhost)"}`);
 console.log(`   CLOUDINARY : ${process.env.CLOUDINARY_CLOUD_NAME}`);
 
@@ -72,9 +72,16 @@ app.get("/api/uploads/health", (req, res) => {
 console.log("✅ API uploads health endpoint registered at /api/uploads/health");
 
 // ── CORS ──────────────────────────────────────────────────────────
+const CORS_ORIGIN = process.env.CORS_ORIGIN ||
+  "https://amwcareerpoint.com,https://www.amwcareerpoint.com";
+// Allow comma-separated list of origins
+const allowedOrigins = CORS_ORIGIN === "*"
+  ? "*"
+  : CORS_ORIGIN.split(",").map((o) => o.trim());
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "*",
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
@@ -152,12 +159,13 @@ app.use(
 // ── Health Check & File Verification (BEFORE rate limiter) ────────
 // Basic health check
 app.get("/", (req, res) => {
+  const publicBase = process.env.BASE_URL || `http://localhost:${PORT}`;
   res.json({
     message: "AMW Career Point API",
     version: "1.0.0",
-    baseUrl: `http://localhost:${PORT}/api/v1`,
+    baseUrl: `${publicBase}/api/v1`,
     status: "running",
-    uploadsUrl: `http://localhost:${PORT}/uploads`,
+    uploadsUrl: `${publicBase}/uploads`,
   });
 });
 
@@ -387,11 +395,10 @@ async function startServer() {
   try {
     await connectDB();
     app.listen(PORT, () => {
-      console.log(
-        `🚀 AMW Career Point API running on http://localhost:${PORT}`,
-      );
-      console.log(`📦 Base URL: http://localhost:${PORT}/api/v1`);
-      console.log(`📁 Uploads:  http://localhost:${PORT}/uploads`);
+      const publicBase = process.env.BASE_URL || `http://localhost:${PORT}`;
+      console.log(`🚀 AMW Career Point API running on port ${PORT}`);
+      console.log(`📦 Public API : ${publicBase}/api/v1`);
+      console.log(`📁 Public Uploads: ${publicBase}/uploads`);
     });
   } catch (error) {
     console.error("❌ Failed to start server:", error.message);

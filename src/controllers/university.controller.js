@@ -5,9 +5,11 @@ const Country = require("../models/Country");
 const makeSlug = (name) =>
   slugify(name, { lower: true, strict: true, trim: true });
 
-const parseSort = (sort = "-createdAt") => {
-  if (sort.startsWith("-")) return { [sort.slice(1)]: -1 };
-  return { [sort]: 1 };
+const parseSort = (sort = "sortOrder") => {
+  const primary = sort.startsWith("-")
+    ? { [sort.slice(1)]: -1 }
+    : { [sort]: 1 };
+  return { ...primary, createdAt: -1, _id: -1 };
 };
 
 const escapeRegex = (s = "") => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -40,12 +42,55 @@ const trimImageFields = (obj) => {
   }
 };
 
+const sanitizeGallery = (gallery) => {
+  if (!Array.isArray(gallery)) return { ok: true, value: [] };
+  const cleaned = gallery
+    .map((u) => (typeof u === "string" ? u.trim() : ""))
+    .filter(Boolean);
+  if (cleaned.length > 4) {
+    return { ok: false, error: "gallery can have at most 4 images" };
+  }
+  return { ok: true, value: cleaned };
+};
+
+const compareBySortObject = (a, b, sortObj) => {
+  for (const [field, dir] of Object.entries(sortObj)) {
+    const av = a?.[field];
+    const bv = b?.[field];
+    if (av === bv) continue;
+    if (av === undefined || av === null) return 1;
+    if (bv === undefined || bv === null) return -1;
+    if (av > bv) return dir > 0 ? 1 : -1;
+    if (av < bv) return dir > 0 ? -1 : 1;
+  }
+  return 0;
+};
+
+const computeSearchScore = (university, searchTerm) => {
+  const needle = searchTerm.toLowerCase();
+  const name = (university?.name || "").toLowerCase();
+  const slug = (university?.slug || "").toLowerCase();
+  const description = (university?.description || "").toLowerCase();
+  const countryName = (university?.country?.name || "").toLowerCase();
+
+  let score = 0;
+  if (name === needle) score += 100;
+  if (slug === needle) score += 95;
+  if (name.startsWith(needle)) score += 80;
+  if (slug.startsWith(needle)) score += 75;
+  if (countryName.includes(needle)) score += 60;
+  if (name.includes(needle)) score += 50;
+  if (slug.includes(needle)) score += 45;
+  if (description.includes(needle)) score += 30;
+  return score;
+};
+
 const listImpl = async (req, res, next, allowStatusOverride = false) => {
   try {
     const {
       page = 1,
       limit = 10,
-      sort = "-createdAt",
+      sort = "sortOrder",
       status,
       country,
       featured,
@@ -92,18 +137,43 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
     }
 
     const LIST_FIELDS =
-      "_id name slug country description logo heroImage annualFees courseDuration medium featured status createdAt updatedAt";
+      "_id name slug country description logo heroImage annualFees courseDuration medium featured status sortOrder createdAt updatedAt";
 
-    const [data, total] = await Promise.all([
-      University.find(filter)
+    let data = [];
+    let total = 0;
+    const sortObj = parseSort(sort);
+
+    if (searchTerm) {
+      const allMatched = await University.find(filter)
         .select(LIST_FIELDS)
         .populate(COUNTRY_POPULATE)
-        .sort(parseSort(sort))
-        .skip(skip)
-        .limit(limitNum)
-        .lean(),
-      University.countDocuments(filter),
-    ]);
+        .lean();
+
+      allMatched.forEach((item) => {
+        item.__searchScore = computeSearchScore(item, searchTerm);
+      });
+
+      allMatched.sort((a, b) => {
+        if (b.__searchScore !== a.__searchScore) {
+          return b.__searchScore - a.__searchScore;
+        }
+        return compareBySortObject(a, b, sortObj);
+      });
+
+      total = allMatched.length;
+      data = allMatched.slice(skip, skip + limitNum);
+    } else {
+      [data, total] = await Promise.all([
+        University.find(filter)
+          .select(LIST_FIELDS)
+          .populate(COUNTRY_POPULATE)
+          .sort(sortObj)
+          .skip(skip)
+          .limit(limitNum)
+          .lean(),
+        University.countDocuments(filter),
+      ]);
+    }
 
     // Trim all image URLs to prevent newline characters
     data.forEach((university) => {
@@ -230,8 +300,17 @@ exports.create = async (req, res, next) => {
     }
 
     // Filter empty strings from array fields
-    if (Array.isArray(body.gallery))
-      body.gallery = body.gallery.filter((u) => u && u.trim());
+    const galleryResult = sanitizeGallery(body.gallery);
+    if (!galleryResult.ok) {
+      return res.status(400).json({
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Validation failed",
+          details: [{ field: "gallery", message: galleryResult.error }],
+        },
+      });
+    }
+    body.gallery = galleryResult.value;
     if (Array.isArray(body.recognition))
       body.recognition = body.recognition.filter((r) => r && r.trim());
     if (Array.isArray(body.highlights))
@@ -292,8 +371,19 @@ exports.update = async (req, res, next) => {
     }
 
     // Filter empty strings from array fields
-    if (Array.isArray(updates.gallery))
-      updates.gallery = updates.gallery.filter((u) => u && u.trim());
+    if (Array.isArray(updates.gallery)) {
+      const galleryResult = sanitizeGallery(updates.gallery);
+      if (!galleryResult.ok) {
+        return res.status(400).json({
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "Validation failed",
+            details: [{ field: "gallery", message: galleryResult.error }],
+          },
+        });
+      }
+      updates.gallery = galleryResult.value;
+    }
     if (Array.isArray(updates.recognition))
       updates.recognition = updates.recognition.filter((r) => r && r.trim());
     if (Array.isArray(updates.highlights))

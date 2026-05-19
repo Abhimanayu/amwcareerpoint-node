@@ -35,7 +35,14 @@ const universitySchema = new mongoose.Schema(
     description:     { type: String, default: "" },
     logo:            { type: String, default: "" },
     heroImage:       { type: String, default: "" },
-    gallery:         [{ type: String }],
+    gallery: {
+      type: [{ type: String, trim: true }],
+      default: [],
+      validate: {
+        validator: (arr) => Array.isArray(arr) && arr.length <= 4,
+        message: "gallery can have at most 4 images",
+      },
+    },
     establishedYear: { type: String, default: "" },
     ranking:         { type: String, default: "" },
     accreditation:   { type: String, default: "" },
@@ -47,6 +54,7 @@ const universitySchema = new mongoose.Schema(
     recognition:     [{ type: String }],
     status:          { type: String, enum: ["active", "inactive"], default: "active" },
     featured:        { type: Boolean, default: false },
+    sortOrder:       { type: Number, default: 0 },
     highlights:      [highlightSchema],
     faqs:            [faqSchema],
     seo:             { type: seoSchema, default: () => ({}) },
@@ -56,5 +64,6 @@ const universitySchema = new mongoose.Schema(
 
 universitySchema.index({ country: 1, status: 1 });
 universitySchema.index({ featured: 1 });
+universitySchema.index({ status: 1, sortOrder: 1, createdAt: -1, _id: -1 });
 
 module.exports = mongoose.model("University", universitySchema);

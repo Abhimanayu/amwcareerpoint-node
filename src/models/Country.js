@@ -66,7 +66,7 @@ const studentLifeSchema = new mongoose.Schema(
   {
     eyebrow: { type: String, default: "", trim: true, maxlength: 80 },
     title: { type: String, default: "", trim: true, maxlength: 180 },
-    description: { type: String, default: "", trim: true, maxlength: 1200 },
+    description: { type: String, default: "", trim: true, maxlength: 5000 },
     cards: {
       type: [studentLifeCardSchema],
       default: [],

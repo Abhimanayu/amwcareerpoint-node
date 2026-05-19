@@ -13,6 +13,8 @@ const parseSort = (sort = "-sortOrder") => {
   return { ...primary, createdAt: -1, _id: -1 };
 };
 
+const escapeRegex = (s = "") => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 /**
  * Trim image URL fields to strip hidden \r\n characters that cause 404s.
  */
@@ -228,13 +230,24 @@ const buildListStatusFilter = (status, allowStatusOverride = false) => {
 
 const listImpl = async (req, res, next, allowStatusOverride = false) => {
   try {
-    const { page = 1, limit = 10, sort = "-sortOrder", status } = req.query;
+    const { page = 1, limit = 10, sort = "-sortOrder", status, search } = req.query;
 
     const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
     const skip = (pageNum - 1) * limitNum;
 
     const filter = buildListStatusFilter(status, allowStatusOverride);
+
+    const searchTerm = typeof search === "string" ? search.trim() : "";
+    if (searchTerm) {
+      const searchRegex = new RegExp(escapeRegex(searchTerm), "i");
+      filter.$or = [
+        { name: searchRegex },
+        { slug: searchRegex },
+        { tagline: searchRegex },
+        { description: searchRegex },
+      ];
+    }
 
     const LIST_FIELDS =
       "_id name slug tagline description flagImage heroImage cardImage feeRange duration livingCost currency universityCount sortOrder status isFeatured updatedAt";

@@ -10,6 +10,8 @@ const parseSort = (sort = "-createdAt") => {
   return { [sort]: 1 };
 };
 
+const escapeRegex = (s = "") => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const COUNTRY_POPULATE = { path: "country", select: "_id name slug flagImage" };
 
 const buildListStatusFilter = (status, allowStatusOverride = false) => {
@@ -47,6 +49,7 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
       status,
       country,
       featured,
+      search,
     } = req.query;
 
     const pageNum = Math.max(1, parseInt(page));
@@ -65,6 +68,27 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
         const c = await Country.findOne({ slug: country }).lean();
         if (c) filter.country = c._id;
       }
+    }
+
+    const searchTerm = typeof search === "string" ? search.trim() : "";
+    if (searchTerm) {
+      const searchRegex = new RegExp(escapeRegex(searchTerm), "i");
+      const matchingCountries = await Country.find({ name: searchRegex })
+        .select("_id")
+        .lean();
+      const countryIds = matchingCountries.map((c) => c._id);
+
+      const searchOr = [
+        { name: searchRegex },
+        { slug: searchRegex },
+        { description: searchRegex },
+      ];
+
+      if (countryIds.length > 0) {
+        searchOr.push({ country: { $in: countryIds } });
+      }
+
+      filter.$or = searchOr;
     }
 
     const LIST_FIELDS =

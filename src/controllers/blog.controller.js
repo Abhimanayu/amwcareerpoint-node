@@ -9,6 +9,8 @@ const parseSort = (sort = "-createdAt") => {
   return { [sort]: 1 };
 };
 
+const escapeRegex = (s = "") => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const CATEGORY_POPULATE = { path: "category", select: "_id name" };
 
 const buildListStatusFilter = (status, allowStatusOverride = false) => {
@@ -28,6 +30,7 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
       category,
       featured,
       q,
+      search,
     } = req.query;
 
     const pageNum = Math.max(1, parseInt(page));
@@ -38,14 +41,13 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
 
     if (featured === "true") filter.featured = true;
 
-    // Text search across title, excerpt, tags, and author
-    if (q && q.trim()) {
-      const searchRegex = new RegExp(
-        q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-        "i",
-      );
+    // Text search across title, slug, excerpt, tags, and author
+    const searchTerm = typeof search === "string" ? search.trim() : (q || "").trim();
+    if (searchTerm) {
+      const searchRegex = new RegExp(escapeRegex(searchTerm), "i");
       filter.$or = [
         { title: searchRegex },
+        { slug: searchRegex },
         { excerpt: searchRegex },
         { tags: searchRegex },
         { author: searchRegex },

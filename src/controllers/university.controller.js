@@ -111,7 +111,12 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
         filter.country = country;
       } else {
         const c = await Country.findOne({ slug: country }).lean();
-        if (c) filter.country = c._id;
+        if (c) {
+          filter.country = c._id;
+        } else {
+          // Preserve filter intent: unresolved country should return zero results, not all universities.
+          filter._id = null;
+        }
       }
     }
 

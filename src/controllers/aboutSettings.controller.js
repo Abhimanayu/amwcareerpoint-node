@@ -53,7 +53,6 @@ function mergeWithDefaults(settings) {
   const src = settings || {};
   return {
     ...DEFAULT_ABOUT_SETTINGS,
-    ...src,
     seo: { ...DEFAULT_ABOUT_SETTINGS.seo, ...(src.seo || {}) },
     hero: { ...DEFAULT_ABOUT_SETTINGS.hero, ...(src.hero || {}) },
     story: { ...DEFAULT_ABOUT_SETTINGS.story, ...(src.story || {}) },
@@ -176,7 +175,25 @@ exports.getAdmin = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const payload = sanitizePayload(req.body || {});
+    const existing = await AboutSettings.findOne({ key: "about" }).lean();
+    const mergedInput = mergeWithDefaults({
+      ...(existing || {}),
+      ...(req.body || {}),
+      seo: { ...(existing?.seo || {}), ...(req.body?.seo || {}) },
+      hero: { ...(existing?.hero || {}), ...(req.body?.hero || {}) },
+      story: { ...(existing?.story || {}), ...(req.body?.story || {}) },
+      team: { ...(existing?.team || {}), ...(req.body?.team || {}) },
+      mission: { ...(existing?.mission || {}), ...(req.body?.mission || {}) },
+      sections: { ...(existing?.sections || {}), ...(req.body?.sections || {}) },
+      achievements: Array.isArray(req.body?.achievements)
+        ? req.body.achievements
+        : existing?.achievements,
+      values: Array.isArray(req.body?.values)
+        ? req.body.values
+        : existing?.values,
+    });
+
+    const payload = sanitizePayload(mergedInput);
     const updated = await AboutSettings.findOneAndUpdate(
       { key: "about" },
       { $set: payload },

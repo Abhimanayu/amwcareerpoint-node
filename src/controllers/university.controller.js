@@ -5,6 +5,26 @@ const Country = require("../models/Country");
 const makeSlug = (name) =>
   slugify(name, { lower: true, strict: true, trim: true });
 
+const MAX_UNIVERSITY_LIST_LIMIT = 500;
+
+const parsePositiveInt = (value, fallback) => {
+  const n = Number.parseInt(value, 10);
+  if (!Number.isFinite(n) || n <= 0) return fallback;
+  return n;
+};
+
+const normalizeCountrySlugInput = (input) => {
+  const raw = String(input || "").trim().toLowerCase();
+  if (!raw) return "";
+
+  // Support frontend-style country slugs like "mbbs-in-kyrgyzstan".
+  if (raw.startsWith("mbbs-in-")) {
+    return raw.slice("mbbs-in-".length);
+  }
+
+  return raw;
+};
+
 const parseSort = (sort = "sortOrder") => {
   const primary = sort.startsWith("-")
     ? { [sort.slice(1)]: -1 }
@@ -97,8 +117,11 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
       search,
     } = req.query;
 
-    const pageNum = Math.max(1, parseInt(page));
-    const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
+    const pageNum = parsePositiveInt(page, 1);
+    const limitNum = Math.min(
+      MAX_UNIVERSITY_LIST_LIMIT,
+      parsePositiveInt(limit, 10)
+    );
     const skip = (pageNum - 1) * limitNum;
 
     const filter = buildListStatusFilter(status, allowStatusOverride);
@@ -107,10 +130,12 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
 
     // Filter by country: supports ObjectId or slug
     if (country) {
-      if (country.match(/^[0-9a-fA-F]{24}$/)) {
-        filter.country = country;
+      const countryInput = String(country).trim();
+      if (/^[0-9a-fA-F]{24}$/.test(countryInput)) {
+        filter.country = countryInput;
       } else {
-        const c = await Country.findOne({ slug: country }).lean();
+        const slugInput = normalizeCountrySlugInput(countryInput);
+        const c = await Country.findOne({ slug: slugInput }).lean();
         if (c) {
           filter.country = c._id;
         } else {

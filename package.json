@@ -7,7 +7,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "seed": "node src/scripts/seed.js",
-    "seed:dummy": "node src/scripts/seedDummy.js"
+    "seed:dummy": "node src/scripts/seedDummy.js",
+    "predictor:import-cutoff": "node src/scripts/importPredictorCutoff.js"
   },
   "keywords": [],
   "author": "",

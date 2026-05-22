@@ -40,6 +40,9 @@ const mediaRoutes = require("./src/routes/media.routes");
 const faqRoutes = require("./src/routes/faq.routes");
 const homeSettingsRoutes = require("./src/routes/homeSettings.routes");
 const aboutSettingsRoutes = require("./src/routes/aboutSettings.routes");
+const predictorMetadataRoutes = require("./src/routes/predictorMetadata.routes");
+const predictorRoutes = require("./src/routes/predictor.routes");
+const predictorAuthRoutes = require("./src/routes/predictorAuth.routes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -329,6 +332,8 @@ const publicCacheHeaders = (req, res, next) => {
 // Auth
 app.use("/api/v1/auth/login", markLimited, authLimiter);
 app.use("/api/v1/auth/refresh", markLimited, authLimiter);
+app.use("/api/v1/predictor/auth/login", markLimited, authLimiter);
+app.use("/api/v1/predictor/auth/refresh", markLimited, authLimiter);
 
 // Enquiry — strict limiter only on POST (contact form), admin reads use general limiter
 app.post("/api/v1/enquiries", markLimited, enquiryLimiter);
@@ -342,6 +347,7 @@ const publicGetPaths = [
   "/api/v1/faqs",
   "/api/v1/home-settings",
   "/api/v1/about-settings",
+  "/api/v1/predictor/metadata",
 ];
 publicGetPaths.forEach((routePath) => {
   app.get(routePath, markLimited, publicReadLimiter, publicCacheHeaders);
@@ -365,6 +371,9 @@ app.get("/api/v1", (req, res) => {
       faqs: "/api/v1/faqs",
       homeSettings: "/api/v1/home-settings",
       aboutSettings: "/api/v1/about-settings",
+      predictorMetadata: "/api/v1/predictor/metadata",
+      predictorAuth: "/api/v1/predictor/auth",
+      predictor: "/api/v1/predictor",
     },
   });
 });
@@ -380,6 +389,9 @@ app.use("/api/v1/media", mediaRoutes);
 app.use("/api/v1/faqs", faqRoutes);
 app.use("/api/v1/home-settings", homeSettingsRoutes);
 app.use("/api/v1/about-settings", aboutSettingsRoutes);
+app.use("/api/v1/predictor/metadata", predictorMetadataRoutes);
+app.use("/api/v1/predictor/auth", predictorAuthRoutes);
+app.use("/api/v1/predictor", predictorRoutes);
 
 // ── 404 Handler ───────────────────────────────────────────────────
 app.use((req, res) => {

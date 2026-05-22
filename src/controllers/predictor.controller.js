@@ -65,6 +65,13 @@ function buildSearchFilter(body = {}) {
   return { filter, rank: Number.isFinite(rank) && rank > 0 ? rank : null };
 }
 
+async function loadLatestAccessRecord(userId) {
+  return PredictorAccess.findOne({ userId })
+    .sort({ expiresAt: -1, createdAt: -1 })
+    .select("expiresAt isActive accessType")
+    .lean();
+}
+
 exports.getAccessStatus = async (req, res, next) => {
   try {
     // Support both student (req.predictorUser) and admin (req.admin)
@@ -82,6 +89,9 @@ exports.getAccessStatus = async (req, res, next) => {
           hasAccess: true,
           expiresAt: null,
           daysRemaining: null,
+          accessState: "admin_bypass",
+          isExpired: false,
+          expiredAt: null,
           isAdminBypass: true,
         },
       });
@@ -99,11 +109,17 @@ exports.getAccessStatus = async (req, res, next) => {
       .lean();
 
     if (!activeAccess) {
+      const latestAccess = await loadLatestAccessRecord(user.id);
+      const expiredAt = latestAccess?.expiresAt || null;
+
       return res.json({
         data: {
           hasAccess: false,
-          expiresAt: null,
+          expiresAt: expiredAt,
           daysRemaining: 0,
+          accessState: expiredAt ? "expired" : "inactive",
+          isExpired: Boolean(expiredAt),
+          expiredAt,
           isAdminBypass: false,
         },
       });
@@ -117,6 +133,9 @@ exports.getAccessStatus = async (req, res, next) => {
         hasAccess: true,
         expiresAt: activeAccess.expiresAt,
         daysRemaining: daysRemaining > 0 ? daysRemaining : 0,
+        accessState: "active",
+        isExpired: false,
+        expiredAt: null,
         isAdminBypass: false,
       },
     });

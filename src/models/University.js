@@ -65,5 +65,6 @@ const universitySchema = new mongoose.Schema(
 universitySchema.index({ country: 1, status: 1 });
 universitySchema.index({ featured: 1 });
 universitySchema.index({ status: 1, sortOrder: 1, createdAt: -1, _id: -1 });
+universitySchema.index({ country: 1, status: 1, sortOrder: 1, createdAt: -1, _id: -1 });
 
 module.exports = mongoose.model("University", universitySchema);

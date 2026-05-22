@@ -15,13 +15,6 @@ const parsePositiveInt = (value, fallback) => {
 
 const normalizeCountrySlugInput = (input) => {
   const raw = String(input || "").trim().toLowerCase();
-  if (!raw) return "";
-
-  // Support frontend-style country slugs like "mbbs-in-kyrgyzstan".
-  if (raw.startsWith("mbbs-in-")) {
-    return raw.slice("mbbs-in-".length);
-  }
-
   return raw;
 };
 
@@ -71,6 +64,36 @@ const sanitizeGallery = (gallery) => {
     return { ok: false, error: "gallery can have at most 4 images" };
   }
   return { ok: true, value: cleaned };
+};
+
+const resolveCountryIdFromInput = async (countryInput) => {
+  const raw = String(countryInput || "").trim();
+  if (!raw) return null;
+
+  if (/^[0-9a-fA-F]{24}$/.test(raw)) {
+    return raw;
+  }
+
+  const normalized = normalizeCountrySlugInput(raw);
+  const slugCandidates = new Set([normalized]);
+
+  // Support exact prefixed slug and plain slug formats.
+  if (normalized.startsWith("mbbs-in-")) {
+    slugCandidates.add(normalized.slice("mbbs-in-".length));
+  } else {
+    slugCandidates.add(`mbbs-in-${normalized}`);
+  }
+
+  const countryDoc = await Country.findOne({
+    $or: [
+      { slug: { $in: Array.from(slugCandidates).filter(Boolean) } },
+      { name: new RegExp(`^${escapeRegex(raw)}$`, "i") },
+    ],
+  })
+    .select("_id")
+    .lean();
+
+  return countryDoc ? countryDoc._id : null;
 };
 
 const compareBySortObject = (a, b, sortObj) => {
@@ -128,20 +151,14 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
 
     if (featured === "true") filter.featured = true;
 
-    // Filter by country: supports ObjectId or slug
+    // Filter by country: supports ObjectId, slug (prefixed/non-prefixed), or exact country name.
     if (country) {
-      const countryInput = String(country).trim();
-      if (/^[0-9a-fA-F]{24}$/.test(countryInput)) {
-        filter.country = countryInput;
+      const resolvedCountryId = await resolveCountryIdFromInput(country);
+      if (resolvedCountryId) {
+        filter.country = resolvedCountryId;
       } else {
-        const slugInput = normalizeCountrySlugInput(countryInput);
-        const c = await Country.findOne({ slug: slugInput }).lean();
-        if (c) {
-          filter.country = c._id;
-        } else {
-          // Preserve filter intent: unresolved country should return zero results, not all universities.
-          filter._id = null;
-        }
+        // Preserve filter intent: unresolved country should return zero results, not all universities.
+        filter._id = null;
       }
     }
 
@@ -166,8 +183,11 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
       filter.$or = searchOr;
     }
 
-    const LIST_FIELDS =
-      "_id name slug country description logo heroImage annualFees courseDuration medium featured status sortOrder createdAt updatedAt";
+    const PUBLIC_LIST_FIELDS =
+      "_id name slug country logo heroImage annualFees courseDuration hostelFees medium featured status sortOrder createdAt updatedAt";
+    const ADMIN_LIST_FIELDS =
+      "_id name slug country description logo heroImage annualFees courseDuration hostelFees medium featured status sortOrder createdAt updatedAt";
+    const LIST_FIELDS = allowStatusOverride ? ADMIN_LIST_FIELDS : PUBLIC_LIST_FIELDS;
 
     let data = [];
     let total = 0;

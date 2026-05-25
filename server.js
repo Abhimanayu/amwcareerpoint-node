@@ -43,6 +43,7 @@ const aboutSettingsRoutes = require("./src/routes/aboutSettings.routes");
 const predictorMetadataRoutes = require("./src/routes/predictorMetadata.routes");
 const predictorRoutes = require("./src/routes/predictor.routes");
 const predictorAuthRoutes = require("./src/routes/predictorAuth.routes");
+const predictorPaymentRoutes = require("./src/routes/predictorPayment.routes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -383,6 +384,7 @@ app.get("/api/v1", (req, res) => {
       aboutSettings: "/api/v1/about-settings",
       predictorMetadata: "/api/v1/predictor/metadata",
       predictorAuth: "/api/v1/predictor/auth",
+      predictorPayment: "/api/v1/predictor/payment",
       predictor: "/api/v1/predictor",
     },
   });
@@ -401,6 +403,7 @@ app.use("/api/v1/home-settings", homeSettingsRoutes);
 app.use("/api/v1/about-settings", aboutSettingsRoutes);
 app.use("/api/v1/predictor/metadata", predictorMetadataRoutes);
 app.use("/api/v1/predictor/auth", predictorAuthRoutes);
+app.use("/api/v1/predictor/payment", predictorPaymentRoutes);
 app.use("/api/v1/predictor", predictorRoutes);
 
 // ── 404 Handler ───────────────────────────────────────────────────

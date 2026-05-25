@@ -350,8 +350,18 @@ const publicGetPaths = [
   "/api/v1/predictor/metadata",
 ];
 publicGetPaths.forEach((routePath) => {
-  app.get(routePath, markLimited, publicReadLimiter, publicCacheHeaders);
-  app.get(`${routePath}/:slug`, markLimited, publicReadLimiter, publicCacheHeaders);
+  const middlewares = [markLimited, publicReadLimiter];
+
+  // FAQ responses are used by admin immediately after mutations.
+  // Keep them uncached to prevent stale list/detail reads.
+  if (routePath === "/api/v1/faqs") {
+    app.get(routePath, ...middlewares);
+    app.get(`${routePath}/:slug`, ...middlewares);
+    return;
+  }
+
+  app.get(routePath, ...middlewares, publicCacheHeaders);
+  app.get(`${routePath}/:slug`, ...middlewares, publicCacheHeaders);
 });
 
 // General fallback limiter for all other /api/v1 routes (admin, media, etc.)

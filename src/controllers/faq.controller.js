@@ -41,12 +41,25 @@ const parseSort = (sort = "sortOrder") => {
   return { [sort]: 1 };
 };
 
+const isPositiveInteger = (value) => {
+  if (typeof value === "number") return Number.isInteger(value) && value > 0;
+  if (typeof value !== "string") return false;
+  return /^[1-9]\d*$/.test(value.trim());
+};
+
+const parsePositiveInt = (value, fallback) => {
+  const parsed = Number.parseInt(value, 10);
+  if (Number.isNaN(parsed) || parsed < 1) return fallback;
+  return parsed;
+};
+
 // GET /faqs
 // Public. Filter by ?page=home&pageSlug=russia&status=active
 exports.list = async (req, res, next) => {
   try {
     const {
-      page     = 1,
+      page,
+      pageNumber,
       limit    = 50,
       sort     = "sortOrder",
       status,
@@ -54,8 +67,24 @@ exports.list = async (req, res, next) => {
       pageSlug,
     } = req.query;
 
-    const pageNum  = Math.max(1, Number.parseInt(page, 10));
-    const limitNum = Math.min(200, Math.max(1, Number.parseInt(limit, 10)));
+    // Backward compatibility: some clients send ?page=about for faq page filter.
+    // If page is non-numeric and faqPage is not provided, treat page as faqPage.
+    let resolvedFaqPage = faqPage;
+    if (resolvedFaqPage === undefined) {
+      const pageLooksLikeFaqScope = typeof page === "string" && isPositiveInteger(page) === false;
+      if (pageLooksLikeFaqScope) {
+        resolvedFaqPage = page;
+      }
+    }
+
+    // Prefer pageNumber for pagination if provided; otherwise use numeric page.
+    let pageInput = pageNumber;
+    if (pageInput === undefined) {
+      pageInput = isPositiveInteger(page) ? page : 1;
+    }
+
+    const pageNum  = parsePositiveInt(pageInput, 1);
+    const limitNum = Math.min(200, parsePositiveInt(limit, 50));
     const skip     = (pageNum - 1) * limitNum;
 
     const filter = {};
@@ -66,8 +95,8 @@ exports.list = async (req, res, next) => {
     else                            filter.status = "active";
 
     // Page filter (which page these FAQs belong to)
-    if (faqPage !== undefined) {
-      const normalizedFaqPage = normalizePage(faqPage);
+    if (resolvedFaqPage !== undefined) {
+      const normalizedFaqPage = normalizePage(resolvedFaqPage);
       if (!isValidFaqPage(normalizedFaqPage)) {
         return validationError(res, [{
           field: "faqPage",

@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "seed": "node src/scripts/seed.js",
     "seed:dummy": "node src/scripts/seedDummy.js",
-    "predictor:import-cutoff": "node src/scripts/importPredictorCutoff.js"
+    "predictor:import-cutoff": "node src/scripts/importPredictorCutoff.js",
+    "predictor:import-cutoff:bundled": "node src/scripts/importPredictorCutoff.js --input src/data/predictor/neet-cutoff.json --meta src/data/predictor/neet-state-meta.json --clear"
   },
   "keywords": [],
   "author": "",

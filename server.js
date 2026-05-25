@@ -18,7 +18,7 @@ const missingEnv = REQUIRED_ENV.filter((k) => !process.env[k]);
 if (missingEnv.length > 0) {
   console.error("❌ Missing required environment variables:", missingEnv.join(", "));
   console.error("   Set them in Hostinger panel → Node.js → Environment Variables");
-  process.exit(1);
+  console.error("Continuing startup so health endpoints can expose diagnostics.");
 }
 console.log("✅ All required env vars present");
 console.log(`   NODE_ENV   : ${process.env.NODE_ENV || "development"}`);
@@ -62,6 +62,21 @@ app.get("/health-test", (req, res) => {
 });
 
 console.log("✅ Health test endpoint registered at /health-test");
+
+app.get("/health-diagnostics", (req, res) => {
+  res.json({
+    status: "ok",
+    dbReady: Boolean(req.app.locals.dbReady),
+    env: {
+      MONGODB_URI: Boolean(process.env.MONGODB_URI),
+      JWT_SECRET: Boolean(process.env.JWT_SECRET),
+      CLOUDINARY_CLOUD_NAME: Boolean(process.env.CLOUDINARY_CLOUD_NAME),
+      CLOUDINARY_API_KEY: Boolean(process.env.CLOUDINARY_API_KEY),
+      CLOUDINARY_API_SECRET: Boolean(process.env.CLOUDINARY_API_SECRET),
+    },
+    timestamp: new Date().toISOString(),
+  });
+});
 
 app.get("/api/uploads/health", (req, res) => {
   console.log("🩺 API uploads health endpoint called!");
@@ -428,7 +443,12 @@ async function startServer() {
     });
   } catch (error) {
     console.error("❌ Failed to start server:", error.message);
-    process.exit(1);
+    app.locals.dbReady = false;
+    app.listen(PORT, () => {
+      const publicBase = process.env.BASE_URL || `http://localhost:${PORT}`;
+      console.log(`AMW Career Point API running without MongoDB on port ${PORT}`);
+      console.log(`Public API : ${publicBase}/api/v1`);
+    });
   }
 }
 

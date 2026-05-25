@@ -1,5 +1,4 @@
 const crypto = require("node:crypto");
-const Razorpay = require("razorpay");
 const PredictorPayment = require("../models/PredictorPayment");
 const PredictorAccess = require("../models/PredictorAccess");
 const { Types } = require("mongoose");
@@ -23,6 +22,7 @@ function hasPaymentConfig() {
 
 function getRazorpayClient() {
   if (!hasPaymentConfig()) return null;
+  const Razorpay = require("razorpay");
   return new Razorpay({
     key_id: RAZORPAY_KEY_ID,
     key_secret: RAZORPAY_KEY_SECRET,

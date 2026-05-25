@@ -1,7 +1,17 @@
 const Faq = require("../models/Faq");
+const mongoose = require("mongoose");
 
 const ALLOWED_FAQ_PAGES = new Set(["home", "country", "university", "contact", "general", "about"]);
 const PAGES_REQUIRING_SLUG = new Set(["country", "university"]);
+
+// Validate MongoDB ObjectId format
+const isValidObjectId = (id) => {
+  try {
+    return mongoose.Types.ObjectId.isValid(id);
+  } catch {
+    return false;
+  }
+};
 
 const validationError = (res, details) =>
   res.status(400).json({
@@ -86,7 +96,19 @@ exports.list = async (req, res, next) => {
 // GET /faqs/:id
 exports.detail = async (req, res, next) => {
   try {
-    const faq = await Faq.findById(req.params.id).lean();
+    const { id } = req.params;
+    
+    // Validate ID format early
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({
+        error: { 
+          code: "INVALID_ID", 
+          message: "Invalid FAQ ID format. Must be a valid MongoDB ObjectId." 
+        },
+      });
+    }
+    
+    const faq = await Faq.findById(id).lean();
     if (!faq) {
       return res.status(404).json({
         error: { code: "NOT_FOUND", message: "FAQ not found" },
@@ -170,6 +192,18 @@ exports.reorder = async (req, res, next) => {
 // PUT /faqs/:id  (Admin)
 exports.update = async (req, res, next) => {
   try {
+    const { id } = req.params;
+    
+    // Validate ID format early
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({
+        error: { 
+          code: "INVALID_ID", 
+          message: "Invalid FAQ ID format. Must be a valid MongoDB ObjectId." 
+        },
+      });
+    }
+    
     const updates = { ...req.body };
 
     if (Object.hasOwn(updates, "page")) {
@@ -179,7 +213,7 @@ exports.update = async (req, res, next) => {
       updates.pageSlug = normalizePageSlug(updates.pageSlug);
     }
 
-    const faq = await Faq.findById(req.params.id);
+    const faq = await Faq.findById(id);
     if (!faq) {
       return res.status(404).json({
         error: { code: "NOT_FOUND", message: "FAQ not found" },
@@ -217,7 +251,19 @@ exports.update = async (req, res, next) => {
 // DELETE /faqs/:id  (Admin)
 exports.remove = async (req, res, next) => {
   try {
-    const faq = await Faq.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+    
+    // Validate ID format early
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({
+        error: { 
+          code: "INVALID_ID", 
+          message: "Invalid FAQ ID format. Must be a valid MongoDB ObjectId." 
+        },
+      });
+    }
+    
+    const faq = await Faq.findByIdAndDelete(id);
     if (!faq) {
       return res.status(404).json({
         error: { code: "NOT_FOUND", message: "FAQ not found" },

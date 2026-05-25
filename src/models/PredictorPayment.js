@@ -6,6 +6,14 @@ const predictorPaymentSchema = new mongoose.Schema(
     orderId: { type: String, required: true, unique: true, trim: true },
     paymentId: { type: String, default: null, trim: true, index: true },
     signature: { type: String, default: null, trim: true },
+    method: {
+      type: String,
+      enum: ["razorpay", "manual"],
+      default: "razorpay",
+      index: true,
+    },
+    transactionId: { type: String, default: null, trim: true, index: true },
+    payerNote: { type: String, default: "", trim: true, maxlength: 500 },
     currency: { type: String, default: "INR", trim: true },
     baseAmountPaise: { type: Number, required: true, min: 1 },
     gstAmountPaise: { type: Number, required: true, min: 0 },
@@ -14,7 +22,7 @@ const predictorPaymentSchema = new mongoose.Schema(
     accessDays: { type: Number, required: true, min: 1 },
     status: {
       type: String,
-      enum: ["created", "paid", "failed"],
+      enum: ["created", "pending", "paid", "failed", "rejected"],
       default: "created",
       index: true,
     },

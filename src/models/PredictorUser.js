@@ -24,7 +24,6 @@ const predictorUserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-predictorUserSchema.index({ email: 1 }, { unique: true });
 predictorUserSchema.index({ phone: 1 }, { sparse: true });
 
 predictorUserSchema.pre("save", async function preSave() {

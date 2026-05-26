@@ -337,9 +337,69 @@ const apiLimiter = rateLimit({
 // Helper: marks the request so the general apiLimiter skips it
 const markLimited = (req, res, next) => { req._rateLimitApplied = true; next(); };
 
-// Cache headers for public GET list/detail endpoints (browser 60s, CDN 120s)
+const PUBLIC_CACHE_TTL_MS = Number(process.env.PUBLIC_CACHE_TTL_MS || 5 * 60 * 1000);
+const PUBLIC_CACHE_MAX_ENTRIES = Number(process.env.PUBLIC_CACHE_MAX_ENTRIES || 150);
+const publicResponseCache = new Map();
+
+function getPublicCacheKey(req) {
+  return `${req.method}:${req.originalUrl}`;
+}
+
+function prunePublicResponseCache() {
+  const now = Date.now();
+  for (const [key, entry] of publicResponseCache) {
+    if (entry.expiresAt <= now) publicResponseCache.delete(key);
+  }
+
+  while (publicResponseCache.size > PUBLIC_CACHE_MAX_ENTRIES) {
+    const oldestKey = publicResponseCache.keys().next().value;
+    if (!oldestKey) break;
+    publicResponseCache.delete(oldestKey);
+  }
+}
+
+const publicResponseCacheMiddleware = (req, res, next) => {
+  if (req.method !== "GET" || req.headers.authorization) {
+    return next();
+  }
+
+  const key = getPublicCacheKey(req);
+  const cached = publicResponseCache.get(key);
+  const now = Date.now();
+
+  if (cached && cached.expiresAt > now) {
+    res.set("X-AMW-Cache", "HIT");
+    return res.status(cached.status).json(cached.body);
+  }
+
+  if (cached) publicResponseCache.delete(key);
+
+  const originalJson = res.json.bind(res);
+  res.json = (body) => {
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      publicResponseCache.set(key, {
+        status: res.statusCode,
+        body,
+        expiresAt: Date.now() + PUBLIC_CACHE_TTL_MS,
+      });
+      prunePublicResponseCache();
+      res.set("X-AMW-Cache", "MISS");
+    }
+
+    return originalJson(body);
+  };
+
+  return next();
+};
+
+// Cache headers for anonymous public GET list/detail endpoints.
 const publicCacheHeaders = (req, res, next) => {
-  res.set("Cache-Control", "public, max-age=60, s-maxage=120, stale-while-revalidate=300");
+  if (req.headers.authorization) {
+    res.set("Cache-Control", "private, no-store");
+    return next();
+  }
+
+  res.set("Cache-Control", "public, max-age=300, s-maxage=900, stale-while-revalidate=1800");
   res.set("Vary", "Accept-Encoding");
   next();
 };
@@ -376,8 +436,8 @@ publicGetPaths.forEach((routePath) => {
     return;
   }
 
-  app.get(routePath, ...middlewares, publicCacheHeaders);
-  app.get(`${routePath}/:slug`, ...middlewares, publicCacheHeaders);
+  app.get(routePath, ...middlewares, publicCacheHeaders, publicResponseCacheMiddleware);
+  app.get(`${routePath}/:slug`, ...middlewares, publicCacheHeaders, publicResponseCacheMiddleware);
 });
 
 // General fallback limiter for all other /api/v1 routes (admin, media, etc.)

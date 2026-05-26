@@ -66,6 +66,26 @@ const sanitizeGallery = (gallery) => {
   return { ok: true, value: cleaned };
 };
 
+const sanitizeCurriculum = (curriculum) => {
+  if (!Array.isArray(curriculum)) return { ok: false, error: "curriculum must be an array" };
+
+  const cleaned = curriculum
+    .map((row) => {
+      if (!row || typeof row !== "object") return null;
+      const year = typeof row.year === "string" ? row.year.trim() : "";
+      const title = typeof row.title === "string" ? row.title.trim() : "";
+      const subjects = typeof row.subjects === "string" ? row.subjects.trim() : "";
+      const desc = typeof row.desc === "string" ? row.desc.trim() : "";
+
+      // Keep rows that have at least one meaningful field.
+      if (!year && !title && !subjects && !desc) return null;
+      return { year, title, subjects, desc };
+    })
+    .filter(Boolean);
+
+  return { ok: true, value: cleaned };
+};
+
 const resolveCountryIdFromInput = async (countryInput) => {
   const raw = String(countryInput || "").trim();
   if (!raw) return null;
@@ -367,6 +387,19 @@ exports.create = async (req, res, next) => {
       body.highlights = body.highlights.filter((h) => h && h.label);
     if (Array.isArray(body.faqs))
       body.faqs = body.faqs.filter((f) => f && f.question);
+    if (Object.hasOwn(body, "curriculum")) {
+      const curriculumResult = sanitizeCurriculum(body.curriculum);
+      if (!curriculumResult.ok) {
+        return res.status(400).json({
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "Validation failed",
+            details: [{ field: "curriculum", message: curriculumResult.error }],
+          },
+        });
+      }
+      body.curriculum = curriculumResult.value;
+    }
 
     // Trim all image URL fields to remove hidden newline characters
     trimImageFields(body);
@@ -440,6 +473,34 @@ exports.update = async (req, res, next) => {
       updates.highlights = updates.highlights.filter((h) => h && h.label);
     if (Array.isArray(updates.faqs))
       updates.faqs = updates.faqs.filter((f) => f && f.question);
+    if (Object.hasOwn(updates, "curriculum")) {
+      const curriculumResult = sanitizeCurriculum(updates.curriculum);
+      if (!curriculumResult.ok) {
+        return res.status(400).json({
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "Validation failed",
+            details: [{ field: "curriculum", message: curriculumResult.error }],
+          },
+        });
+      }
+      updates.curriculum = curriculumResult.value;
+    }
+
+    if (Object.hasOwn(updates, "curriculum")) {
+      const curriculumLength = Array.isArray(updates.curriculum) ? updates.curriculum.length : 0;
+      const sample = curriculumLength > 0 ? updates.curriculum[0] : null;
+      console.info("[University Update] curriculum payload", {
+        universityId: id,
+        curriculumLength,
+        sample,
+      });
+    }
+
+    console.info("[University Update] changed fields", {
+      universityId: id,
+      fields: Object.keys(updates),
+    });
 
     // Trim all image URL fields to remove hidden newline characters
     trimImageFields(updates);
@@ -454,6 +515,11 @@ exports.update = async (req, res, next) => {
       return res.status(404).json({
         error: { code: "NOT_FOUND", message: "University not found" },
       });
+    }
+
+    trimImageFields(university);
+    if (university.country && university.country.flagImage) {
+      university.country.flagImage = university.country.flagImage.trim();
     }
 
     res.json({ data: university.toObject() });

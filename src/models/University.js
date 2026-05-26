@@ -16,6 +16,16 @@ const faqSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const curriculumSchema = new mongoose.Schema(
+  {
+    year: { type: String, default: "", trim: true },
+    title: { type: String, default: "", trim: true },
+    subjects: { type: String, default: "", trim: true },
+    desc: { type: String, default: "", trim: true },
+  },
+  { _id: false }
+);
+
 const seoSchema = new mongoose.Schema(
   {
     metaTitle:       { type: String, default: "" },
@@ -57,6 +67,7 @@ const universitySchema = new mongoose.Schema(
     sortOrder:       { type: Number, default: 0 },
     highlights:      [highlightSchema],
     faqs:            [faqSchema],
+    curriculum:      [curriculumSchema],
     seo:             { type: seoSchema, default: () => ({}) },
   },
   { timestamps: true }

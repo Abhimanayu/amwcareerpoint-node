@@ -170,9 +170,9 @@ function sanitizeSections(sections = {}) {
 }
 
 // ── Phase 2: slim field projections ─────────────────────────────────────────
-const COUNTRY_HOME_SELECT = "_id name slug flagImage cardImage feeRange duration";
-const UNIVERSITY_HOME_SELECT = "_id name slug logo heroImage annualFees courseDuration";
-const BLOG_HOME_SELECT = "_id title slug excerpt coverImage author createdAt";
+const COUNTRY_HOME_SELECT = "_id name slug flagImage flagImageAlt cardImage cardImageAlt heroImage heroImageAlt feeRange duration";
+const UNIVERSITY_HOME_SELECT = "_id name slug logo logoAlt heroImage heroImageAlt gallery galleryAlt annualFees courseDuration";
+const BLOG_HOME_SELECT = "_id title slug excerpt coverImage coverImageAlt author createdAt";
 
 // Resolve ordered home countries. publicMode = filter status:active.
 async function resolveHomeCountries(storedIds, publicMode) {
@@ -193,7 +193,7 @@ async function resolveHomeCountries(storedIds, publicMode) {
 
 // Resolve ordered home universities.
 async function resolveHomeUniversities(storedIds, publicMode) {
-  const COUNTRY_POP = { path: "country", select: "_id name slug flagImage" };
+  const COUNTRY_POP = { path: "country", select: "_id name slug flagImage flagImageAlt" };
   if (Array.isArray(storedIds) && storedIds.length > 0) {
     const filter = publicMode
       ? { _id: { $in: storedIds }, status: "active" }

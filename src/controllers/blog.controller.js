@@ -67,7 +67,7 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
     }
 
     const LIST_FIELDS =
-      "_id title slug excerpt coverImage category author tags status featured createdAt updatedAt";
+      "_id title slug excerpt coverImage coverImageAlt category author tags status featured createdAt updatedAt";
 
     const [data, total] = await Promise.all([
       Blog.find(filter)

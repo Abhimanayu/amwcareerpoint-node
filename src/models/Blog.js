@@ -14,6 +14,7 @@ const blogSchema = new mongoose.Schema(
     content:    { type: String, required: true },
     excerpt:    { type: String, default: "" },
     coverImage: { type: String, default: "" },
+    coverImageAlt: { type: String, default: "", trim: true, maxlength: 180 },
     category:   { type: mongoose.Schema.Types.ObjectId, ref: "BlogCategory" },
     author:     { type: String, default: "" },
     tags:       [{ type: String }],

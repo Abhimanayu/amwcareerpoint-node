@@ -44,13 +44,23 @@ const universitySchema = new mongoose.Schema(
     country:         { type: mongoose.Schema.Types.ObjectId, ref: "Country", required: true },
     description:     { type: String, default: "" },
     logo:            { type: String, default: "" },
+    logoAlt:         { type: String, default: "", trim: true, maxlength: 180 },
     heroImage:       { type: String, default: "" },
+    heroImageAlt:    { type: String, default: "", trim: true, maxlength: 180 },
     gallery: {
       type: [{ type: String, trim: true }],
       default: [],
       validate: {
         validator: (arr) => Array.isArray(arr) && arr.length <= 4,
         message: "gallery can have at most 4 images",
+      },
+    },
+    galleryAlt: {
+      type: [{ type: String, trim: true, maxlength: 180 }],
+      default: [],
+      validate: {
+        validator: (arr) => Array.isArray(arr) && arr.length <= 4,
+        message: "galleryAlt can have at most 4 items",
       },
     },
     establishedYear: { type: String, default: "" },

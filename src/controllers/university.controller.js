@@ -27,7 +27,7 @@ const parseSort = (sort = "sortOrder") => {
 
 const escapeRegex = (s = "") => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-const COUNTRY_POPULATE = { path: "country", select: "_id name slug flagImage" };
+const COUNTRY_POPULATE = { path: "country", select: "_id name slug flagImage flagImageAlt" };
 
 const buildListStatusFilter = (status, allowStatusOverride = false) => {
   if (!allowStatusOverride) return { status: "active" };
@@ -52,6 +52,21 @@ const trimImageFields = (obj) => {
     obj.gallery = obj.gallery
       .map((u) => (typeof u === "string" ? u.trim() : u))
       .filter((u) => u);
+  }
+};
+
+const trimAltTextFields = (obj) => {
+  const ALT_FIELDS = ["logoAlt", "heroImageAlt", "cardImageAlt"];
+  for (const field of ALT_FIELDS) {
+    if (obj[field] && typeof obj[field] === "string") {
+      obj[field] = obj[field].trim();
+    }
+  }
+
+  if (Array.isArray(obj.galleryAlt)) {
+    obj.galleryAlt = obj.galleryAlt
+      .map((alt) => (typeof alt === "string" ? alt.trim() : ""))
+      .slice(0, 4);
   }
 };
 
@@ -204,9 +219,9 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
     }
 
     const PUBLIC_LIST_FIELDS =
-      "_id name slug country logo heroImage annualFees courseDuration hostelFees medium featured status sortOrder createdAt updatedAt";
+      "_id name slug country logo logoAlt heroImage heroImageAlt gallery galleryAlt annualFees courseDuration hostelFees medium featured status sortOrder createdAt updatedAt";
     const ADMIN_LIST_FIELDS =
-      "_id name slug country description logo heroImage annualFees courseDuration hostelFees medium featured status sortOrder createdAt updatedAt";
+      "_id name slug country description logo logoAlt heroImage heroImageAlt gallery galleryAlt annualFees courseDuration hostelFees medium featured status sortOrder createdAt updatedAt";
     const LIST_FIELDS = allowStatusOverride ? ADMIN_LIST_FIELDS : PUBLIC_LIST_FIELDS;
 
     let data = [];
@@ -403,6 +418,7 @@ exports.create = async (req, res, next) => {
 
     // Trim all image URL fields to remove hidden newline characters
     trimImageFields(body);
+    trimAltTextFields(body);
 
     const university = await University.create({ ...body, slug });
     const populated = await University.findById(university._id)
@@ -504,6 +520,7 @@ exports.update = async (req, res, next) => {
 
     // Trim all image URL fields to remove hidden newline characters
     trimImageFields(updates);
+    trimAltTextFields(updates);
 
     const university = await University.findByIdAndUpdate(
       id,

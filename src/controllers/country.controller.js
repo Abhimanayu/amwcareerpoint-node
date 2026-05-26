@@ -27,6 +27,15 @@ const trimImageFields = (obj) => {
   }
 };
 
+const trimAltTextFields = (obj) => {
+  const ALT_FIELDS = ["flagImageAlt", "heroImageAlt", "bannerImageAlt", "cardImageAlt"];
+  for (const field of ALT_FIELDS) {
+    if (obj[field] && typeof obj[field] === "string") {
+      obj[field] = obj[field].trim();
+    }
+  }
+};
+
 /**
  * Validate and sanitize a supportExperience payload.
  * Returns { ok, error } — if ok is false, error contains a 400-ready message.
@@ -250,7 +259,7 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
     }
 
     const LIST_FIELDS =
-      "_id name slug tagline description flagImage heroImage cardImage feeRange duration livingCost currency universityCount sortOrder status isFeatured updatedAt";
+      "_id name slug tagline description flagImage flagImageAlt heroImage heroImageAlt cardImage cardImageAlt feeRange duration livingCost currency universityCount sortOrder status isFeatured updatedAt";
 
     const [data, total] = await Promise.all([
       Country.find(filter)
@@ -302,9 +311,13 @@ const ensureFullCountryShape = (doc) => {
     tagline: null,
     description: null,
     flagImage: null,
+    flagImageAlt: "",
     heroImage: null,
+    heroImageAlt: "",
     bannerImage: null,
+    bannerImageAlt: "",
     cardImage: null,
+    cardImageAlt: "",
     headerColor: null,
     feeRange: null,
     feeRangeUSD: null,
@@ -485,6 +498,7 @@ exports.create = async (req, res, next) => {
 
     // Trim image URL fields to strip hidden newline characters
     trimImageFields(body);
+    trimAltTextFields(body);
 
     const country = await Country.create({ ...body, slug });
 
@@ -618,6 +632,7 @@ exports.update = async (req, res, next) => {
 
     // Trim image URL fields to strip hidden newline characters
     trimImageFields(updates);
+    trimAltTextFields(updates);
 
     const country = await Country.findByIdAndUpdate(
       id,

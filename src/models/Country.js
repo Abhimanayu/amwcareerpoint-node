@@ -156,9 +156,13 @@ const countrySchema = new mongoose.Schema(
 
     // ── Images (support both naming conventions) ─────────────────
     flagImage: { type: String, default: null }, // frontend: flagImage
+    flagImageAlt: { type: String, default: "", trim: true, maxlength: 180 },
     heroImage: { type: String, default: null }, // frontend: heroImage
+    heroImageAlt: { type: String, default: "", trim: true, maxlength: 180 },
     bannerImage: { type: String, default: null }, // legacy support
+    bannerImageAlt: { type: String, default: "", trim: true, maxlength: 180 },
     cardImage: { type: String, default: null },
+    cardImageAlt: { type: String, default: "", trim: true, maxlength: 180 },
 
     // ── Styling ───────────────────────────────────────────────────
     headerColor: { type: String, default: null },

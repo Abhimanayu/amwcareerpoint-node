@@ -219,7 +219,7 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
     }
 
     const PUBLIC_LIST_FIELDS =
-      "_id name slug country logo logoAlt heroImage heroImageAlt gallery galleryAlt annualFees courseDuration hostelFees medium featured status sortOrder createdAt updatedAt";
+      "_id name slug city location country logo logoAlt heroImage heroImageAlt gallery galleryAlt annualFees courseDuration hostelFees medium featured status sortOrder createdAt updatedAt";
     const ADMIN_LIST_FIELDS =
       "_id name slug country description logo logoAlt heroImage heroImageAlt gallery galleryAlt annualFees courseDuration hostelFees medium featured status sortOrder createdAt updatedAt";
     const LIST_FIELDS = allowStatusOverride ? ADMIN_LIST_FIELDS : PUBLIC_LIST_FIELDS;

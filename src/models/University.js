@@ -42,6 +42,7 @@ const universitySchema = new mongoose.Schema(
     name:            { type: String, required: true, trim: true },
     slug:            { type: String, required: true, unique: true, lowercase: true, trim: true },
     country:         { type: mongoose.Schema.Types.ObjectId, ref: "Country", required: true },
+    city:            { type: String, default: "", trim: true, maxlength: 120 },
     description:     { type: String, default: "" },
     logo:            { type: String, default: "" },
     logoAlt:         { type: String, default: "", trim: true, maxlength: 180 },

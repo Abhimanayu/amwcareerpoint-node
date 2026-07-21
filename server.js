@@ -92,8 +92,10 @@ app.get("/api/uploads/health", (req, res) => {
 console.log("✅ API uploads health endpoint registered at /api/uploads/health");
 
 // ── CORS ──────────────────────────────────────────────────────────
-const CORS_ORIGIN = process.env.CORS_ORIGIN ||
-  "https://amwcareerpoint.com,https://www.amwcareerpoint.com";
+const defaultCorsOrigins = process.env.NODE_ENV === "production"
+  ? "https://amwcareerpoint.com,https://www.amwcareerpoint.com"
+  : "https://amwcareerpoint.com,https://www.amwcareerpoint.com,http://localhost:3000,http://127.0.0.1:3000";
+const CORS_ORIGIN = process.env.CORS_ORIGIN || defaultCorsOrigins;
 // Allow comma-separated list of origins
 const allowedOrigins = CORS_ORIGIN === "*"
   ? "*"

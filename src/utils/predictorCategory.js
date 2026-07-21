@@ -1,19 +1,53 @@
 const KNOWN_BASES = new Set([
   "UR", "OBC", "SC", "ST", "EWS", "BC", "GEN", "GENERAL",
   "MBC", "SA", "SBC", "SEBC", "NRI", "SM", "MM", "OC",
+  "OPEN",
 ]);
 
 function deriveCategoryParts(state, rawCategory) {
   const raw = String(rawCategory || "").trim();
   const upper = raw.toUpperCase();
 
+  if (["GENERAL", "GEN", "OPEN", "OC", "OM", "OPNO"].includes(upper)) {
+    return { rawCategory: raw, category: "UR", subCategory: null };
+  }
+
+  if (/^UR\s*\(/i.test(raw)) {
+    const paren = raw.match(/\(([^)]+)\)/);
+    return { rawCategory: raw, category: "UR", subCategory: paren?.[1]?.trim().toUpperCase() || null };
+  }
+
+  if (/^SC[0-9A-Z]+$/i.test(raw) && upper !== "SC") {
+    return { rawCategory: raw, category: "SC", subCategory: upper.slice(2) || null };
+  }
+
+  if (/^SC\s+.+/i.test(raw)) {
+    return { rawCategory: raw, category: "SC", subCategory: raw.substring(2).trim().toUpperCase() || null };
+  }
+
+  if (/^ST[0-9A-Z]+$/i.test(raw) && upper !== "ST") {
+    return { rawCategory: raw, category: "ST", subCategory: upper.slice(2) || null };
+  }
+
+  if (/^ST\s+.+/i.test(raw)) {
+    return { rawCategory: raw, category: "ST", subCategory: raw.substring(2).trim().toUpperCase() || null };
+  }
+
+  if (/^CATEGORY\s+/i.test(raw)) {
+    return { rawCategory: raw, category: "CATEGORY", subCategory: raw.replace(/^category\s+/i, "").trim().toUpperCase() || null };
+  }
+
   // Rule 1: BCA / BCB / BCC / BCD / BCE
   if (/^BC[A-E]$/i.test(raw)) {
     return { rawCategory: raw, category: "BC", subCategory: upper[2] };
   }
 
+  if (/^BC[A-Z]$/i.test(raw) && upper !== "BC") {
+    return { rawCategory: raw, category: "BC", subCategory: upper.slice(2) || null };
+  }
+
   // Rule 2: Madhya Pradesh slash notation
-  if (state === "Madhya Pradesh" && raw.includes("/")) {
+  if (String(state).toUpperCase() === "MADHYA PRADESH" && raw.includes("/")) {
     const slashIdx = raw.indexOf("/");
     const base = raw.substring(0, slashIdx).trim().toUpperCase();
     const sub = raw.substring(slashIdx + 1).trim();
@@ -23,7 +57,7 @@ function deriveCategoryParts(state, rawCategory) {
   }
 
   // Rule 3: Uttarakhand parentheses notation
-  if (state === "Uttarakhand" && raw.includes("(")) {
+  if (String(state).toUpperCase() === "UTTARAKHAND" && raw.includes("(")) {
     const parenIdx = raw.indexOf("(");
     const base = raw.substring(0, parenIdx).trim().toUpperCase();
     if (base) {

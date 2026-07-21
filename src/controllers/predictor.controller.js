@@ -2,6 +2,7 @@ const PredictorCutoff = require("../models/PredictorCutoff");
 const PredictorAccess = require("../models/PredictorAccess");
 const { getPredictorAccessStatus } = require("../middleware/predictorAccess");
 const { Types } = require("mongoose");
+const { computeChance, getQuotaGroupLabel } = require("../utils/predictorNormalize");
 
 function cleanString(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -42,6 +43,7 @@ function buildSearchFilter(body = {}) {
   const category = cleanString(body.category);
   const subCategory = cleanString(body.subCategory);
   const quota = cleanString(body.quota);
+  const quotaGroup = cleanString(body.quotaGroup).toUpperCase();
   const college = cleanString(body.college);
   const rank = Number(body.rank);
 
@@ -55,6 +57,7 @@ function buildSearchFilter(body = {}) {
     if (subCategory) filter.subCategory = subCategory;
   }
   if (quota) filter.quota = quota;
+  if (quotaGroup) filter.quotaGroup = quotaGroup;
   if (college) filter.college = { $regex: college.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`), $options: "i" };
 
   if (Number.isFinite(rank) && rank > 0) {
@@ -165,9 +168,19 @@ exports.search = async (req, res, next) => {
       PredictorCutoff.countDocuments(filter),
     ]);
 
+    const items = rows.map((row) => {
+      const rankMargin = rank ? row.closingRank - rank : null;
+      return {
+        ...row,
+        rankMargin,
+        chance: computeChance(rankMargin),
+        quotaGroupLabel: getQuotaGroupLabel(row.quotaGroup),
+      };
+    });
+
     return res.json({
       data: {
-        items: rows,
+        items,
         pagination: {
           page,
           limit,
@@ -180,6 +193,7 @@ exports.search = async (req, res, next) => {
           category: cleanString(req.body.category) || null,
           subCategory: cleanString(req.body.subCategory) || null,
           quota: cleanString(req.body.quota) || null,
+          quotaGroup: cleanString(req.body.quotaGroup) || null,
           college: cleanString(req.body.college) || null,
           rank,
         },

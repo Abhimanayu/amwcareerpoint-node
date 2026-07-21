@@ -1,10 +1,15 @@
 const PredictorCutoff = require("../models/PredictorCutoff");
+const { getQuotaGroupLabel } = require("../utils/predictorNormalize");
 
 function cleanState(input) {
   return typeof input === "string" ? input.trim() : "";
 }
 
 function cleanCategory(input) {
+  return typeof input === "string" ? input.trim().toUpperCase() : "";
+}
+
+function cleanQuotaGroup(input) {
   return typeof input === "string" ? input.trim().toUpperCase() : "";
 }
 
@@ -18,15 +23,20 @@ async function listStates() {
   return sortAlpha([...new Set(clean)]);
 }
 
-async function listCategoriesAndQuotas(stateFilter, categoryFilter) {
+async function listCategoriesAndQuotas(stateFilter, categoryFilter, quotaGroupFilter) {
   const filter = stateFilter ? { state: stateFilter } : {};
   if (categoryFilter) filter.category = categoryFilter;
+  if (quotaGroupFilter) filter.quotaGroup = quotaGroupFilter;
 
-  const [categories, subCategories, rawCategories, quotas] = await Promise.all([
-    PredictorCutoff.distinct("category", stateFilter ? { state: stateFilter } : {}),
+  const categoryBaseFilter = stateFilter ? { state: stateFilter } : {};
+  if (quotaGroupFilter) categoryBaseFilter.quotaGroup = quotaGroupFilter;
+
+  const [categories, subCategories, rawCategories, quotas, quotaGroups] = await Promise.all([
+    PredictorCutoff.distinct("category", categoryBaseFilter),
     PredictorCutoff.distinct("subCategory", filter),
     PredictorCutoff.distinct("rawCategory", filter),
     PredictorCutoff.distinct("quota", filter),
+    PredictorCutoff.distinct("quotaGroup", categoryFilter ? filter : categoryBaseFilter),
   ]);
 
   const cleanCategories = sortAlpha(
@@ -41,19 +51,30 @@ async function listCategoriesAndQuotas(stateFilter, categoryFilter) {
   const cleanQuotas = sortAlpha(
     [...new Set(quotas.filter((x) => typeof x === "string" && x.trim()).map((x) => x.trim()))]
   );
+  const cleanQuotaGroups = sortAlpha(
+    [...new Set(quotaGroups.filter((x) => typeof x === "string" && x.trim()).map((x) => x.trim()))]
+  );
 
   return {
     categories: cleanCategories,
     subCategories: cleanSubCategories,
     rawCategories: cleanRawCategories,
     quotas: cleanQuotas,
+    quotaGroups: cleanQuotaGroups,
+    quotaGroupOptions: cleanQuotaGroups.map((value) => ({
+      value,
+      label: getQuotaGroupLabel(value),
+    })),
   };
 }
 
-async function listCategoryOptions(stateFilter) {
+async function listCategoryOptions(stateFilter, quotaGroupFilter) {
   const pipeline = [];
-  if (stateFilter) {
-    pipeline.push({ $match: { state: stateFilter } });
+  const match = {};
+  if (stateFilter) match.state = stateFilter;
+  if (quotaGroupFilter) match.quotaGroup = quotaGroupFilter;
+  if (Object.keys(match).length > 0) {
+    pipeline.push({ $match: match });
   }
 
   pipeline.push(
@@ -88,6 +109,7 @@ exports.getMetadata = async (req, res, next) => {
   try {
     const state = cleanState(req.query.state);
     const category = cleanCategory(req.query.category);
+    const quotaGroup = cleanQuotaGroup(req.query.quotaGroup);
     const states = await listStates();
 
     if (state && !states.includes(state)) {
@@ -101,8 +123,8 @@ exports.getMetadata = async (req, res, next) => {
     }
 
     const [metadata, categoryOptions] = await Promise.all([
-      listCategoriesAndQuotas(state, category),
-      listCategoryOptions(state),
+      listCategoriesAndQuotas(state, category, quotaGroup),
+      listCategoryOptions(state, quotaGroup),
     ]);
 
     if (category && !metadata.categories.includes(category)) {
@@ -119,11 +141,14 @@ exports.getMetadata = async (req, res, next) => {
       data: {
         state: state || null,
         category: category || null,
+        quotaGroup: quotaGroup || null,
         states,
         categories: metadata.categories,
         subCategories: metadata.subCategories,
         rawCategories: metadata.rawCategories,
         quotas: metadata.quotas,
+        quotaGroups: metadata.quotaGroups,
+        quotaGroupOptions: metadata.quotaGroupOptions,
         categoryOptions,
       },
     });

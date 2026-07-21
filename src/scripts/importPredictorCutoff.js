@@ -2,9 +2,19 @@ const fs = require("node:fs");
 const path = require("node:path");
 require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
 const mongoose = require("mongoose");
+const readXlsxFile = require("read-excel-file/node");
 
 const PredictorCutoff = require("../models/PredictorCutoff");
 const { deriveCategoryParts } = require("../utils/predictorCategory");
+const {
+  normalizeState,
+  normalizeCollege,
+  normalizeCategory,
+  normalizeQuota,
+  normalizeWhitespace,
+  deriveQuotaGroup,
+  inferCategoryFromQuota,
+} = require("../utils/predictorNormalize");
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/amwcareerpoint";
 
@@ -24,12 +34,57 @@ function loadJsonFile(filePath) {
   return { absPath, data: JSON.parse(raw) };
 }
 
-function toNormalizedRecord(row) {
-  const state = String(row.state || "").trim();
-  const college = String(row.college || "").trim();
-  const rawCategory = String(row.category || "").trim();
-  const quota = String(row.quota || "").trim();
-  const closingRank = Number(row.closingRank);
+function mapRowFromArray(row) {
+  return {
+    serialNumber: row[0],
+    state: row[1],
+    closingRank: row[2],
+    category: row[3],
+    quota: row[4],
+    college: row[5],
+  };
+}
+
+function isHeaderRow(row) {
+  const normalized = row.map((cell) => String(cell || "").trim().toUpperCase());
+  return normalized.includes("STATES") && normalized.includes("NEET RANK") && normalized.includes("COLLEGES");
+}
+
+async function loadXlsxFile(filePath) {
+  const absPath = path.resolve(process.cwd(), filePath);
+  const sheets = await readXlsxFile(absPath, { trim: true });
+  const data = [];
+
+  sheets.forEach((sheet) => {
+    const sheetName = sheet.sheet;
+    const rows = sheet.data || [];
+
+    if (!Array.isArray(rows) || rows.length === 0) return;
+
+    const startIndex = isHeaderRow(rows[0]) ? 1 : 0;
+    for (const row of rows.slice(startIndex)) {
+      if (!row || row.every((cell) => String(cell || "").trim() === "")) continue;
+      data.push({ ...mapRowFromArray(row), sourceSheet: sheetName });
+    }
+  });
+
+  return { absPath, data };
+}
+
+async function loadInputFile(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  if (ext === ".xlsx" || ext === ".xls") return loadXlsxFile(filePath);
+  return loadJsonFile(filePath);
+}
+
+function toNormalizedRecord(row, context = {}) {
+  const state = normalizeState(row.state ?? row.STATES);
+  const college = normalizeCollege(row.college ?? row.COLLEGES);
+  const rawQuota = normalizeWhitespace(row.quota ?? row.QUOTA);
+  const quota = normalizeQuota(rawQuota);
+  const rawCategoryInput = normalizeCategory(row.category ?? row.rawCategory ?? row["ALL CATEGORIES"]);
+  const rawCategory = rawCategoryInput || inferCategoryFromQuota(rawQuota || quota);
+  const closingRank = Number(row.closingRank ?? row["NEET RANK"]);
 
   if (!state || !college || !rawCategory || !quota || !Number.isFinite(closingRank) || closingRank <= 0) {
     return null;
@@ -45,6 +100,13 @@ function toNormalizedRecord(row) {
     subCategory: parsed.subCategory,
     closingRank,
     quota,
+    rawQuota,
+    quotaGroup: deriveQuotaGroup(rawQuota || quota),
+    stateNormalized: state,
+    collegeNormalized: college.toLowerCase(),
+    sourceYear: context.sourceYear,
+    sourceFile: context.sourceFile,
+    importBatchId: context.importBatchId,
   };
 }
 
@@ -60,11 +122,14 @@ function parseOptions() {
   const input = getArg("--input");
   const metaPath = getArg("--meta") || null;
   const batchSize = Number(getArg("--batch-size") || 1000);
+  const sourceYearRaw = getArg("--source-year") || getArg("--year") || null;
+  const sourceYear = sourceYearRaw ? Number(sourceYearRaw) : null;
+  const importBatchId = getArg("--batch-id") || `predictor_${new Date().toISOString().replace(/[:.]/g, "-")}`;
   const dryRun = hasFlag("--dry-run");
   const clearFirst = hasFlag("--clear");
 
   if (!input) {
-    console.error("Usage: node src/scripts/importPredictorCutoff.js --input <path-to-neet-cutoff.json> [--meta <path-to-neet-state-meta.json>] [--batch-size 1000] [--clear] [--dry-run]");
+    console.error("Usage: node src/scripts/importPredictorCutoff.js --input <path-to-neet-cutoff.json|xlsx> [--source-year 2025] [--meta <path-to-neet-state-meta.json>] [--batch-size 1000] [--clear] [--dry-run]");
     process.exit(1);
   }
   if (!Number.isFinite(batchSize) || batchSize <= 0) {
@@ -72,7 +137,12 @@ function parseOptions() {
     process.exit(1);
   }
 
-  return { input, metaPath, batchSize, dryRun, clearFirst };
+  if (sourceYearRaw && (!Number.isFinite(sourceYear) || sourceYear < 2000 || sourceYear > 2100)) {
+    console.error("❌ Invalid --source-year. Provide a year like 2025.");
+    process.exit(1);
+  }
+
+  return { input, metaPath, batchSize, sourceYear, importBatchId, dryRun, clearFirst };
 }
 
 function getMetaStates(metaPath) {
@@ -85,12 +155,12 @@ function getMetaStates(metaPath) {
   return [];
 }
 
-function normalizeRows(data) {
+function normalizeRows(data, context) {
   const normalized = [];
   let skipped = 0;
 
   for (const row of data) {
-    const parsed = toNormalizedRecord(row);
+    const parsed = toNormalizedRecord(row, context);
     if (!parsed) {
       skipped++;
       continue;
@@ -185,16 +255,20 @@ async function upsertRows(deduped, batchSize) {
 }
 
 async function run() {
-  const { input, metaPath, batchSize, dryRun, clearFirst } = parseOptions();
+  const { input, metaPath, batchSize, sourceYear, importBatchId, dryRun, clearFirst } = parseOptions();
 
-  const { absPath, data } = loadJsonFile(input);
+  const { absPath, data } = await loadInputFile(input);
   if (!Array.isArray(data)) {
-    console.error("❌ Input JSON must be an array of cutoff rows.");
+    console.error("❌ Input file must resolve to an array of cutoff rows.");
     process.exit(1);
   }
 
   const metaStates = getMetaStates(metaPath);
-  const { normalized, skipped } = normalizeRows(data);
+  const { normalized, skipped } = normalizeRows(data, {
+    sourceYear,
+    sourceFile: path.basename(absPath),
+    importBatchId,
+  });
   const { deduped, duplicateRows } = dedupeRows(normalized);
   const { statesFromCutoff, collegesCount } = buildSummary(deduped);
 

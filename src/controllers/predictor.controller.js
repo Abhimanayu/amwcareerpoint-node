@@ -158,6 +158,11 @@ exports.search = async (req, res, next) => {
     const sortDir = toSortDirection(req.body.sortDir);
 
     const { filter, rank } = buildSearchFilter(req.body || {});
+    if (!Number.isFinite(rank) || rank <= 0) {
+      return res.status(400).json({
+        error: { code: "VALIDATION_ERROR", message: "Valid NEET rank is required" },
+      });
+    }
 
     const [rows, total] = await Promise.all([
       PredictorCutoff.find(filter)

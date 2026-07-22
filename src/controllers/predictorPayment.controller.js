@@ -1,10 +1,14 @@
 const PredictorPayment = require("../models/PredictorPayment");
 const PredictorAccess = require("../models/PredictorAccess");
 const { Types } = require("mongoose");
+const crypto = require("crypto");
+const Razorpay = require("razorpay");
 
 const PREDICTOR_PRICE_INR = Number(process.env.PREDICTOR_PRICE_INR || 499);
 const PREDICTOR_GST_PERCENT = Number(process.env.PREDICTOR_GST_PERCENT || 18);
 const PREDICTOR_ACCESS_DAYS = Number(process.env.PREDICTOR_ACCESS_DAYS || 7);
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || "";
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
 const PREDICTOR_MANUAL_PAYMENT_ENABLED = process.env.PREDICTOR_MANUAL_PAYMENT_ENABLED !== "false";
 const PREDICTOR_MANUAL_PAYMENT_LABEL = process.env.PREDICTOR_MANUAL_PAYMENT_LABEL || "Manual UPI / bank transfer";
 const PREDICTOR_MANUAL_PAYMENT_UPI_ID = process.env.PREDICTOR_MANUAL_PAYMENT_UPI_ID || "";
@@ -14,7 +18,31 @@ const PREDICTOR_MANUAL_PAYMENT_INSTRUCTIONS =
   "Pay manually, then submit your transaction ID. Admin will verify and activate 7-day access.";
 
 function hasPaymentConfig() {
-  return false;
+  return Boolean(RAZORPAY_KEY_ID && RAZORPAY_KEY_SECRET);
+}
+
+function getRazorpayClient() {
+  if (!hasPaymentConfig()) return null;
+  return new Razorpay({
+    key_id: RAZORPAY_KEY_ID,
+    key_secret: RAZORPAY_KEY_SECRET,
+  });
+}
+
+function isValidSignature(payload, signature) {
+  if (!payload || !signature) return false;
+
+  const expected = crypto
+    .createHmac("sha256", RAZORPAY_KEY_SECRET)
+    .update(payload)
+    .digest("hex");
+
+  const expectedBuffer = Buffer.from(expected, "hex");
+  const signatureBuffer = Buffer.from(signature, "hex");
+  return (
+    expectedBuffer.length === signatureBuffer.length &&
+    crypto.timingSafeEqual(expectedBuffer, signatureBuffer)
+  );
 }
 
 function computePlan() {
@@ -77,7 +105,7 @@ exports.getPlan = async (req, res) => {
   return res.json({
     data: {
       ...computePlan(),
-      keyId: null,
+      keyId: hasPaymentConfig() ? RAZORPAY_KEY_ID : null,
       isPaymentConfigured: hasPaymentConfig(),
       manualPayment: {
         enabled: PREDICTOR_MANUAL_PAYMENT_ENABLED,
@@ -92,10 +120,47 @@ exports.getPlan = async (req, res) => {
 
 exports.createOrder = async (req, res, next) => {
   try {
-    return res.status(503).json({
-      error: {
-        code: "PAYMENT_NOT_CONFIGURED",
-        message: "Online payment is not configured yet. Please use manual payment verification.",
+    const razorpay = getRazorpayClient();
+    if (!razorpay) {
+      return res.status(503).json({
+        error: {
+          code: "PAYMENT_NOT_CONFIGURED",
+          message: "Online payment is not configured yet. Please use manual payment verification.",
+        },
+      });
+    }
+
+    const plan = computePlan();
+    const order = await razorpay.orders.create({
+      amount: plan.amountPaise,
+      currency: plan.currency,
+      receipt: `pred_${Date.now()}`,
+      notes: {
+        userId: String(req.predictorUser.id),
+        accessDays: String(plan.accessDays),
+      },
+    });
+
+    const payment = await PredictorPayment.create({
+      userId: req.predictorUser.id,
+      orderId: order.id,
+      method: "razorpay",
+      currency: plan.currency,
+      baseAmountPaise: plan.baseAmountPaise,
+      gstAmountPaise: plan.gstAmountPaise,
+      amountPaise: plan.amountPaise,
+      gstPercent: plan.gstPercent,
+      accessDays: plan.accessDays,
+      status: "created",
+      notes: "Razorpay order created",
+    });
+
+    return res.status(201).json({
+      data: {
+        paymentRecordId: payment._id,
+        orderId: order.id,
+        keyId: RAZORPAY_KEY_ID,
+        ...plan,
       },
     });
   } catch (err) {
@@ -286,10 +351,88 @@ exports.rejectManualRequest = async (req, res, next) => {
 
 exports.verifyPayment = async (req, res, next) => {
   try {
-    return res.status(503).json({
-      error: {
-        code: "PAYMENT_NOT_CONFIGURED",
-        message: "Online payment verification is not configured yet. Please use manual payment verification.",
+    if (!hasPaymentConfig()) {
+      return res.status(503).json({
+        error: {
+          code: "PAYMENT_NOT_CONFIGURED",
+          message: "Online payment verification is not configured yet. Please use manual payment verification.",
+        },
+      });
+    }
+
+    const orderId = cleanString(req.body?.razorpay_order_id);
+    const paymentId = cleanString(req.body?.razorpay_payment_id);
+    const signature = cleanString(req.body?.razorpay_signature);
+
+    if (!orderId || !paymentId || !signature) {
+      return res.status(400).json({
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Razorpay order ID, payment ID, and signature are required",
+        },
+      });
+    }
+
+    const payment = await PredictorPayment.findOne({
+      userId: req.predictorUser.id,
+      orderId,
+      method: "razorpay",
+    });
+
+    if (!payment) {
+      return res.status(404).json({
+        error: {
+          code: "PAYMENT_NOT_FOUND",
+          message: "Payment order was not found for this account",
+        },
+      });
+    }
+
+    if (payment.status === "paid" && payment.accessId) {
+      const access = await PredictorAccess.findById(payment.accessId).lean();
+      return res.json({
+        data: {
+          status: "paid",
+          accessExpiresAt: access?.expiresAt || null,
+          accessDays: payment.accessDays,
+        },
+      });
+    }
+
+    const isSignatureValid = isValidSignature(`${orderId}|${paymentId}`, signature);
+    if (!isSignatureValid) {
+      payment.status = "failed";
+      payment.paymentId = paymentId;
+      payment.signature = signature;
+      payment.notes = "Razorpay signature verification failed";
+      await payment.save();
+
+      return res.status(400).json({
+        error: {
+          code: "PAYMENT_VERIFICATION_FAILED",
+          message: "Payment verification failed. Please contact support if amount was deducted.",
+        },
+      });
+    }
+
+    const access = await grantPaidAccess({
+      userId: payment.userId,
+      accessDays: payment.accessDays,
+      note: `Razorpay payment verified: ${paymentId}`,
+    });
+
+    payment.status = "paid";
+    payment.paymentId = paymentId;
+    payment.signature = signature;
+    payment.accessId = access._id;
+    payment.notes = "Razorpay payment verified successfully";
+    await payment.save();
+
+    return res.json({
+      data: {
+        status: "paid",
+        accessExpiresAt: access.expiresAt,
+        accessDays: payment.accessDays,
       },
     });
   } catch (err) {

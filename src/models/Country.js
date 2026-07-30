@@ -152,7 +152,7 @@ const countrySchema = new mongoose.Schema(
       trim: true,
     },
     tagline: { type: String, default: null, maxlength: 260 },
-    description: { type: String, default: null, maxlength: 50000 },
+    description: { type: String, default: null, maxlength: 500000 },
 
     // ── Images (support both naming conventions) ─────────────────
     flagImage: { type: String, default: null }, // frontend: flagImage

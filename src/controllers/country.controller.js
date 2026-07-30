@@ -1,6 +1,31 @@
 const slugify = require("slugify");
 const Country = require("../models/Country");
 
+const COUNTRY_DESCRIPTION_TEXT_MAX = 100000;
+const COUNTRY_DESCRIPTION_HTML_MAX = 500000;
+
+const getRichTextTextLength = (value) =>
+  String(value || "")
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, "")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&(?:#\d+|#x[\da-f]+|[a-z][\da-z]+);/gi, " ")
+    .trim().length;
+
+const validateCountryDescription = (value) => {
+  if (value === undefined || value === null || value === "") return null;
+
+  const html = String(value);
+  if (html.length > COUNTRY_DESCRIPTION_HTML_MAX) {
+    return `Formatted description must not exceed ${COUNTRY_DESCRIPTION_HTML_MAX} HTML characters`;
+  }
+  if (getRichTextTextLength(html) > COUNTRY_DESCRIPTION_TEXT_MAX) {
+    return `Description must not exceed ${COUNTRY_DESCRIPTION_TEXT_MAX} visible characters`;
+  }
+
+  return null;
+};
+
 const makeSlug = (name) =>
   slugify(name, { lower: true, strict: true, trim: true });
 
@@ -406,6 +431,17 @@ exports.create = async (req, res, next) => {
       });
     }
 
+    const descriptionError = validateCountryDescription(body.description);
+    if (descriptionError) {
+      return res.status(400).json({
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Validation failed",
+          details: [{ field: "description", message: descriptionError }],
+        },
+      });
+    }
+
     const slug = body.slug
       ? slugify(body.slug, { lower: true, strict: true, trim: true })
       : makeSlug(body.name);
@@ -534,6 +570,17 @@ exports.update = async (req, res, next) => {
   try {
     const { id } = req.params;
     const updates = { ...req.body };
+
+    const descriptionError = validateCountryDescription(updates.description);
+    if (descriptionError) {
+      return res.status(400).json({
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Validation failed",
+          details: [{ field: "description", message: descriptionError }],
+        },
+      });
+    }
 
     if (updates.name || updates.slug) {
       updates.slug = updates.slug

@@ -10,9 +10,8 @@ const rateLimit = require("express-rate-limit");
 const REQUIRED_ENV = [
   "MONGODB_URI",
   "JWT_SECRET",
-  "CLOUDINARY_CLOUD_NAME",
-  "CLOUDINARY_API_KEY",
-  "CLOUDINARY_API_SECRET",
+  "IMAGEKIT_PRIVATE_KEY",
+  "IMAGEKIT_URL_ENDPOINT",
 ];
 const missingEnv = REQUIRED_ENV.filter((k) => !process.env[k]);
 if (missingEnv.length > 0) {
@@ -24,7 +23,7 @@ console.log("✅ All required env vars present");
 console.log(`   NODE_ENV   : ${process.env.NODE_ENV || "development"}`);
 console.log(`   CORS_ORIGIN: ${process.env.CORS_ORIGIN || "https://amwcareerpoint.com,https://www.amwcareerpoint.com (default)"}`);
 console.log(`   BASE_URL   : ${process.env.BASE_URL || "(not set — will default to localhost)"}`);
-console.log(`   CLOUDINARY : ${process.env.CLOUDINARY_CLOUD_NAME}`);
+console.log(`   IMAGEKIT   : ${process.env.IMAGEKIT_URL_ENDPOINT || "(not set)"}`);
 
 const connectDB = require("./src/config/db");
 const errorHandler = require("./src/middleware/errorHandler");
@@ -71,6 +70,8 @@ app.get("/health-diagnostics", (req, res) => {
     env: {
       MONGODB_URI: Boolean(process.env.MONGODB_URI),
       JWT_SECRET: Boolean(process.env.JWT_SECRET),
+      IMAGEKIT_PRIVATE_KEY: Boolean(process.env.IMAGEKIT_PRIVATE_KEY),
+      IMAGEKIT_URL_ENDPOINT: Boolean(process.env.IMAGEKIT_URL_ENDPOINT),
       CLOUDINARY_CLOUD_NAME: Boolean(process.env.CLOUDINARY_CLOUD_NAME),
       CLOUDINARY_API_KEY: Boolean(process.env.CLOUDINARY_API_KEY),
       CLOUDINARY_API_SECRET: Boolean(process.env.CLOUDINARY_API_SECRET),

@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
-const { uploadBuffer, destroy, getResource } = require("../config/cloudinary");
+const { destroy, getResource } = require("../config/cloudinary");
+const { uploadBuffer: uploadToImageKit } = require("../config/imagekit");
 
 // Whitelist of allowed folder values
 const ALLOWED_FOLDERS = ["countries", "universities", "blogs", "counsellors", "reviews", "general"];
@@ -27,22 +28,25 @@ exports.upload = async (req, res, next) => {
     const timestamp = Date.now();
     const random = Math.round(Math.random() * 1e6);
     const publicIdBase = `${timestamp}-${random}`;
+    const filename = `${publicIdBase}.${ext || "png"}`;
 
-    console.log(`☁️  Uploading to Cloudinary: amw/${folder}/${publicIdBase}`);
+    console.log(`Uploading to ImageKit: /amw/${folder}/${filename}`);
 
-    const result = await uploadBuffer(req.file.buffer, {
-      folder: `amw/${folder}`,
-      public_id: publicIdBase,
-      format: ext || undefined,
+    const result = await uploadToImageKit(req.file.buffer, {
+      folder: `/amw/${folder}`,
+      fileName: filename,
+      mimetype: req.file.mimetype,
     });
 
-    console.log(`✅ Cloudinary upload OK: ${result.secure_url}`);
+    console.log(`ImageKit upload OK: ${result.url}`);
 
     res.json({
       data: {
-        url: result.secure_url,
-        publicId: result.public_id,
-        filename: `${publicIdBase}.${ext || "png"}`,
+        url: result.url,
+        publicId: result.publicId,
+        fileId: result.fileId,
+        filePath: result.filePath,
+        filename,
         originalName: req.file.originalname,
         size: req.file.size,
         mimetype: req.file.mimetype,
@@ -52,6 +56,17 @@ exports.upload = async (req, res, next) => {
     });
   } catch (err) {
     console.error("❌ Upload error:", err);
+
+    if (err.code === "IMAGEKIT_ERROR" || err.code === "IMAGEKIT_CONFIG_ERROR") {
+      return res.status(502).json({
+        error: {
+          code: err.code,
+          message: "Image upload to cloud storage failed",
+          details: err.message,
+          timestamp: new Date().toISOString(),
+        },
+      });
+    }
 
     // Surface Cloudinary-specific errors clearly
     if (err.http_code || err.message?.includes("Cloudinary")) {

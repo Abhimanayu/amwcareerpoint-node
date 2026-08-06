@@ -5,7 +5,7 @@ const Country = require("../models/Country");
 const makeSlug = (name) =>
   slugify(name, { lower: true, strict: true, trim: true });
 
-const MAX_UNIVERSITY_LIST_LIMIT = 500;
+const MAX_UNIVERSITY_LIST_LIMIT = 1000;
 
 const parsePositiveInt = (value, fallback) => {
   const n = Number.parseInt(value, 10);

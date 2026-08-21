@@ -284,7 +284,7 @@ const listImpl = async (req, res, next, allowStatusOverride = false) => {
     }
 
     const LIST_FIELDS =
-      "_id name slug tagline description flagImage flagImageAlt heroImage heroImageAlt cardImage cardImageAlt feeRange duration livingCost currency universityCount sortOrder status isFeatured updatedAt";
+      "_id name slug tagline description flagImage flagImageAlt heroImage heroImageAlt cardImage cardImageAlt feeRange duration medium livingCost currency universityCount sortOrder status isFeatured updatedAt";
 
     const [data, total] = await Promise.all([
       Country.find(filter)
@@ -352,6 +352,7 @@ const ensureFullCountryShape = (doc) => {
     eligibility: [],
     admissionProcess: [],
     climate: null,
+    medium: null,
     language: null,
     currency: null,
     livingCost: null,

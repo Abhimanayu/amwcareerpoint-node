@@ -186,6 +186,7 @@ const countrySchema = new mongoose.Schema(
 
     // ── Extra info ────────────────────────────────────────────────
     climate: { type: String, default: null },
+    medium: { type: String, default: null, trim: true, maxlength: 120 },
     language: { type: String, default: null },
     currency: { type: String, default: null },
     livingCost: { type: String, default: null },

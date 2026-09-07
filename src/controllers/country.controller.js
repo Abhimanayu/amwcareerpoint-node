@@ -308,6 +308,28 @@ exports.list = async (req, res, next) => listImpl(req, res, next, false);
 // GET /countries/admin/list
 exports.listAdmin = async (req, res, next) => listImpl(req, res, next, true);
 
+// Lightweight existence check used by the frontend SEO routing layer.
+exports.seoStatus = async (req, res, next) => {
+  try {
+    const country = await Country.findOne({
+      slug: req.params.slug,
+      status: "active",
+    })
+      .select("slug")
+      .lean();
+
+    if (!country) {
+      return res.status(404).json({
+        error: { code: "NOT_FOUND", message: "Country not found" },
+      });
+    }
+
+    res.json({ data: { slug: country.slug } });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // GET /countries/:slug
 exports.detail = async (req, res, next) => {
   try {

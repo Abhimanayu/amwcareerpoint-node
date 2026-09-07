@@ -5,6 +5,7 @@ const { authMiddleware } = require("../middleware/auth");
 router.get("/", ctrl.list);
 router.get("/admin/list", authMiddleware, ctrl.listAdmin);
 router.get("/admin/:id", authMiddleware, ctrl.detailById);
+router.get("/:slug/seo-status", ctrl.seoStatus);
 router.get("/:slug", ctrl.detail);
 router.post("/", authMiddleware, ctrl.create);
 router.put("/:id", authMiddleware, ctrl.update);

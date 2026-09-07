@@ -281,6 +281,28 @@ exports.list = async (req, res, next) => listImpl(req, res, next, false);
 // GET /universities/admin/list
 exports.listAdmin = async (req, res, next) => listImpl(req, res, next, true);
 
+// Lightweight existence check used by the frontend SEO routing layer.
+exports.seoStatus = async (req, res, next) => {
+  try {
+    const university = await University.findOne({
+      slug: req.params.slug,
+      status: "active",
+    })
+      .select("slug")
+      .lean();
+
+    if (!university) {
+      return res.status(404).json({
+        error: { code: "NOT_FOUND", message: "University not found" },
+      });
+    }
+
+    res.json({ data: { slug: university.slug } });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // GET /universities/:slug
 exports.detail = async (req, res, next) => {
   try {

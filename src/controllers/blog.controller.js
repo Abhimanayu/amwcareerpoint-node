@@ -92,6 +92,28 @@ exports.list = async (req, res, next) => listImpl(req, res, next, false);
 // GET /blogs/admin/list
 exports.listAdmin = async (req, res, next) => listImpl(req, res, next, true);
 
+// Lightweight existence check used by the frontend SEO routing layer.
+exports.seoStatus = async (req, res, next) => {
+  try {
+    const blog = await Blog.findOne({
+      slug: req.params.slug,
+      status: "published",
+    })
+      .select("slug")
+      .lean();
+
+    if (!blog) {
+      return res.status(404).json({
+        error: { code: "NOT_FOUND", message: "Blog post not found" },
+      });
+    }
+
+    res.json({ data: { slug: blog.slug } });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // GET /blogs/:slug
 exports.detail = async (req, res, next) => {
   try {

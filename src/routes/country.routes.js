@@ -11,6 +11,7 @@ router.get("/admin/:id", authMiddleware, ctrl.detailById);
 router.put("/reorder", authMiddleware, ctrl.reorder);
 
 // Public
+router.get("/:slug/seo-status", ctrl.seoStatus);
 router.get("/:slug", ctrl.detail);
 
 // Admin-only
